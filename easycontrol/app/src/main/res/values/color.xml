@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- 主界面色彩 -->
+  <color name="background">#F3F4F6</color>
+  <color name="onBackground">#242424</color>
+  <color name="onBackgroundSecond">#636564</color>
+  <color name="cardBackground">#FFFFFF</color>
+  <color name="onCardBackground">#000000</color>
+  <color name="onCardBackgroundSecond">#696969</color>
+
+  <!-- 特殊色彩 -->
+  <color name="button">#2E2E2E</color>
+  <color name="onButton">#E0E0E0</color>
+  <color name="alert">#ca5357</color>
+  <color name="onAlert">#ded8d8</color>
+  <color name="translucent">#000000ff</color>
+
+  <!-- 客户端界面色彩 -->
+  <color name="clientBar">#579CF9</color>
+  <color name="clientBarSecond">#c0d1d1d1</color>
+
+  <!-- 迷你界面色彩 -->
+  <color name="bar1">#e8b621</color>
+  <color name="bar2">#3a7f9e</color>
+  <color name="bar3">#6eaa84</color>
+  <color name="bar4">#0A95FF</color>
+
+</resources>

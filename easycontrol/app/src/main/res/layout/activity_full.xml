@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#222325"
+  android:keepScreenOn="true"
+  tools:context=".client.view.FullActivity">
+
+  <EditText
+    android:id="@+id/edit_text"
+    android:layout_width="10dp"
+    android:layout_height="10dp"
+    android:inputType="textVisiblePassword" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:id="@+id/texture_view_layout"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:orientation="horizontal" />
+
+    <LinearLayout
+      android:id="@+id/nav_bar"
+      android:layout_width="match_parent"
+      android:layout_height="35dp"
+      android:layout_gravity="bottom"
+      android:gravity="center"
+      android:orientation="horizontal"
+      android:paddingEnd="50dp"
+      android:paddingStart="10dp">
+
+      <ImageView
+        android:id="@+id/button_rotate"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/rotate"
+        android:tint="#DEDEDE" />
+
+      <ImageView
+        android:id="@+id/button_switch"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/square"
+        android:tint="#DEDEDE" />
+
+      <ImageView
+        android:id="@+id/button_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/o"
+        android:tint="#DEDEDE" />
+
+      <ImageView
+        android:id="@+id/button_back"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/caret_left"
+        android:tint="#DEDEDE" />
+
+    </LinearLayout>
+  </LinearLayout>
+
+  <ImageView
+    android:id="@+id/button_more"
+    android:layout_width="50dp"
+    android:layout_height="35dp"
+    android:layout_gravity="end|bottom"
+    android:focusable="false"
+    android:padding="4dp"
+    android:src="@drawable/ellipsis_vertical"
+    android:tint="#DEDEDE" />
+
+  <GridLayout
+    android:id="@+id/bar_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="45dp"
+    android:background="@drawable/background_cron"
+    android:columnCount="4"
+    android:elevation="6dp"
+    android:padding="8dp">
+
+    <ImageView
+      android:id="@+id/button_nav_bar"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/not_equal"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_mini"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/minus"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_full_exit"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/compress"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_close"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/x"
+      android:tint="@color/alert" />
+
+    <ImageView
+      android:id="@+id/button_light"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/lightbulb"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_light_off"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/lightbulb_off"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_power"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/power_off"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_lock"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="4dp"
+      android:focusable="false"
+      android:src="@drawable/lock"
+      android:tint="@color/onCardBackground" />
+
+  </GridLayout>
+</FrameLayout>

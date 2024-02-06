@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="@color/cardBackground"
+  android:gravity="center_vertical"
+  android:orientation="vertical"
+  android:paddingTop="6dp"
+  android:paddingBottom="6dp">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <FrameLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+      <TextView
+        android:id="@+id/item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设置项"
+        android:textColor="@color/onCardBackground"
+        android:textSize="@dimen/smallFont"
+        tools:ignore="HardcodedText" />
+    </FrameLayout>
+
+    <Switch
+      android:id="@+id/item_switch"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:thumbTint="@color/button"
+      android:thumbTintMode="multiply"
+      android:trackTint="@color/button"
+      android:trackTintMode="multiply"
+      tools:ignore="UseSwitchCompatOrMaterialXml" />
+  </LinearLayout>
+
+  <TextView
+    android:id="@+id/item_detail"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:text="辅助说明"
+    android:textColor="@color/onCardBackgroundSecond"
+    android:textSize="@dimen/smallSmallFont"
+    tools:ignore="HardcodedText" />
+
+</LinearLayout>

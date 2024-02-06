@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<top.eiyooooo.easycontrol.app.client.view.MyViewForSmallView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:background="@color/cardBackground"
+  android:elevation="8dp">
+
+  <EditText
+    android:id="@+id/edit_text"
+    android:layout_width="10dp"
+    android:layout_height="10dp"
+    android:inputType="textVisiblePassword" />
+
+  <LinearLayout
+    android:id="@+id/texture_view_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:id="@+id/nav_bar"
+      android:layout_width="match_parent"
+      android:layout_height="30dp"
+      android:gravity="center"
+      android:visibility="gone">
+
+      <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+      <ImageView
+        android:id="@+id/button_switch"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/square"
+        android:tint="@color/onCardBackground" />
+
+      <ImageView
+        android:id="@+id/button_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/o"
+        android:tint="@color/onCardBackground" />
+
+      <ImageView
+        android:id="@+id/button_back"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:focusable="false"
+        android:padding="4dp"
+        android:src="@drawable/caret_left"
+        android:tint="@color/onCardBackground" />
+
+      <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+    </LinearLayout>
+  </LinearLayout>
+
+  <FrameLayout
+    android:id="@+id/bar"
+    android:layout_width="100dp"
+    android:layout_height="38dp"
+    android:layout_gravity="top|center_horizontal"
+    android:layout_marginTop="1dp"
+    android:background="@drawable/background_cron"
+    android:backgroundTint="@color/translucent"
+    android:paddingBottom="1dp">
+
+    <View
+      android:layout_width="80dp"
+      android:layout_height="10dp"
+      android:layout_gravity="center"
+      android:background="@drawable/background_cron"
+      android:backgroundTint="@color/clientBar"
+      android:focusable="false" />
+  </FrameLayout>
+
+  <GridLayout
+    android:id="@+id/bar_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top|center_horizontal"
+    android:layout_marginTop="45dp"
+    android:background="@drawable/background_cron"
+    android:columnCount="4"
+    android:elevation="6dp"
+    android:padding="8dp">
+
+    <ImageView
+      android:id="@+id/button_nav_bar"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/not_equal"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_mini"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/minus"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_full"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/expand"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_rotate"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/rotate"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_light"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/lightbulb"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_light_off"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/lightbulb_off"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_power"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/power_off"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_close"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/x"
+      android:tint="@color/alert" />
+  </GridLayout>
+
+  <View
+    android:id="@+id/re_size"
+    android:layout_width="40dp"
+    android:layout_height="25dp"
+    android:layout_gravity="end|bottom"
+    android:focusable="false" />
+
+</top.eiyooooo.easycontrol.app.client.view.MyViewForSmallView>

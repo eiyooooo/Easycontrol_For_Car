@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">易控车机版</string>
+
+  <!-- 主页 -->
+  <string name="main_poem">行车不规范，亲人两行泪</string>
+  <string name="car_version_message">如果你喜欢车机版的话\n可以在车机版Github仓库上Star哦🙇</string>
+  <string name="main_float_permission">请授予悬浮窗权限</string>
+
+  <!-- 设置页面 -->
+  <string name="set_default">默认参数</string>
+  <string name="set_display">显示</string>
+  <string name="set_turn_on_screen_if_start">启动时点亮屏幕</string>
+  <string name="set_turn_on_screen_if_start_detail">连接成功后自动点亮被控端屏幕</string>
+  <string name="set_turn_off_screen_if_start">启动时进入熄屏控制</string>
+  <string name="set_turn_off_screen_if_start_detail">连接成功两秒后进入熄屏控制（需开启"启动时点亮屏幕"）</string>
+  <string name="set_turn_off_screen_if_start_error">请先开启“启动时点亮屏幕”哦</string>
+  <string name="set_turn_off_screen_if_stop">断开时熄灭屏幕</string>
+  <string name="set_turn_off_screen_if_stop_detail">断开连接后自动熄灭被控端屏幕</string>
+  <string name="set_turn_on_screen_if_stop">断开时退出熄屏控制</string>
+  <string name="set_turn_on_screen_if_stop_detail">断开连接后退出熄屏控制（需关闭"断开时熄灭屏幕"）</string>
+  <string name="set_turn_on_screen_if_stop_error">请先关闭“断开时熄灭屏幕”哦</string>
+  <string name="set_display_keep_screen_awake">被控端保持唤醒</string>
+  <string name="set_display_keep_screen_awake_detail">连接过程中被控端不锁定（即修改自动锁定时间）</string>
+  <string name="set_display_auto_back_on_start_default">打开默认后返回</string>
+  <string name="set_display_auto_back_on_start_default_detail">启动时打开默认后是否自动返回桌面</string>
+  <string name="set_display_default_show_nav_bar">默认显示导航栏</string>
+  <string name="set_display_default_show_nav_bar_detail">设置小窗和全屏模式默认是否显示导航栏</string>
+  <string name="set_display_default_mini_on_outside">触摸外界时最小化</string>
+  <string name="set_display_default_mini_on_outside_detail">(小窗模式)触摸小窗以外位置时最小化</string>
+  <string name="set_other">其他</string>
+  <string name="set_if_start_default_usb">启动时打开默认USB设备</string>
+  <string name="set_if_start_default_usb_detail">启动APP时若USB设备已连接并已授权则自动打开</string>
+  <string name="set_other_clear_default">清除默认无线设备</string>
+  <string name="set_other_clear_default_usb">清除默认USB设备</string>
+  <string name="set_other_clear_default_code">已清除默认无线设备</string>
+  <string name="set_other_clear_default_usb_code">已清除默认USB设备</string>
+  <string name="set_other_no_default">没有找到默认设备哦oVo</string>
+  <string name="set_other_custom_key">自定义密钥(需重新授权)</string>
+  <string name="set_other_clear_key">重新生成密钥(需重新授权)</string>
+  <string name="set_other_clear_key_code">已刷新</string>
+  <string name="set_other_locale">语言切换(中文/English)</string>
+  <string name="set_other_locale_code">OK, you may need to restart the APP</string>
+  <string name="set_about">关于</string>
+  <string name="set_about_ip">查看本机IP</string>
+  <string name="set_about_website">项目主页</string>
+  <string name="set_about_how_to_use">使用说明</string>
+  <string name="set_about_privacy">隐私政策</string>
+  <string name="set_about_version">版本: </string>
+
+  <!-- 查看IP地址页面 -->
+  <string name="ip_title">本机地址</string>
+  <string name="ip_ipv4">IPv4(点击复制)</string>
+  <string name="ip_ipv6">IPv6(点击复制)</string>
+  <string name="ip_copy">已复制</string>
+
+  <!-- 查看密钥页面 -->
+  <string name="adb_key_pub">公钥(Base64编码)</string>
+  <string name="adb_key_pri">私钥(Base64编码)</string>
+  <string name="adb_key_button">保存</string>
+  <string name="adb_key_button_code">已保存</string>
+
+  <!-- 设备添加模块 -->
+  <string name="add_device_name">设备名称</string>
+  <string name="add_device_name_hint">不可为空</string>
+  <string name="add_device_address">地址:端口号</string>
+  <string name="add_device_address_hint">支持IPv4/v6地址、域名</string>
+  <string name="add_device_option">高级选项</string>
+  <string name="add_device_button">确认</string>
+
+  <!-- 设备设置模块 -->
+  <string name="set_device_title">干什么◔ ‸◔?</string>
+  <string name="set_device_button_recover">恢复分辨率</string>
+  <string name="set_device_button_recover_success">恢复成功</string>
+  <string name="set_device_button_recover_error">连接失败，请检查ADB和网络</string>
+  <string name="set_device_button_set_default">启动时打开</string>
+  <string name="set_device_button_set_default_link">设为默认USB</string>
+  <string name="set_device_button_get_uuid">获取ID</string>
+  <string name="set_device_button_get_uuid_success">已复制</string>
+  <string name="set_device_button_start_wireless">打开无线</string>
+  <string name="set_device_button_start_wireless_success">成功</string>
+  <string name="set_device_button_change">修改</string>
+  <string name="set_device_button_delete">删除</string>
+
+  <!-- 加载中模块 -->
+  <string name="loading_text">加加加加载中</string>
+
+  <!-- 错误提示 -->
+  <string name="error_no_browser">没有默认浏览器</string>
+  <string name="error_address_error">地址格式错误</string>
+  <string name="error_refused_back">全屏状态会拦截返回</string>
+  <string name="error_connect_server">连接被控端失败</string>
+  <string name="error_stream_closed">连接断开</string>
+
+  <!-- 设备参数设置及注释说明 -->
+  <string name="option_is_audio">使能音频</string>
+  <string name="option_is_audio_detail">开启后将尝试传输音频，被控端需要安卓12或以上</string>
+  <string name="option_max_size">最大大小</string>
+  <string name="option_max_size_detail">设置画面长和宽的最大大小</string>
+  <string name="option_max_fps">最大帧率</string>
+  <string name="option_max_fps_detail">最大帧率限制，值越低画面越卡顿，但流量也越小，延迟也会降低</string>
+  <string name="option_max_video_bit">最大码率</string>
+  <string name="option_max_video_bit_detail">码率越大视频损失越小体积越大，建议设置为4，过高会导致延迟增加</string>
+  <string name="option_use_h265">优先H265</string>
+  <string name="option_use_h265_detail">优先使用H265，视频体积小延迟低，实际以支持情况为主，若视频异常可尝试关闭</string>
+  <string name="option_use_opus">优先Opus</string>
+  <string name="option_use_opus_detail">优先使用OPUS，音频体积小延迟低，实际以支持情况为主</string>
+  <string name="option_default_full">默认全屏启动</string>
+  <string name="option_default_full_detail">开启后在连接成功后直接进入全屏状态</string>
+  <string name="option_set_resolution">修改分辨率</string>
+  <string name="option_set_resolution_detail">开启后会自动修改被控端分辨率，可能会无法自动恢复(可手动恢复)，慎重考虑</string>
+
+</resources>

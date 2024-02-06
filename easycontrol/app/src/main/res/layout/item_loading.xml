@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content">
+
+  <FrameLayout
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:layout_gravity="center"
+  android:background="@drawable/background_cron"
+  android:paddingStart="40dp"
+  android:paddingTop="10dp"
+  android:paddingEnd="40dp"
+  android:paddingBottom="10dp">
+
+  <TextView
+    android:id="@+id/text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:text="@string/loading_text"
+    android:textColor="@color/onCardBackground"
+    android:textSize="@dimen/middleFont"
+    android:textStyle="bold" />
+  </FrameLayout>
+
+</FrameLayout>

@@ -1,0 +1,13 @@
+easycontrol/*.iml
+easycontrol/.gradle
+easycontrol/.idea
+easycontrol/local.properties
+.idea
+easycontrol/app/build
+easycontrol/app/.gradle
+easycontrol/app/debug
+easycontrol/app/release
+easycontrol/app/src/main/res/raw/easycontrol_server.jar
+
+easycontrol/server/build
+easycontrol/server/.gradle
