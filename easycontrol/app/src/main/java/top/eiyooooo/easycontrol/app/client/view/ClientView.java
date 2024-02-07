@@ -98,6 +98,10 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     return videoSize;
   }
 
+  public Pair<Integer, Integer> getMaxSize() {
+    return maxSize;
+  }
+
   public Surface getSurface() {
     return new Surface(surfaceTexture);
   }

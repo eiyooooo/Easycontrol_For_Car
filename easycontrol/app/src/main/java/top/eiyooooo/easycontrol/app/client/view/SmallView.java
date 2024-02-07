@@ -29,6 +29,7 @@ public class SmallView extends ViewOutlineProvider {
   private boolean RemoteIsPortrait = true;
   private int InitSize = 0;
   private boolean InitPos = false;
+  private boolean lightState;
 
   // 悬浮窗
   private final ModuleSmallViewBinding smallView = ModuleSmallViewBinding.inflate(LayoutInflater.from(AppData.main));
@@ -47,6 +48,7 @@ public class SmallView extends ViewOutlineProvider {
   public SmallView(ClientView clientView) {
     this.clientView = clientView;
     smallViewParams.gravity = Gravity.START | Gravity.TOP;
+    lightState = !AppData.setting.getTurnOffScreenIfStart();
     // 设置默认导航栏状态
     setNavBarHide(AppData.setting.getDefaultShowNavBar());
     // 获取屏幕宽高
@@ -302,12 +304,29 @@ public class SmallView extends ViewOutlineProvider {
       AppData.dbHelper.update(clientView.device);
       clientView.onClose.run();
     });
-    smallView.buttonLight.setOnClickListener(v -> {
-      controlPacket.sendLightEvent(Display.STATE_ON);
+    if (!lightState) smallView.buttonLightOff.setImageResource(R.drawable.lightbulb);
+    smallView.buttonLightOff.setOnClickListener(v -> {
+      if (lightState) {
+        controlPacket.sendLightEvent(Display.STATE_UNKNOWN);
+        smallView.buttonLightOff.setImageResource(R.drawable.lightbulb);
+        lightState = false;
+      } else {
+        controlPacket.sendLightEvent(Display.STATE_ON);
+        smallView.buttonLightOff.setImageResource(R.drawable.lightbulb_off);
+        lightState = true;
+      }
       barViewTimer();
     });
-    smallView.buttonLightOff.setOnClickListener(v -> {
-      controlPacket.sendLightEvent(Display.STATE_UNKNOWN);
+    smallView.resetLocation.setOnClickListener(v -> {
+      clientView.device.small_p_p_x = 0;
+      clientView.device.small_p_p_y = 0;
+      clientView.device.small_p_l_x = 0;
+      clientView.device.small_p_l_y = 0;
+      clientView.device.small_l_p_x = 0;
+      clientView.device.small_l_p_y = 0;
+      clientView.device.small_l_l_x = 0;
+      clientView.device.small_l_l_y = 0;
+      clientView.updateMaxSize(clientView.getMaxSize());
       barViewTimer();
     });
     smallView.buttonPower.setOnClickListener(v -> {
