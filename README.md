@@ -32,7 +32,7 @@
 - [点击此处查看](https://github.com/eiyooooo/Easycontrol_For_Car/releases)
 
 ## 关于发行版本下载
-本项目不提供发行版本下载，如有需要请自行编译。或者通过[易控原版](https://gitee.com/mingzhixianweb/easycontrol)赞助后进入易控内测群下载。
+本项目不提供发行版本下载，如有需要请自行[编译](https://github.com/eiyooooo/Easycontrol_For_Car/blob/main/HOW_TO_BUILD.md)。或者通过[易控原版](https://gitee.com/mingzhixianweb/easycontrol)赞助后进入易控内测群下载。
 
 ## 截图
 <img src="https://github.com/eiyooooo/Easycontrol_For_Car/raw/main/pic/screenshot/small.webp" width="200px">
