@@ -102,7 +102,7 @@ public class Client {
       } catch (Exception e) {
         release(Arrays.toString(e.getStackTrace()));
       } finally {
-        AppData.windowManager.removeView(loading.first);
+        if (loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
         if (loadingTimeOutThread != null) loadingTimeOutThread.interrupt();
         keepAliveThread.start();
       }
