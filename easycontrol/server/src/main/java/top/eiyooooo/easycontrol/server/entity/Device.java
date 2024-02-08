@@ -37,6 +37,9 @@ public final class Device {
   public static int deviceRotation;
   public static Pair<Integer, Integer> videoSize;
   public static boolean needReset = false;
+  public static int resetInfo_Width = 0;
+  public static int resetInfo_Height = 0;
+  public static int resetInfo_Density = 0;
   public static int oldScreenOffTimeout = 60000;
 
   private static final int displayId = Display.DEFAULT_DISPLAY;
@@ -45,6 +48,7 @@ public final class Device {
   public static void init() throws IOException, InterruptedException {
     getRealDeviceSize();
     getDeivceSize();
+    getResetInfo();
     // 旋转监听
     setRotationListener();
     // 剪切板监听
@@ -68,6 +72,26 @@ public final class Device {
     layerStack = displayInfo.layerStack;
     getVideoSize();
   }
+
+    private static void getResetInfo() {
+        try {
+          String output = Device.execReadOutput("wm size");
+          Matcher matcher = Pattern.compile("(?<=Override size: )\\d+x\\d+").matcher(output);
+          if (matcher.find()) {
+            String match = matcher.group();
+            String[] dimensions = match.split("x");
+            resetInfo_Width = Integer.parseInt(dimensions[0]);
+            resetInfo_Height = Integer.parseInt(dimensions[1]);
+          }
+
+          output = Device.execReadOutput("wm density");
+          matcher = Pattern.compile("(?<=Override density: )\\d+").matcher(output);
+          if (matcher.find()) {
+              resetInfo_Density = Integer.parseInt(matcher.group());
+          }
+        } catch (Exception ignored) {
+        }
+    }
 
   private static void getVideoSize() {
     boolean isPortrait = deviceSize.first < deviceSize.second;

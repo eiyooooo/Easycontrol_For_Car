@@ -240,7 +240,20 @@ public final class Server {
             AudioEncode.release();
             break;
           case 2:
-            if (Device.needReset) Device.execReadOutput("wm size reset");
+            if (Device.needReset) {
+              if (Device.resetInfo_Width != 0 && Device.resetInfo_Height != 0)
+                Device.execReadOutput("wm size " + Device.resetInfo_Width + "x" + Device.resetInfo_Height);
+              else
+                Device.execReadOutput("wm size reset");
+
+              try {
+                Thread.sleep(500);
+              } catch (InterruptedException ignored) {
+              }
+
+              if (Device.resetInfo_Density != 0)
+                Device.execReadOutput("wm density " + Device.resetInfo_Density);
+            }
             if (Options.keepAwake) Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
           case 3:
             Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
