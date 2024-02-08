@@ -1,7 +1,7 @@
 # 易控车机版(Easycontrol_For_Car)
 
 ## 简介
-本软件基于开源项目Scrcpy，对其进行了大量魔改，实现了其安卓客户端，并添加了一些功能，实现了安卓端控制安卓端。
+本软件基于[易控原版](https://gitee.com/mingzhixianweb/easycontrol)，对其进行了修改，优化了安卓车机控制安卓手机的体验。
 
 ## 车机版功能特色
 - 车机版放大按钮
@@ -23,6 +23,7 @@
   - USB断开流程
   - 断开连接流程
   - 主控端与被控端通信丢失后断开连接
+- 屏幕宽高比例自由缩放(实验性)
 
 ## 使用说明
 - [点击此处前往易控车机版使用说明](https://github.com/eiyooooo/Easycontrol_For_Car/blob/main/HOW_TO_USE.md)

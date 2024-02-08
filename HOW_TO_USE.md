@@ -50,46 +50,48 @@
 		- 子网地址：\*netAddress\*，如子网为192.168.43.0/24, 则“\*netAddress\*.1:5555”表示“192.168.43.1:5555”
 	
 5. 扩展使用
-	易控车机版支持在外部使用广播控制，广播地址为："top.eiyooooo.easycontrol.app.CONTROL"，需要向意向也就是Intent填入想要做的动作：
-	- 启动默认设备：
-		action：startDefault
-	- 启动目标设备：
-		action：start
-		uuid：设备ID
-	- 目标设备变成小窗：
-		action：changeToSmall
-		uuid：设备ID
-	- 目标设备最小化：
-		action：changeToMini
-		uuid：设备ID
-	- 目标设备全屏：
-		action：changeToFull
-		uuid：设备ID
-	- 目标设备按下电源键：
-		action：buttonPower
-		uuid：设备ID
-	- 目标设备打开背光：
-		action：buttonLight
-		uuid：设备ID
-	- 目标设备关闭背光：
-		action：buttonLightOff
-		uuid：设备ID
-	- 目标设备按下返回键：
-		action：buttonBack
-		uuid：设备ID
-	- 目标设备按下桌面键：
-		action：buttonHome
-		uuid：设备ID
-	- 目标设备按下最近任务键：
-		action：buttonSwitch
-		uuid：设备ID
-	- 目标设备旋转屏幕：
-		action：buttonRotate
-		uuid：设备ID
-	- 目标设备关闭投屏：
-		action：close
-		uuid：设备ID
+	1. 易控车机版支持在外部使用广播控制(通过快捷方式直接启动**不支持**)
+		
+		广播地址为："**top.eiyooooo.easycontrol.app.CONTROL**"，需要向意向也就是Intent填入想要做的动作
+		- 启动默认设备：
+			action：startDefault
+		- 启动目标设备：
+			action：start
+			uuid：设备ID
+		- 目标设备变成小窗：
+			action：changeToSmall
+			uuid：设备ID
+		- 目标设备最小化：
+			action：changeToMini
+			uuid：设备ID
+		- 目标设备全屏：
+			action：changeToFull
+			uuid：设备ID
+		- 目标设备按下电源键：
+			action：buttonPower
+			uuid：设备ID
+		- 目标设备打开背光：
+			action：buttonLight
+			uuid：设备ID
+		- 目标设备关闭背光：
+			action：buttonLightOff
+			uuid：设备ID
+		- 目标设备按下返回键：
+			action：buttonBack
+			uuid：设备ID
+		- 目标设备按下桌面键：
+			action：buttonHome
+			uuid：设备ID
+		- 目标设备按下最近任务键：
+			action：buttonSwitch
+			uuid：设备ID
+		- 目标设备旋转屏幕：
+			action：buttonRotate
+			uuid：设备ID
+		- 目标设备关闭投屏：
+			action：close
+			uuid：设备ID
 
-6. 可通过快捷方式直接启动默认USB或无线设备
-	- StartUsbActivity启动默认USB设备
-	- StartDefaultActivity启动默认无线设备
+	2. 可通过快捷方式直接启动默认USB或无线设备
+		- StartUsbActivity启动默认USB设备
+		- StartDefaultActivity启动默认无线设备
