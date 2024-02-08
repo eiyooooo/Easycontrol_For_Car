@@ -64,7 +64,6 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public synchronized void changeToSmall() {
     hide(false);
-    if (device.setResolution) controlPacket.sendChangeSizeEvent(SmallView.getResolution());
     smallView.show();
   }
 
@@ -119,6 +118,13 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     ViewGroup.LayoutParams layoutParams = textureView.getLayoutParams();
     layoutParams.width = surfaceSize.first;
     layoutParams.height = surfaceSize.second;
+    textureView.setLayoutParams(layoutParams);
+  }
+  public void reCalculateTextureViewSize(int width, int height) {
+    surfaceSize = new Pair<>(width, height);
+    ViewGroup.LayoutParams layoutParams = textureView.getLayoutParams();
+    layoutParams.width = width;
+    layoutParams.height = height;
     textureView.setLayoutParams(layoutParams);
   }
 

@@ -107,7 +107,7 @@
   <string name="option_use_opus_detail">OPUS is preferred, the audio volume is small and the delay is low, and the actual support is mainly</string>
   <string name="option_default_full">Default full</string>
   <string name="option_default_full_detail">After this function is enabled, the system enters the full-screen state directly after the connection is successful</string>
-  <string name="option_set_resolution">Auto set resolution</string>
-  <string name="option_set_resolution_detail">After this function is enabled, the resolution of the controlled end will be automatically changed. Therefore, the resolution may not be automatically restored (you can manually restore it)</string>
+  <string name="option_set_resolution">Screen aspect ratio free scaling (experimental)</string>
+  <string name="option_set_resolution_detail">After this function is enabled, the screen aspect ratio can be freely set (experimental function, manual resolution recovery in case of error)</string>
 
 </resources>

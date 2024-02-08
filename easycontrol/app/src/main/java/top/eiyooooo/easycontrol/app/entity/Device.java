@@ -32,6 +32,10 @@ public class Device {
   public int small_l_l_y;
   public int small_l_l_width;
   public int small_l_l_height;
+  public int small_free_x;
+  public int small_free_y;
+  public int small_free_width;
+  public int small_free_height;
   public static int SMALL_X = 0;
   public static int SMALL_Y = 0;
   public static int SMALL_WIDTH = 0;
@@ -55,6 +59,7 @@ public class Device {
                 int small_p_l_x, int small_p_l_y, int small_p_l_width, int small_p_l_height,
                 int small_l_p_x, int small_l_p_y, int small_l_p_width, int small_l_p_height,
                 int small_l_l_x, int small_l_l_y, int small_l_l_width, int small_l_l_height,
+                int small_free_x, int small_free_y, int small_free_width, int small_free_height,
                 int mini_y) {
     this.uuid = uuid;
     this.type = type;
@@ -84,11 +89,15 @@ public class Device {
     this.small_l_l_y = small_l_l_y;
     this.small_l_l_width = small_l_l_width;
     this.small_l_l_height = small_l_l_height;
+    this.small_free_x = small_free_x;
+    this.small_free_y = small_free_y;
+    this.small_free_width = small_free_width;
+    this.small_free_height = small_free_height;
     this.mini_y = mini_y;
   }
 
   public static Device getDefaultDevice(String uuid, int type) {
-    return new Device(uuid, type, uuid, "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, MINI_Y);
+    return new Device(uuid, type, uuid, "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
   }
 
   public boolean isNormalDevice() {

@@ -61,7 +61,8 @@ public class SmallView extends ViewOutlineProvider {
     if (clientView.device.small_p_p_width == 0 | clientView.device.small_p_p_height == 0
             | clientView.device.small_p_l_width == 0 | clientView.device.small_p_l_height == 0
             | clientView.device.small_l_p_width == 0 | clientView.device.small_l_p_height == 0
-            | clientView.device.small_l_l_width == 0 | clientView.device.small_l_l_height == 0) {
+            | clientView.device.small_l_l_width == 0 | clientView.device.small_l_l_height == 0
+            | clientView.device.small_free_width == 0 | clientView.device.small_free_height == 0) {
       clientView.device.small_p_p_width = shortEdge * 4 / 5;
       clientView.device.small_p_p_height = longEdge * 4 / 5;
       clientView.device.small_p_l_width = shortEdge * 4 / 5;
@@ -70,6 +71,8 @@ public class SmallView extends ViewOutlineProvider {
       clientView.device.small_l_p_height = shortEdge * 4 / 5;
       clientView.device.small_l_l_width = longEdge * 4 / 5;
       clientView.device.small_l_l_height = shortEdge * 4 / 5;
+      clientView.device.small_free_width = shortEdge * 4 / 5;
+      clientView.device.small_free_height = longEdge * 4 / 5;
     }
     // 设置监听控制
     setFloatVideoListener();
@@ -80,6 +83,26 @@ public class SmallView extends ViewOutlineProvider {
       if (right == 0 || bottom == 0) return;
       InitSize++;
       if (InitSize < 2) return;
+
+      if (clientView.device.setResolution) {
+        if (clientView.device.small_free_x == 0 & clientView.device.small_free_y == 0) {
+          clientView.updateMaxSize(new Pair<>(clientView.device.small_free_width, clientView.device.small_free_height));
+          ViewGroup.LayoutParams layoutParams = clientView.textureView.getLayoutParams();
+          smallViewParams.x = clientView.device.small_free_x = (shortEdge - layoutParams.width) / 2;
+          smallViewParams.y = clientView.device.small_free_y = (longEdge - layoutParams.height) / 2;
+          AppData.windowManager.updateViewLayout(smallView.getRoot(), smallViewParams);
+          InitPos = true;
+        }
+
+        if (!InitPos) {
+          smallViewParams.x = clientView.device.small_free_x;
+          smallViewParams.y = clientView.device.small_free_y;
+          AppData.windowManager.updateViewLayout(smallView.getRoot(), smallViewParams);
+          clientView.updateMaxSize(new Pair<>(clientView.device.small_free_width, clientView.device.small_free_height));
+          InitPos = true;
+        }
+        return;
+      }
 
       if (clientView.device.small_p_p_x == 0 & clientView.device.small_p_p_y == 0 & right < bottom & LocalIsPortrait()) {
         clientView.updateMaxSize(new Pair<>(clientView.device.small_p_p_width, clientView.device.small_p_p_height));
@@ -180,11 +203,6 @@ public class SmallView extends ViewOutlineProvider {
     }
   }
 
-  // 获取默认宽高比，用于修改分辨率使用
-  public static float getResolution() {
-    return 0.55f;
-  }
-
   // 设置焦点监听
   @SuppressLint("ClickableViewAccessibility")
   private void setFloatVideoListener() {
@@ -247,22 +265,28 @@ public class SmallView extends ViewOutlineProvider {
           // 更新
           smallViewParams.x = paramsX.get() + flipX;
           smallViewParams.y = paramsY.get() + flipY;
-          if (RemoteIsPortrait) {
-            if (LocalIsPortrait()) {
-                clientView.device.small_p_p_x = smallViewParams.x;
-                clientView.device.small_p_p_y = smallViewParams.y;
-                } else {
-                clientView.device.small_l_p_x = smallViewParams.x;
-                clientView.device.small_l_p_y = smallViewParams.y;
-            }
+
+          if (clientView.device.setResolution) {
+            clientView.device.small_free_x = smallViewParams.x;
+            clientView.device.small_free_y = smallViewParams.y;
           }
           else {
-            if (LocalIsPortrait()) {
-              clientView.device.small_p_l_x = smallViewParams.x;
-              clientView.device.small_p_l_y = smallViewParams.y;
+            if (RemoteIsPortrait) {
+              if (LocalIsPortrait()) {
+                clientView.device.small_p_p_x = smallViewParams.x;
+                clientView.device.small_p_p_y = smallViewParams.y;
+              } else {
+                clientView.device.small_l_p_x = smallViewParams.x;
+                clientView.device.small_l_p_y = smallViewParams.y;
+              }
             } else {
-              clientView.device.small_l_l_x = smallViewParams.x;
-              clientView.device.small_l_l_y = smallViewParams.y;
+              if (LocalIsPortrait()) {
+                clientView.device.small_p_l_x = smallViewParams.x;
+                clientView.device.small_p_l_y = smallViewParams.y;
+              } else {
+                clientView.device.small_l_l_x = smallViewParams.x;
+                clientView.device.small_l_l_y = smallViewParams.y;
+              }
             }
           }
           AppData.windowManager.updateViewLayout(smallView.getRoot(), smallViewParams);
@@ -394,30 +418,42 @@ public class SmallView extends ViewOutlineProvider {
   private void setReSizeListener() {
     int minSize = PublicTools.dp2px(150f);
     smallView.reSize.setOnTouchListener((v, event) -> {
+      if (!InitPos) return true;
       if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
         int sizeX = (int) (event.getRawX() - smallViewParams.x);
         int sizeY = (int) (event.getRawY() - smallViewParams.y);
         if (sizeX < minSize || sizeY < minSize) return true;
-        clientView.updateMaxSize(new Pair<>(sizeX, sizeY));
 
-        if (sizeX < sizeY) {
-          if (LocalIsPortrait()){
-            clientView.device.small_p_p_width = sizeX;
-            clientView.device.small_p_p_height = sizeY;
-          } else {
-            clientView.device.small_l_p_width = sizeX;
-            clientView.device.small_l_p_height = sizeY;
-          }
+        if (clientView.device.setResolution) {
+          clientView.reCalculateTextureViewSize(sizeX, sizeY);
+
+          clientView.device.small_free_width = sizeX;
+          clientView.device.small_free_height = sizeY;
         }
         else {
-          if (LocalIsPortrait()){
-            clientView.device.small_p_l_width = sizeX;
-            clientView.device.small_p_l_height = sizeY;
+          clientView.updateMaxSize(new Pair<>(sizeX, sizeY));
+
+          if (sizeX < sizeY) {
+            if (LocalIsPortrait()) {
+              clientView.device.small_p_p_width = sizeX;
+              clientView.device.small_p_p_height = sizeY;
+            } else {
+              clientView.device.small_l_p_width = sizeX;
+              clientView.device.small_l_p_height = sizeY;
+            }
           } else {
-            clientView.device.small_l_l_width = sizeX;
-            clientView.device.small_l_l_height = sizeY;
+            if (LocalIsPortrait()) {
+              clientView.device.small_p_l_width = sizeX;
+              clientView.device.small_p_l_height = sizeY;
+            } else {
+              clientView.device.small_l_l_width = sizeX;
+              clientView.device.small_l_l_height = sizeY;
+            }
           }
         }
+      } else if (clientView.device.setResolution & event.getActionMasked() == MotionEvent.ACTION_UP) {
+        clientView.controlPacket.sendChangeSizeEvent((float) clientView.textureView.getWidth() / (float) clientView.textureView.getHeight());
+        InitPos = false;
       }
       return true;
     });
