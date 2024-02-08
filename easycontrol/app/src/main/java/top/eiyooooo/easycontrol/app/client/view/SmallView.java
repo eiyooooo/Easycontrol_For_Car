@@ -30,6 +30,8 @@ public class SmallView extends ViewOutlineProvider {
   private int InitSize = 0;
   private boolean InitPos = false;
   private boolean lightState;
+  int longEdge;
+  int shortEdge;
 
   // 悬浮窗
   private final ModuleSmallViewBinding smallView = ModuleSmallViewBinding.inflate(LayoutInflater.from(AppData.main));
@@ -55,8 +57,8 @@ public class SmallView extends ViewOutlineProvider {
     DisplayMetrics displayMetrics = AppData.main.getResources().getDisplayMetrics();
     int screenWidth = displayMetrics.widthPixels;
     int screenHeight = displayMetrics.heightPixels + statusBarHeight;
-    int longEdge = Math.max(screenWidth, screenHeight);
-    int shortEdge = Math.min(screenWidth, screenHeight);
+    longEdge = Math.max(screenWidth, screenHeight);
+    shortEdge = Math.min(screenWidth, screenHeight);
     // 设置默认大小
     if (clientView.device.small_p_p_width == 0 | clientView.device.small_p_p_height == 0
             | clientView.device.small_p_l_width == 0 | clientView.device.small_p_l_height == 0
@@ -350,6 +352,18 @@ public class SmallView extends ViewOutlineProvider {
       clientView.device.small_l_p_y = 0;
       clientView.device.small_l_l_x = 0;
       clientView.device.small_l_l_y = 0;
+      clientView.device.small_free_x = 0;
+      clientView.device.small_free_y = 0;
+      clientView.device.small_p_p_width = shortEdge * 4 / 5;
+      clientView.device.small_p_p_height = longEdge * 4 / 5;
+      clientView.device.small_p_l_width = shortEdge * 4 / 5;
+      clientView.device.small_p_l_height = longEdge * 4 / 5;
+      clientView.device.small_l_p_width = longEdge * 4 / 5;
+      clientView.device.small_l_p_height = shortEdge * 4 / 5;
+      clientView.device.small_l_l_width = longEdge * 4 / 5;
+      clientView.device.small_l_l_height = shortEdge * 4 / 5;
+      clientView.device.small_free_width = shortEdge * 4 / 5;
+      clientView.device.small_free_height = longEdge * 4 / 5;
       clientView.updateMaxSize(clientView.getMaxSize());
       barViewTimer();
     });
