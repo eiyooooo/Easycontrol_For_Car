@@ -25,6 +25,7 @@ import top.eiyooooo.easycontrol.server.entity.Options;
 import top.eiyooooo.easycontrol.server.helper.AudioEncode;
 import top.eiyooooo.easycontrol.server.helper.VideoEncode;
 import top.eiyooooo.easycontrol.server.helper.ControlPacket;
+import top.eiyooooo.easycontrol.server.helper.VirtualDisplay;
 import top.eiyooooo.easycontrol.server.wrappers.ClipboardManager;
 import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
 import top.eiyooooo.easycontrol.server.wrappers.InputManager;
@@ -55,6 +56,13 @@ public final class Server {
       Options.parse(args);
       // 初始化
       setManagers();
+      if (Options.createDisplay) {
+        try {
+            Device.displayId = VirtualDisplay.create();
+            } catch (Exception e) {
+            Options.createDisplay = false;
+        }
+      }
       Device.init();
       // 连接
       connectClient();
@@ -78,6 +86,13 @@ public final class Server {
         if (Options.TurnOffScreenIfStart)
           postDelayed(() -> Device.changeScreenPowerMode(Display.STATE_UNKNOWN), 2000);
       }
+      if (Options.createDisplay) {
+        try {
+        Device.foregroundAppId = Integer.parseInt(Device.execReadOutput("am stack list | grep -oE taskId=[0-9]*: | grep -oE -m1 [0-9]*").trim());
+        Device.execReadOutput("am display move-stack " + Device.foregroundAppId + " " + Device.displayId);
+        } catch (Exception ignored) {}
+      }
+      ControlPacket.sendDisplayId();
       synchronized (object) {
         object.wait();
       }
@@ -236,6 +251,12 @@ public final class Server {
             socket.close();
             break;
           case 1:
+            if (Device.foregroundAppId != 0) {
+              try {
+                Device.execReadOutput("am display move-stack " + Device.foregroundAppId + " 0");
+              } catch (Exception ignored) {}
+            }
+            if (Options.createDisplay)  VirtualDisplay.release();
             VideoEncode.release();
             AudioEncode.release();
             break;

@@ -44,6 +44,7 @@ public class Client {
   public final ControlPacket controlPacket = new ControlPacket(this::write);
   public final ClientView clientView;
   public final String uuid;
+  private final boolean createDisplay;
   private Thread startThread;
   private Thread loadingTimeOutThread;
   private Thread keepAliveThread;
@@ -58,6 +59,8 @@ public class Client {
     allClient.add(this);
     // 初始化
     uuid = device.uuid;
+    createDisplay = device.createDisplay;
+    if (device.setResolution & device.createDisplay) PublicTools.logToast("自由缩放与应用流转功能目前不能同时开启哦");
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
       handlerThread.start();
@@ -136,6 +139,7 @@ public class Client {
       + " maxSize=" + device.maxSize
       + " maxFps=" + device.maxFps
       + " maxVideoBit=" + device.maxVideoBit
+      + " createDisplay=" + (device.createDisplay ? 1 : 0)
       + " keepAwake=" + (AppData.setting.getKeepAwake() ? 1 : 0)
       + " ScreenMode=" + ScreenMode
       + " useH265=" + ((device.useH265 && supportH265) ? 1 : 0)
@@ -162,6 +166,7 @@ public class Client {
   private static final int CLIPBOARD_EVENT = 3;
   private static final int CHANGE_SIZE_EVENT = 4;
   private static final int KEEP_ALIVE_EVENT = 5;
+  private static final int DISPLAY_ID_EVENT = 6;
 
   private void executeStreamIn() {
     try {
@@ -199,6 +204,10 @@ public class Client {
             break;
           case KEEP_ALIVE_EVENT:
             lastKeepAliveTime = System.currentTimeMillis();
+            break;
+          case DISPLAY_ID_EVENT:
+            int displayId = bufferStream.readByte();
+            if (createDisplay & displayId == 0) PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
             break;
         }
       }

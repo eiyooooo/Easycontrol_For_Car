@@ -86,7 +86,7 @@ public class SmallView extends ViewOutlineProvider {
       InitSize++;
       if (InitSize < 2) return;
 
-      if (clientView.device.setResolution) {
+      if (clientView.device.setResolution & !clientView.device.createDisplay) {
         if (clientView.device.small_free_x == 0 & clientView.device.small_free_y == 0) {
           clientView.updateMaxSize(new Pair<>(clientView.device.small_free_width, clientView.device.small_free_height));
           ViewGroup.LayoutParams layoutParams = clientView.textureView.getLayoutParams();
@@ -268,7 +268,7 @@ public class SmallView extends ViewOutlineProvider {
           smallViewParams.x = paramsX.get() + flipX;
           smallViewParams.y = paramsY.get() + flipY;
 
-          if (clientView.device.setResolution) {
+          if (clientView.device.setResolution & !clientView.device.createDisplay) {
             clientView.device.small_free_x = smallViewParams.x;
             clientView.device.small_free_y = smallViewParams.y;
           }
@@ -438,7 +438,7 @@ public class SmallView extends ViewOutlineProvider {
         int sizeY = (int) (event.getRawY() - smallViewParams.y);
         if (sizeX < minSize || sizeY < minSize) return true;
 
-        if (clientView.device.setResolution) {
+        if (clientView.device.setResolution & !clientView.device.createDisplay) {
           clientView.reCalculateTextureViewSize(sizeX, sizeY);
 
           clientView.device.small_free_width = sizeX;
@@ -465,7 +465,7 @@ public class SmallView extends ViewOutlineProvider {
             }
           }
         }
-      } else if (clientView.device.setResolution & event.getActionMasked() == MotionEvent.ACTION_UP) {
+      } else if (clientView.device.setResolution & !clientView.device.createDisplay & event.getActionMasked() == MotionEvent.ACTION_UP) {
         clientView.controlPacket.sendChangeSizeEvent((float) clientView.textureView.getWidth() / (float) clientView.textureView.getHeight());
         InitPos = false;
       }

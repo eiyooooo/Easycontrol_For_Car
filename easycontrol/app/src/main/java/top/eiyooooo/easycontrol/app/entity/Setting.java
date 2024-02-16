@@ -61,6 +61,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getDefaultCreateDisplay() {
+    return sharedPreferences.getBoolean("defaultCreateDisplay", false);
+  }
+
+  public void setDefaultCreateDisplay(boolean value) {
+    editor.putBoolean("defaultCreateDisplay", value);
+    editor.apply();
+  }
+
   public boolean getDefaultUseH265() {
     return sharedPreferences.getBoolean("defaultUseH265", true);
   }

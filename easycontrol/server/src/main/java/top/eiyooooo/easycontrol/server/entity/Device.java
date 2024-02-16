@@ -42,8 +42,9 @@ public final class Device {
   public static int resetInfo_Density = 0;
   public static int oldScreenOffTimeout = 60000;
 
-  private static final int displayId = Display.DEFAULT_DISPLAY;
+  public static int displayId = Display.DEFAULT_DISPLAY;
   public static int layerStack;
+  public static int foregroundAppId = 0;
 
   public static void init() throws IOException, InterruptedException {
     getRealDeviceSize();
@@ -94,6 +95,10 @@ public final class Device {
     }
 
   private static void getVideoSize() {
+    if (Options.createDisplay) {
+      videoSize = new Pair<>(deviceSize.first, deviceSize.second);
+      return;
+    }
     boolean isPortrait = deviceSize.first < deviceSize.second;
     int major = isPortrait ? deviceSize.second : deviceSize.first;
     int minor = isPortrait ? deviceSize.first : deviceSize.second;
@@ -206,6 +211,7 @@ public final class Device {
 
   private static void injectEvent(InputEvent inputEvent) {
     try {
+      if (displayId != Display.DEFAULT_DISPLAY) InputManager.setDisplayId(inputEvent, displayId);
       InputManager.injectInputEvent(inputEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     } catch (Exception ignored) {
     }

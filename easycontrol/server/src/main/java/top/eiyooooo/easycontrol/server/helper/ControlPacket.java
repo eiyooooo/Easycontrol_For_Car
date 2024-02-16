@@ -61,6 +61,14 @@ public final class ControlPacket {
     Server.write(ByteBuffer.wrap(new byte[]{5}));
   }
 
+  public static void sendDisplayId() throws IOException, ErrnoException {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(2);
+    byteBuffer.put((byte) 6);
+    byteBuffer.put((byte) Device.displayId);
+    byteBuffer.flip();
+    Server.write(byteBuffer);
+  }
+
   public static void handleTouchEvent() throws IOException {
     int action = Server.inputStream.readByte();
     int pointerId = Server.inputStream.readByte();

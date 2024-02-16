@@ -14,12 +14,17 @@ public final class InputManager {
 
   private static Object manager;
   private static Method injectInputEventMethod;
+  private static Method setDisplayIdMethod;
 
   public static void init(Object m) throws NoSuchMethodException {
     manager = m;
     injectInputEventMethod = manager.getClass().getMethod("injectInputEvent", InputEvent.class, int.class);
+    setDisplayIdMethod = InputEvent.class.getMethod("setDisplayId", int.class);
   }
 
+  public static void setDisplayId(InputEvent inputEvent, int displayId) throws InvocationTargetException, IllegalAccessException {
+    setDisplayIdMethod.invoke(inputEvent, displayId);
+  }
 
   public static void injectInputEvent(InputEvent inputEvent, int mode) throws InvocationTargetException, IllegalAccessException {
     injectInputEventMethod.invoke(manager, inputEvent, mode);
