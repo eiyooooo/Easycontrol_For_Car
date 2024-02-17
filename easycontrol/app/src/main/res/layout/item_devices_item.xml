@@ -34,6 +34,7 @@
     tools:ignore="HardcodedText" />
 
   <ImageView
+    android:id="@+id/device_expand"
     android:layout_width="24dp"
     android:layout_height="24dp"
     android:rotation="180"

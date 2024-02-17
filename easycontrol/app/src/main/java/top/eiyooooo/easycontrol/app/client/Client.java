@@ -44,7 +44,7 @@ public class Client {
   public final ControlPacket controlPacket = new ControlPacket(this::write);
   public final ClientView clientView;
   public final String uuid;
-  private final boolean createDisplay;
+  public final int mode; // 0为屏幕镜像模式，1为应用流转模式
   private Thread startThread;
   private Thread loadingTimeOutThread;
   private Thread keepAliveThread;
@@ -56,17 +56,21 @@ public class Client {
   private static final boolean supportOpus = PublicTools.isDecoderSupport("opus");
 
   public Client(Device device, UsbDevice usbDevice) {
+    this(device, usbDevice, 0);
+  }
+
+  public Client(Device device, UsbDevice usbDevice, int mode) {
     allClient.add(this);
     // 初始化
     uuid = device.uuid;
-    createDisplay = device.createDisplay;
-    if (device.setResolution & device.createDisplay) PublicTools.logToast("自由缩放与应用流转功能目前不能同时开启哦");
+    this.mode = mode;
+    if (device.setResolution & mode == 1) PublicTools.logToast("应用流转模式下暂不支持自由缩放哦");
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
       handlerThread.start();
       handler = new Handler(handlerThread.getLooper());
     }
-    clientView = new ClientView(device, controlPacket, () -> {
+    clientView = new ClientView(device, mode, controlPacket, () -> {
       status = 1;
       executeStreamInThread.start();
       AppData.uiHandler.post(this::executeOtherService);
@@ -139,7 +143,7 @@ public class Client {
       + " maxSize=" + device.maxSize
       + " maxFps=" + device.maxFps
       + " maxVideoBit=" + device.maxVideoBit
-      + " createDisplay=" + (device.createDisplay ? 1 : 0)
+      + " createDisplay=" + (mode == 1 ? 1 : 0)
       + " keepAwake=" + (AppData.setting.getKeepAwake() ? 1 : 0)
       + " ScreenMode=" + ScreenMode
       + " useH265=" + ((device.useH265 && supportH265) ? 1 : 0)
@@ -207,7 +211,7 @@ public class Client {
             break;
           case DISPLAY_ID_EVENT:
             int displayId = bufferStream.readByte();
-            if (createDisplay & displayId == 0) PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
+            if (mode == 1 & displayId == 0) PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
             break;
         }
       }

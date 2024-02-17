@@ -23,6 +23,7 @@ import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 public class ClientView implements TextureView.SurfaceTextureListener {
   public final Device device;
+  public final int mode;
   public final ControlPacket controlPacket;
   private final PublicTools.MyFunction onReady;
   public final PublicTools.MyFunction onClose;
@@ -37,8 +38,9 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   private Pair<Integer, Integer> maxSize;
   private Pair<Integer, Integer> surfaceSize;
 
-  public ClientView(Device device, ControlPacket controlPacket, PublicTools.MyFunction onReady, PublicTools.MyFunction onClose) {
+  public ClientView(Device device, int mode, ControlPacket controlPacket, PublicTools.MyFunction onReady, PublicTools.MyFunction onClose) {
     this.device = device;
+    this.mode = mode;
     textureView = new TextureView(AppData.main);
     smallView = new SmallView(this);
     miniView = new MiniView(this);
@@ -51,7 +53,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public synchronized void changeToFull() {
     hide(false);
-    if (device.setResolution & !device.createDisplay) controlPacket.sendChangeSizeEvent(FullActivity.getResolution());
+    if (device.setResolution & mode == 0) controlPacket.sendChangeSizeEvent(FullActivity.getResolution());
     Intent intent = new Intent(AppData.main, FullActivity.class);
     int i = 0;
     for (Client client : Client.allClient) {

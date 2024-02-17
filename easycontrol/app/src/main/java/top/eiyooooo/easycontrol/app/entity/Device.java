@@ -13,7 +13,6 @@ public class Device {
   public int maxFps;
   public int maxVideoBit;
   public boolean setResolution;
-  public boolean createDisplay;
   public boolean defaultFull;
   public boolean useH265;
   public boolean useOpus;
@@ -53,7 +52,6 @@ public class Device {
                 int maxFps,
                 int maxVideoBit,
                 boolean setResolution,
-                boolean createDisplay,
                 boolean defaultFull,
                 boolean useH265,
                 boolean useOpus,
@@ -72,7 +70,6 @@ public class Device {
     this.maxFps = maxFps;
     this.maxVideoBit = maxVideoBit;
     this.setResolution = setResolution;
-    this.createDisplay = createDisplay;
     this.defaultFull = defaultFull;
     this.useH265 = useH265;
     this.useOpus = useOpus;
@@ -100,7 +97,7 @@ public class Device {
   }
 
   public static Device getDefaultDevice(String uuid, int type) {
-    return new Device(uuid, type, uuid, "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultCreateDisplay(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
+    return new Device(uuid, type, uuid, "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
   }
 
   public boolean isNormalDevice() {

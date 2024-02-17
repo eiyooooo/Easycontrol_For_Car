@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
     mainActivity = ActivityMainBinding.inflate(this.getLayoutInflater());
     setContentView(mainActivity.getRoot());
     // 设置设备列表适配器、广播接收器
-    deviceListAdapter = new DeviceListAdapter(this);
+    deviceListAdapter = new DeviceListAdapter(this, mainActivity.devicesList);
     mainActivity.devicesList.setAdapter(deviceListAdapter);
     myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
     // 设置按钮监听

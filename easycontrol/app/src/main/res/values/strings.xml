@@ -106,11 +106,13 @@
   <string name="option_use_h265_detail">优先使用H265，视频体积小延迟低，实际以支持情况为主，若视频异常可尝试关闭</string>
   <string name="option_use_opus">优先Opus</string>
   <string name="option_use_opus_detail">优先使用OPUS，音频体积小延迟低，实际以支持情况为主</string>
-  <string name="option_default_full">默认全屏启动</string>
+  <string name="option_default_full">全屏启动</string>
   <string name="option_default_full_detail">开启后在连接成功后直接进入全屏状态</string>
   <string name="option_set_resolution">宽高比例自由缩放(实验性)</string>
   <string name="option_set_resolution_detail">开启后屏幕宽高比例可自由设置(实验性功能，出错可手动恢复分辨率)</string>
-  <string name="option_create_display">前台应用流转(测试)</string>
-  <string name="option_create_display_detail">开启后被控端前台应用流转至本机(实验性功能，可能会出现异常)</string>
+
+  <!-- 设备列表展开 -->
+  <string name="start_display_mirroring">屏幕镜像</string>
+  <string name="start_create_display">应用流转</string>
 
 </resources>

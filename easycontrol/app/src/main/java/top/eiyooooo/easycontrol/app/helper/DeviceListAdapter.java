@@ -9,7 +9,8 @@ import android.hardware.usb.UsbDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,60 +22,128 @@ import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.R;
 import top.eiyooooo.easycontrol.app.databinding.ItemDevicesItemBinding;
+import top.eiyooooo.easycontrol.app.databinding.ItemDevicesItemDetailBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemSetDeviceBinding;
 
-public class DeviceListAdapter extends BaseAdapter {
+public class DeviceListAdapter extends BaseExpandableListAdapter {
 
   public final ArrayList<Device> devicesList = new ArrayList<>();
   public final HashMap<String, UsbDevice> linkDevices = new HashMap<>();
   private final Context context;
+  private final ExpandableListView expandableListView;
 
-  public DeviceListAdapter(Context c) {
+
+  public DeviceListAdapter(Context c, ExpandableListView expandableListView) {
+    this.expandableListView = expandableListView;
     queryDevices();
     context = c;
   }
 
   @Override
-  public int getCount() {
+  public int getGroupCount() {
     return devicesList.size();
   }
 
   @Override
-  public Object getItem(int i) {
+  public int getChildrenCount(int groupPosition) {
+    return 1;
+  }
+
+  @Override
+  public Object getGroup(int groupPosition) {
     return null;
   }
 
   @Override
-  public long getItemId(int i) {
+  public Object getChild(int groupPosition, int childPosition) {
+    return null;
+  }
+
+  @Override
+  public long getGroupId(int groupPosition) {
     return 0;
   }
 
   @Override
-  public View getView(int i, View view, ViewGroup viewGroup) {
-    if (view == null) {
-      ItemDevicesItemBinding devicesItemBinding = ItemDevicesItemBinding.inflate(LayoutInflater.from(context));
-      view = devicesItemBinding.getRoot();
-      view.setTag(devicesItemBinding);
-    }
-    // 获取设备
-    Device device = devicesList.get(i);
-    setView(view, device);
-    return view;
+  public long getChildId(int groupPosition, int childPosition) {
+    return 0;
   }
 
-  // 创建View
-  private void setView(View view, Device device) {
+  @Override
+  public boolean hasStableIds() {
+    return false;
+  }
+
+  @Override
+  public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    if (convertView == null) {
+      ItemDevicesItemBinding devicesItemBinding = ItemDevicesItemBinding.inflate(LayoutInflater.from(context));
+      convertView = devicesItemBinding.getRoot();
+      convertView.setTag(devicesItemBinding);
+    }
+    // 获取设备
+    Device device = devicesList.get(groupPosition);
+    setView(convertView, device, isExpanded, groupPosition);
+    return convertView;
+  }
+
+  @Override
+  public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    if (convertView == null) {
+      ItemDevicesItemDetailBinding devicesItemDetailBinding = ItemDevicesItemDetailBinding.inflate(LayoutInflater.from(context));
+      convertView = devicesItemDetailBinding.getRoot();
+      convertView.setTag(devicesItemDetailBinding);
+    }
+    // 获取设备
+    Device device = devicesList.get(groupPosition);
+    setChildView(convertView, device);
+    return convertView;
+  }
+
+  @Override
+  public boolean isChildSelectable(int groupPosition, int childPosition) {
+    return false;
+  }
+
+  // 创建主View
+  private void setView(View view, Device device, boolean isExpanded, int groupPosition) {
     ItemDevicesItemBinding devicesItemBinding = (ItemDevicesItemBinding) view.getTag();
+    // 设置展开图标
+    devicesItemBinding.deviceExpand.setRotation(isExpanded ? 270 : 180);
     // 设置卡片值
     devicesItemBinding.deviceIcon.setImageResource(device.isLinkDevice() ? R.drawable.link : R.drawable.wifi);
     devicesItemBinding.deviceName.setText(device.name);
     // 单击事件
-    devicesItemBinding.getRoot().setOnClickListener(v -> startDevice(device));
+    devicesItemBinding.getRoot().setOnClickListener(v -> {
+      if (expandableListView.isGroupExpanded(groupPosition))
+        expandableListView.collapseGroup(groupPosition);
+      else
+        expandableListView.expandGroup(groupPosition);
+    });
     // 长按事件
     devicesItemBinding.getRoot().setOnLongClickListener(v -> {
       onLongClickCard(device);
       return true;
     });
+  }
+
+  // 创建子View
+  private void setChildView(View view, Device device) {
+    ItemDevicesItemDetailBinding devicesItemDetailBinding = (ItemDevicesItemDetailBinding) view.getTag();
+    // 设置卡片值
+    devicesItemDetailBinding.isAudio.setChecked(device.isAudio);
+    devicesItemDetailBinding.defaultFull.setChecked(device.defaultFull);
+    // 单击事件
+    devicesItemDetailBinding.isAudio.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      device.isAudio = isChecked;
+      AppData.dbHelper.update(device);
+    });
+    devicesItemDetailBinding.defaultFull.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      device.defaultFull = isChecked;
+      AppData.dbHelper.update(device);
+    });
+    devicesItemDetailBinding.displayMirroring.setOnClickListener(v -> startDevice(device, 0));
+    devicesItemDetailBinding.createDisplay.setOnClickListener(v -> startDevice(device, 1));
   }
 
   // 卡片长按事件
@@ -151,11 +220,15 @@ public class DeviceListAdapter extends BaseAdapter {
   }
 
   public void startDevice(Device device) {
+    startDevice(device, 0);
+  }
+
+  public void startDevice(Device device, int mode) {
     if (device.isLinkDevice()) {
       UsbDevice usbDevice = linkDevices.get(device.uuid);
       if (usbDevice == null) return;
-      new Client(device, usbDevice);
-    } else new Client(device, null);
+      new Client(device, usbDevice, mode);
+    } else new Client(device, null, mode);
   }
 
   public void update() {

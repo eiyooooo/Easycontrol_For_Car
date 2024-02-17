@@ -54,7 +54,7 @@
 
   </LinearLayout>
 
-  <ListView
+  <ExpandableListView
     android:id="@+id/devices_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -64,6 +64,7 @@
     android:paddingStart="15dp"
     android:paddingEnd="15dp"
     android:paddingBottom="60dp"
-    tools:listitem="@layout/item_devices_item" />
+    tools:listitem="@layout/item_devices_item"
+    android:groupIndicator="@null" />
 
 </LinearLayout>

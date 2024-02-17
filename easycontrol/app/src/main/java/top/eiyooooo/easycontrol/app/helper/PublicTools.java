@@ -172,10 +172,6 @@ public class PublicTools {
       if (setDefault) AppData.setting.setDefaultSetResolution(isChecked);
       else device.setResolution = isChecked;
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSwitchCard(context, context.getString(R.string.option_create_display), context.getString(R.string.option_create_display_detail), setDefault ? AppData.setting.getDefaultCreateDisplay() : device.createDisplay, isChecked -> {
-      if (setDefault) AppData.setting.setDefaultCreateDisplay(isChecked);
-      else device.createDisplay = isChecked;
-    }).getRoot());
   }
 
   // 创建Client加载框
