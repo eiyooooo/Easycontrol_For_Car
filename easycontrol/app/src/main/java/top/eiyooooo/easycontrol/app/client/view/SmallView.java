@@ -205,6 +205,11 @@ public class SmallView extends ViewOutlineProvider {
     }
   }
 
+  public void changeMode(int mode) {
+    smallView.buttonSwitch.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
+    smallView.buttonHome.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
+  }
+
   // 设置焦点监听
   @SuppressLint("ClickableViewAccessibility")
   private void setFloatVideoListener() {

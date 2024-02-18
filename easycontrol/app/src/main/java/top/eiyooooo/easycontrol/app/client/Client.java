@@ -44,7 +44,7 @@ public class Client {
   public final ControlPacket controlPacket = new ControlPacket(this::write);
   public final ClientView clientView;
   public final String uuid;
-  public final int mode; // 0为屏幕镜像模式，1为应用流转模式
+  public int mode; // 0为屏幕镜像模式，1为应用流转模式
   private Thread startThread;
   private Thread loadingTimeOutThread;
   private Thread keepAliveThread;
@@ -211,7 +211,12 @@ public class Client {
             break;
           case DISPLAY_ID_EVENT:
             int displayId = bufferStream.readByte();
-            if (mode == 1 & displayId == 0) PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
+            if (mode == 1) {
+              if (displayId == 0) {
+                PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
+                changeMode(0);
+              } else changeMode(1);
+            }
             break;
         }
       }
@@ -305,5 +310,10 @@ public class Client {
   // 检查是否启动完成
   public boolean isStarted() {
     return status == 1 && clientView != null;
+  }
+
+  private void changeMode(int mode) {
+    this.mode = mode;
+    clientView.changeMode(mode);
   }
 }

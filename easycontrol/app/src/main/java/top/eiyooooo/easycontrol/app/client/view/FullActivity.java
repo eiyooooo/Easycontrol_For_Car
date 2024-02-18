@@ -33,6 +33,7 @@ public class FullActivity extends Activity implements SensorEventListener {
     clientView = Client.allClient.get(getIntent().getIntExtra("index", 0)).clientView;
     clientView.setFullView(this);
     // 初始化
+    clientView.changeMode(clientView.mode);
     fullActivity.barView.setVisibility(View.GONE);
     setNavBarHide(AppData.setting.getDefaultShowNavBar());
     // 按键监听
@@ -79,6 +80,11 @@ public class FullActivity extends Activity implements SensorEventListener {
       finish();
     } catch (Exception ignored) {
     }
+  }
+
+  public void changeMode(int mode) {
+    fullActivity.buttonSwitch.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
+    fullActivity.buttonHome.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
   }
 
   // 获取去除底部操作栏后的屏幕大小，用于修改分辨率使用

@@ -23,7 +23,7 @@ import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 public class ClientView implements TextureView.SurfaceTextureListener {
   public final Device device;
-  public final int mode;
+  public int mode;
   public final ControlPacket controlPacket;
   private final PublicTools.MyFunction onReady;
   public final PublicTools.MyFunction onClose;
@@ -49,6 +49,12 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     this.onClose = onClose;
     setTouchListener();
     textureView.setSurfaceTextureListener(this);
+  }
+
+  public void changeMode(int mode) {
+    this.mode = mode;
+    smallView.changeMode(mode);
+    if (fullView != null) fullView.changeMode(mode);
   }
 
   public synchronized void changeToFull() {
