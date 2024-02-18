@@ -143,7 +143,7 @@ public class Client {
       + " maxSize=" + device.maxSize
       + " maxFps=" + device.maxFps
       + " maxVideoBit=" + device.maxVideoBit
-      + " createDisplay=" + (mode == 1 ? 1 : 0)
+      + " mode=" + (mode == 1 ? 1 : 0)
       + " keepAwake=" + (AppData.setting.getKeepAwake() ? 1 : 0)
       + " ScreenMode=" + ScreenMode
       + " useH265=" + ((device.useH265 && supportH265) ? 1 : 0)

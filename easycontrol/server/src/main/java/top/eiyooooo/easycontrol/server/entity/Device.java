@@ -95,7 +95,7 @@ public final class Device {
     }
 
   private static void getVideoSize() {
-    if (Options.createDisplay) {
+    if (Options.mode == 1) {
       videoSize = new Pair<>(deviceSize.first, deviceSize.second);
       return;
     }

@@ -8,7 +8,7 @@ public final class Options {
   public static int maxSize = 1600;
   public static int maxVideoBit = 4000000;
   public static int maxFps = 60;
-  public static boolean createDisplay = false;
+  public static int mode = 0;
   public static boolean keepAwake = true;
   public static boolean TurnOnScreenIfStart = true;
   public static boolean TurnOffScreenIfStart = false;
@@ -36,8 +36,8 @@ public final class Options {
         case "maxVideoBit":
           maxVideoBit = Integer.parseInt(value) * 1000000;
           break;
-        case "createDisplay":
-          createDisplay = Integer.parseInt(value) == 1;
+        case "mode":
+          mode = Integer.parseInt(value);
           break;
         case "keepAwake":
           keepAwake = Integer.parseInt(value) == 1;

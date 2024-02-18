@@ -56,11 +56,11 @@ public final class Server {
       Options.parse(args);
       // 初始化
       setManagers();
-      if (Options.createDisplay) {
+      if (Options.mode == 1) {
         try {
             Device.displayId = VirtualDisplay.create();
             } catch (Exception e) {
-            Options.createDisplay = false;
+            Options.mode = 0;
         }
       }
       Device.init();
@@ -86,7 +86,7 @@ public final class Server {
         if (Options.TurnOffScreenIfStart)
           postDelayed(() -> Device.changeScreenPowerMode(Display.STATE_UNKNOWN), 2000);
       }
-      if (Options.createDisplay) {
+      if (Options.mode == 1) {
         try {
         Device.foregroundAppId = Integer.parseInt(Device.execReadOutput("am stack list | grep -oE taskId=[0-9]*: | grep -oE -m1 [0-9]*").trim());
         Device.execReadOutput("am display move-stack " + Device.foregroundAppId + " " + Device.displayId);
@@ -256,7 +256,7 @@ public final class Server {
                 Device.execReadOutput("am display move-stack " + Device.foregroundAppId + " 0");
               } catch (Exception ignored) {}
             }
-            if (Options.createDisplay)  VirtualDisplay.release();
+            if (Options.mode == 1)  VirtualDisplay.release();
             VideoEncode.release();
             AudioEncode.release();
             break;
