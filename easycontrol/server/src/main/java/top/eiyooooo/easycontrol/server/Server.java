@@ -171,7 +171,10 @@ public final class Server {
         VideoEncode.encodeOut();
         frame++;
         if (frame > 120) {
-          if (System.currentTimeMillis() - lastKeepAliveTime > timeoutDelay) throw new IOException("连接断开");
+          if (System.currentTimeMillis() - lastKeepAliveTime > timeoutDelay) {
+            timeoutClose = true;
+            throw new IOException("连接断开");
+          }
           frame = 0;
         }
       }
@@ -241,6 +244,8 @@ public final class Server {
     }
   }
 
+  private static boolean timeoutClose = false;
+
   // 释放资源
   private static void release() {
     for (int i = 0; i < 4; i++) {
@@ -277,7 +282,8 @@ public final class Server {
             }
             if (Options.keepAwake) Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
           case 3:
-            Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
+            if (timeoutClose)
+              Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
             break;
         }
       } catch (Exception ignored) {
