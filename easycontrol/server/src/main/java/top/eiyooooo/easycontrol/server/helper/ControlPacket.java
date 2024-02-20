@@ -61,10 +61,10 @@ public final class ControlPacket {
     Server.write(ByteBuffer.wrap(new byte[]{5}));
   }
 
-  public static void sendDisplayId() throws IOException, ErrnoException {
+  public static void sendDisplayId(int displayId) throws IOException, ErrnoException {
     ByteBuffer byteBuffer = ByteBuffer.allocate(2);
     byteBuffer.put((byte) 6);
-    byteBuffer.put((byte) Device.displayId);
+    byteBuffer.put((byte) displayId);
     byteBuffer.flip();
     Server.write(byteBuffer);
   }

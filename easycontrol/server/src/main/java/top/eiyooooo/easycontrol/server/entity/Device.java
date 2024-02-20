@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +45,8 @@ public final class Device {
 
   public static int displayId = Display.DEFAULT_DISPLAY;
   public static int layerStack;
-  public static int foregroundAppId = 0;
+  public static String[] foregroundApp = new String[0];
+  public static ArrayList<String> transferredApp = new ArrayList<>();
 
   public static void init() throws IOException, InterruptedException {
     getRealDeviceSize();

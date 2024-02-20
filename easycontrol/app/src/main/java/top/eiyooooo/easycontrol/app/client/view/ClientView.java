@@ -49,6 +49,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     this.onClose = onClose;
     setTouchListener();
     textureView.setSurfaceTextureListener(this);
+    smallView.changeMode(mode);
   }
 
   public void changeMode(int mode) {
