@@ -232,6 +232,8 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   }
 
   public void update() {
+    for (int i = 0; i < devicesList.size(); i++)
+      expandableListView.collapseGroup(i);
     queryDevices();
     notifyDataSetChanged();
   }
