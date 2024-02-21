@@ -45,8 +45,6 @@ public final class Device {
 
   public static int displayId = Display.DEFAULT_DISPLAY;
   public static int layerStack;
-  public static String[] foregroundApp = new String[0];
-  public static ArrayList<String> transferredApp = new ArrayList<>();
 
   public static void init() throws IOException, InterruptedException {
     getRealDeviceSize();

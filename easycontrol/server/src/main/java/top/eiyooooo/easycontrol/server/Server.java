@@ -86,7 +86,7 @@ public final class Server {
         if (Options.TurnOffScreenIfStart)
           postDelayed(() -> Device.changeScreenPowerMode(Display.STATE_UNKNOWN), 2000);
       }
-      if (Options.mode == 1) foregroundAppMonitor();
+      if (Options.mode == 1) VirtualDisplay.applicationMonitor();
       synchronized (object) {
         object.wait();
       }
@@ -99,34 +99,6 @@ public final class Server {
       else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
       // 释放资源
       release();
-    }
-  }
-
-  private static void foregroundAppMonitor() {
-    try {
-      if (Device.foregroundApp.length != 7)
-        Device.foregroundApp = Device.execReadOutput("am stack list | grep -E 'RootTask id=[0-9]*' | grep -oE -m1 [0-9]*").split("\n");
-      else
-        Device.foregroundApp = Device.execReadOutput("am stack list | grep -E 'RootTask id=" + Device.foregroundApp[0] + "' | grep -oE -m1 [0-9]*").split("\n");
-
-      if (Device.foregroundApp.length != 7) throw new Exception();
-
-      if (Device.foregroundApp[5].equals("0")) {
-        Device.execReadOutput("am display move-stack " + Device.foregroundApp[0] + " " + Device.displayId);
-        Device.foregroundApp[5] = String.valueOf(Device.displayId);
-        Device.transferredApp.add(Device.foregroundApp[0]);
-        ControlPacket.sendDisplayId(Device.displayId);
-      }
-
-      postDelayed(Server::foregroundAppMonitor, 2000);
-    } catch (Exception ignored0) {
-      Device.foregroundApp = new String[0];
-
-      try {
-        ControlPacket.sendDisplayId(-Device.displayId);
-      } catch (Exception ignored1) {}
-
-      postDelayed(Server::foregroundAppMonitor, 2000);
     }
   }
 
@@ -278,11 +250,6 @@ public final class Server {
             socket.close();
             break;
           case 1:
-            for (String transferredAppId : Device.transferredApp) {
-              try {
-                Device.execReadOutput("am display move-stack " + transferredAppId + " 0");
-              } catch (Exception ignored) {}
-            }
             if (Options.mode == 1)  VirtualDisplay.release();
             VideoEncode.release();
             AudioEncode.release();

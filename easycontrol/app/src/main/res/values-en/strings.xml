@@ -92,7 +92,7 @@
   <string name="error_connect_server">Failed to connect</string>
   <string name="error_stream_closed">Disconnected</string>
   <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above)</string>
-  <string name="error_transferred_app_not_found">The transferred application has been closed, transfer will restart after two seconds</string>
+  <string name="error_transferred_app_failed">application transfer failed, transfer will restart after two seconds</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_is_audio">Enable audio</string>

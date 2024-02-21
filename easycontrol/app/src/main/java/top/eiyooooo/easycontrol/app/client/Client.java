@@ -216,7 +216,7 @@ public class Client {
                 PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
                 changeMode(0);
               }
-              else if (displayId < 0) PublicTools.logToast(AppData.main.getString(R.string.error_transferred_app_not_found));
+              else if (displayId < 0) PublicTools.logToast(AppData.main.getString(R.string.error_transferred_app_failed));
             }
             break;
         }
