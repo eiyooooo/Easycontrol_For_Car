@@ -31,7 +31,7 @@ public class Client {
   public static final ArrayList<Client> allClient = new ArrayList<>();
 
   // 连接
-  private Adb adb;
+  public Adb adb;
   private BufferStream bufferStream;
   private BufferStream shell;
 
@@ -45,9 +45,10 @@ public class Client {
   public final ClientView clientView;
   public final String uuid;
   public int mode; // 0为屏幕镜像模式，1为应用流转模式
+  private final boolean isUsbDevice;
   private Thread startThread;
-  private Thread loadingTimeOutThread;
-  private Thread keepAliveThread;
+  private final Thread loadingTimeOutThread;
+  private final Thread keepAliveThread;
   private static final int timeoutDelay = 5 * 1000;
   private static long lastKeepAliveTime;
 
@@ -60,10 +61,17 @@ public class Client {
   }
 
   public Client(Device device, UsbDevice usbDevice, int mode) {
+    for (Client client : allClient) {
+      if (client.uuid.equals(device.uuid) && usbDevice != null) {
+        this.adb = client.adb;
+        break;
+      }
+    }
     allClient.add(this);
     // 初始化
     uuid = device.uuid;
     this.mode = mode;
+    this.isUsbDevice = usbDevice != null;
     if (device.setResolution & mode == 1) PublicTools.logToast("应用流转模式下暂不支持自由缩放哦");
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
@@ -99,7 +107,7 @@ public class Client {
     });
     startThread = new Thread(() -> {
       try {
-        adb = connectADB(device, usbDevice);
+        if (adb == null) adb = connectADB(device, usbDevice);
         startServer(device);
         connectServer();
         AppData.uiHandler.post(() -> {
@@ -270,7 +278,16 @@ public class Client {
             break;
           case 2:
             bufferStream.close();
-            adb.close();
+            boolean closeAdb = true;
+            if (isUsbDevice) {
+              for (Client client : allClient) {
+                if (client.uuid.equals(uuid)) {
+                  closeAdb = false;
+                  break;
+                }
+              }
+            }
+            if (closeAdb) adb.close();
             break;
           case 3:
             videoDecode.release();
