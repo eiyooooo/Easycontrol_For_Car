@@ -187,6 +187,7 @@ public class Client {
       boolean useOpus = true;
       if (bufferStream.readByte() == 1) useOpus = bufferStream.readByte() == 1;
       boolean useH265 = bufferStream.readByte() == 1;
+      boolean firstTransferComplete = false;
       // 循环处理报文
       while (!Thread.interrupted()) {
         switch (bufferStream.readByte()) {
@@ -224,7 +225,13 @@ public class Client {
                 PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
                 changeMode(0);
               }
-              else if (displayId < 0) PublicTools.logToast(AppData.main.getString(R.string.error_transferred_app_failed));
+              else if (displayId < 0) PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_failed));
+              else {
+                if (!firstTransferComplete) {
+                  PublicTools.logToast(AppData.main.getString(R.string.tip_application_transfer));
+                  firstTransferComplete = true;
+                } else PublicTools.logToast(AppData.main.getString(R.string.error_transferred_app_not_found));
+              }
             }
             break;
         }

@@ -10,16 +10,16 @@
   <!-- 设置页面 -->
   <string name="set_default">默认参数</string>
   <string name="set_display">显示</string>
-  <string name="set_turn_on_screen_if_start">启动时点亮屏幕</string>
-  <string name="set_turn_on_screen_if_start_detail">连接成功后自动点亮被控端屏幕</string>
-  <string name="set_turn_off_screen_if_start">启动时进入熄屏控制</string>
-  <string name="set_turn_off_screen_if_start_detail">连接成功两秒后进入熄屏控制（需开启"启动时点亮屏幕"）</string>
-  <string name="set_turn_off_screen_if_start_error">请先开启“启动时点亮屏幕”哦</string>
-  <string name="set_turn_off_screen_if_stop">断开时熄灭屏幕</string>
-  <string name="set_turn_off_screen_if_stop_detail">断开连接后自动熄灭被控端屏幕</string>
-  <string name="set_turn_on_screen_if_stop">断开时退出熄屏控制</string>
-  <string name="set_turn_on_screen_if_stop_detail">断开连接后退出熄屏控制（需关闭"断开时熄灭屏幕"）</string>
-  <string name="set_turn_on_screen_if_stop_error">请先关闭“断开时熄灭屏幕”哦</string>
+  <string name="set_wake_up_screen_on_connect">连接后自动唤醒</string>
+  <string name="set_wake_up_screen_on_connect_detail">连接成功后自动唤醒被控端</string>
+  <string name="set_light_off_on_connect">连接后关闭背光</string>
+  <string name="set_light_off_on_connect_detail">连接成功两秒后关闭屏幕背光（需开启"连接后唤醒"）</string>
+  <string name="set_light_off_on_connect_error">请先开启“连接后自动唤醒”哦</string>
+  <string name="set_lock_screen_on_close">断开后自动锁定</string>
+  <string name="set_lock_screen_on_close_detail">断开连接后自动锁定被控端屏幕</string>
+  <string name="set_light_on_on_close">断开后恢复背光</string>
+  <string name="set_light_on_on_close_detail">断开连接后恢复屏幕背光（需关闭"断开后自动锁定"）</string>
+  <string name="set_light_on_on_close_error">请先关闭“断开后自动锁定”哦</string>
   <string name="set_display_keep_screen_awake">被控端保持唤醒</string>
   <string name="set_display_keep_screen_awake_detail">连接过程中被控端不锁定（即修改自动锁定时间）</string>
   <string name="set_display_auto_back_on_start_default">打开默认后返回</string>
@@ -73,8 +73,8 @@
   <string name="set_device_button_recover">恢复分辨率</string>
   <string name="set_device_button_recover_success">恢复成功</string>
   <string name="set_device_button_recover_error">连接失败，请检查ADB和网络</string>
-  <string name="set_device_button_set_default">启动时打开</string>
-  <string name="set_device_button_set_default_link">设为默认USB</string>
+  <string name="set_device_button_set_default">默认无线设备</string>
+  <string name="set_device_button_set_default_link">默认USB设备</string>
   <string name="set_device_button_get_uuid">获取ID</string>
   <string name="set_device_button_get_uuid_success">已复制</string>
   <string name="set_device_button_start_wireless">打开无线</string>
@@ -92,7 +92,11 @@
   <string name="error_connect_server">连接被控端失败</string>
   <string name="error_stream_closed">连接断开</string>
   <string name="error_create_display">被控端不支持应用流转(需安卓11及以上)</string>
-  <string name="error_transferred_app_failed">应用流转失败，两秒后自动重新开始流转</string>
+  <string name="error_transfer_app_failed">应用流转失败，两秒后重新开始流转</string>
+  <string name="error_transferred_app_not_found">流转应用已关闭，已经尝试重新流转前台应用</string>
+
+  <!-- 提示 -->
+  <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_is_audio">使能音频</string>
@@ -114,6 +118,6 @@
 
   <!-- 设备列表展开 -->
   <string name="start_display_mirroring">屏幕镜像</string>
-  <string name="start_create_display">应用流转</string>
+  <string name="start_application_transfer">应用流转</string>
 
 </resources>

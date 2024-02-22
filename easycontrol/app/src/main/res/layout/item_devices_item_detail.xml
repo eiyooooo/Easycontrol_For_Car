@@ -118,7 +118,7 @@
         android:background="@drawable/background_cron_stroke"
         android:backgroundTint="@color/alert"
         android:gravity="center"
-        android:text="@string/start_create_display"
+        android:text="@string/start_application_transfer"
         android:textColor="@color/button"
         android:textSize="@dimen/smallFont" />
 

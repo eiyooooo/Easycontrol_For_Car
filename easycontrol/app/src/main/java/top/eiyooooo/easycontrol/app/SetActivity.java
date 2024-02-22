@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
-import top.eiyooooo.easycontrol.app.BuildConfig;
 import top.eiyooooo.easycontrol.app.databinding.ActivitySetBinding;
 
 public class SetActivity extends Activity {
@@ -30,16 +29,16 @@ public class SetActivity extends Activity {
     // 默认参数
     PublicTools.createDeviceOptionSet(this, setActivity.setDefault, null);
     // 显示
-    setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_turn_on_screen_if_start), getString(R.string.set_turn_on_screen_if_start_detail), AppData.setting.getTurnOnScreenIfStart(),
+    setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_wake_up_screen_on_connect), getString(R.string.set_wake_up_screen_on_connect_detail), AppData.setting.getTurnOnScreenIfStart(),
             isChecked -> {
               if (!isChecked) {
                 setActivity.setDisplay.removeViewAt(1);
                 AppData.setting.setTurnOffScreenIfStart(false);
-                setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_turn_off_screen_if_start), getString(R.string.set_turn_off_screen_if_start_detail), AppData.setting.getTurnOffScreenIfStart(),
+                setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_light_off_on_connect), getString(R.string.set_light_off_on_connect_detail), AppData.setting.getTurnOffScreenIfStart(),
                         (buttonView, isChecked1) -> {
                           if (!AppData.setting.getTurnOnScreenIfStart()) {
                             buttonView.setChecked(false);
-                            Toast.makeText(this, getString(R.string.set_turn_off_screen_if_start_error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.set_light_off_on_connect_error), Toast.LENGTH_SHORT).show();
                           }
                           else AppData.setting.setTurnOffScreenIfStart(isChecked1);
                         }).getRoot(), 1);
@@ -47,25 +46,25 @@ public class SetActivity extends Activity {
               AppData.setting.setTurnOnScreenIfStart(isChecked);
             }).getRoot());
 
-    setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_turn_off_screen_if_start), getString(R.string.set_turn_off_screen_if_start_detail), AppData.setting.getTurnOffScreenIfStart(),
+    setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_light_off_on_connect), getString(R.string.set_light_off_on_connect_detail), AppData.setting.getTurnOffScreenIfStart(),
             (buttonView, isChecked) -> {
               if (!AppData.setting.getTurnOnScreenIfStart()) {
                 buttonView.setChecked(false);
-                Toast.makeText(this, getString(R.string.set_turn_off_screen_if_start_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.set_light_off_on_connect_error), Toast.LENGTH_SHORT).show();
               }
               else AppData.setting.setTurnOffScreenIfStart(isChecked);
             }).getRoot());
 
-    setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_turn_off_screen_if_stop), getString(R.string.set_turn_off_screen_if_stop_detail), AppData.setting.getTurnOffScreenIfStop(),
+    setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_lock_screen_on_close), getString(R.string.set_lock_screen_on_close_detail), AppData.setting.getTurnOffScreenIfStop(),
             isChecked -> {
               if (isChecked) {
                 setActivity.setDisplay.removeViewAt(3);
                 AppData.setting.setTurnOnScreenIfStop(false);
-                setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_turn_on_screen_if_stop), getString(R.string.set_turn_on_screen_if_stop_detail), AppData.setting.getTurnOnScreenIfStop(),
+                setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_light_on_on_close), getString(R.string.set_light_on_on_close_detail), AppData.setting.getTurnOnScreenIfStop(),
                         (buttonView, isChecked1) -> {
                           if (AppData.setting.getTurnOffScreenIfStop()) {
                             buttonView.setChecked(false);
-                            Toast.makeText(this, getString(R.string.set_turn_on_screen_if_stop_error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.set_light_on_on_close_error), Toast.LENGTH_SHORT).show();
                           }
                           else AppData.setting.setTurnOnScreenIfStop(isChecked1);
                         }).getRoot(), 3);
@@ -73,11 +72,11 @@ public class SetActivity extends Activity {
               AppData.setting.setTurnOffScreenIfStop(isChecked);
             }).getRoot());
 
-    setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_turn_on_screen_if_stop), getString(R.string.set_turn_on_screen_if_stop_detail), AppData.setting.getTurnOnScreenIfStop(),
+    setActivity.setDisplay.addView(PublicTools.createSwitchCardEx(this, getString(R.string.set_light_on_on_close), getString(R.string.set_light_on_on_close_detail), AppData.setting.getTurnOnScreenIfStop(),
             (buttonView, isChecked) -> {
               if (AppData.setting.getTurnOffScreenIfStop()) {
                 buttonView.setChecked(false);
-                Toast.makeText(this, getString(R.string.set_turn_on_screen_if_stop_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.set_light_on_on_close_error), Toast.LENGTH_SHORT).show();
               }
               else AppData.setting.setTurnOnScreenIfStop(isChecked);
             }).getRoot());

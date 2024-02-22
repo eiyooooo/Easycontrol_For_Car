@@ -8,26 +8,26 @@
   <string name="main_float_permission">Please grant hover window privileges</string>
 
   <!-- 设置页面 -->
-  <string name="set_default">Default</string>
+  <string name="set_default">Default settings</string>
   <string name="set_display">Display</string>
-  <string name="set_turn_on_screen_if_start">Turn on screen when started</string>
-  <string name="set_turn_on_screen_if_start_detail">Automatically turn on the controlled end screen after the connection is successful</string>
-  <string name="set_turn_off_screen_if_start">Make screen off when started</string>
-  <string name="set_turn_off_screen_if_start_detail">Enter the screen off control two seconds after the connection is successful (need to turn on "Turn on screen when starting")</string>
-  <string name="set_turn_off_screen_if_start_error">Please turn on \u0022Turn on screen when starting\u0022</string>
-  <string name="set_turn_off_screen_if_stop">Turn off screen when stopped</string>
-  <string name="set_turn_off_screen_if_stop_detail">Automatically turn off the controlled end screen after the connection is disconnected</string>
-  <string name="set_turn_on_screen_if_stop">Make screen on when stopped</string>
-  <string name="set_turn_on_screen_if_stop_detail">Exit the screen off control after the connection is disconnected (need to turn off "Turn off screen when disconnected")</string>
-  <string name="set_turn_on_screen_if_stop_error">Please turn off \u0022Turn off screen when disconnected\u0022</string>
-  <string name="set_display_keep_screen_awake">Keep controlled awake</string>
-  <string name="set_display_keep_screen_awake_detail">The controlled end is not locked during the connection</string>
-  <string name="set_display_auto_back_on_start_default">Open default and return</string>
-  <string name="set_display_auto_back_on_start_default_detail">Whether to automatically return to the desktop after the default is turned on at startup</string>
-  <string name="set_display_default_show_nav_bar">Default show navigation bar</string>
+  <string name="set_wake_up_screen_on_connect">Wake up after connection</string>
+  <string name="set_wake_up_screen_on_connect_detail">Automatically wake up the controlled end after the connection is successful</string>
+  <string name="set_light_off_on_connect">Turn off backlight after connection</string>
+  <string name="set_light_off_on_connect_detail">Turn off the screen backlight two seconds after the connection is successful (need to turn on "Wake up after connection")</string>
+  <string name="set_light_off_on_connect_error">Please turn on \u0022Wake up after connection\u0022</string>
+  <string name="set_lock_screen_on_close">Lock the screen after disconnection</string>
+  <string name="set_lock_screen_on_close_detail">Automatically lock the controlled end screen after the connection is disconnected</string>
+  <string name="set_light_on_on_close">Restore backlight after disconnection</string>
+  <string name="set_light_on_on_close_detail">Restore the screen backlight after the connection is disconnected (need to turn off "Lock screen after disconnection")</string>
+  <string name="set_light_on_on_close_error">Please turn off \u0022Lock the screen after disconnection\u0022</string>
+  <string name="set_display_keep_screen_awake">Keep the controlled end awake</string>
+  <string name="set_display_keep_screen_awake_detail">The controlled end does not lock during the connection process</string>
+  <string name="set_display_auto_back_on_start_default">Return to launcher after a connection</string>
+  <string name="set_display_auto_back_on_start_default_detail">Return to launcher automatically when default device connected</string>
+  <string name="set_display_default_show_nav_bar">Show navigation bar by default</string>
   <string name="set_display_default_show_nav_bar_detail">Sets whether the navigation bar is displayed by default in small window and full screen modes</string>
-  <string name="set_display_default_mini_on_outside">Minimize when touching the outside world</string>
-  <string name="set_display_default_mini_on_outside_detail">(Small window mode) Minimized when touching a location other than a small window</string>
+  <string name="set_display_default_mini_on_outside">Minimize when touching outside the small window</string>
+  <string name="set_display_default_mini_on_outside_detail">(Small window mode) Minimized when touching outside the small window</string>
   <string name="set_other">Other</string>
   <string name="set_if_start_default_usb">Open default USB at startup</string>
   <string name="set_if_start_default_usb_detail">If the USB device is connected and authorized when starting the app, it will automatically open</string>
@@ -36,9 +36,9 @@
   <string name="set_other_clear_default_code">Cleared default wireless device</string>
   <string name="set_other_clear_default_usb_code">Cleared default USB device</string>
   <string name="set_other_no_default">Default device not found</string>
-  <string name="set_other_custom_key">Custom key (reauthorization required)</string>
-  <string name="set_other_clear_key">Regenerate the key (reauthorization required)</string>
-  <string name="set_other_clear_key_code">Already refreshed</string>
+  <string name="set_other_custom_key">Custom key (ADB reauthorization required)</string>
+  <string name="set_other_clear_key">Regenerate the key (ADB reauthorization required)</string>
+  <string name="set_other_clear_key_code">Regenerated</string>
   <string name="set_other_locale">Change language(中文/English)</string>
   <string name="set_other_locale_code">已切换，可能需要重启APP</string>
   <string name="set_about">About</string>
@@ -64,22 +64,22 @@
   <string name="add_device_name">Name</string>
   <string name="add_device_name_hint">Non-null</string>
   <string name="add_device_address">Address:Port</string>
-  <string name="add_device_address_hint">IPv4/v6 addresses or domain names</string>
+  <string name="add_device_address_hint">IPv4/v6 addresses or domain</string>
   <string name="add_device_option">Advanced options</string>
   <string name="add_device_button">OK</string>
 
   <!-- 设备设置模块 -->
   <string name="set_device_title">Do what◔ ‸◔?</string>
-  <string name="set_device_button_recover">Recovery resolution</string>
-  <string name="set_device_button_recover_success">Recovery success</string>
+  <string name="set_device_button_recover">Reset resolution</string>
+  <string name="set_device_button_recover_success">Success</string>
   <string name="set_device_button_recover_error">Connection failed, please check ADB and network</string>
-  <string name="set_device_button_set_default">Open on startup</string>
-  <string name="set_device_button_set_default_link">Set as default USB device</string>
-  <string name="set_device_button_get_uuid">Get ID</string>
+  <string name="set_device_button_set_default">Default wireless</string>
+  <string name="set_device_button_set_default_link">Default USB</string>
+  <string name="set_device_button_get_uuid">Copy ID</string>
   <string name="set_device_button_get_uuid_success">Copied</string>
   <string name="set_device_button_start_wireless">Enable wireless</string>
   <string name="set_device_button_start_wireless_success">Successfully</string>
-  <string name="set_device_button_change">Change</string>
+  <string name="set_device_button_change">Settings</string>
   <string name="set_device_button_delete">Delete</string>
 
   <!-- 加载中模块 -->
@@ -88,32 +88,36 @@
   <!-- 错误提示 -->
   <string name="error_no_browser">No default browser</string>
   <string name="error_address_error">Address format error</string>
-  <string name="error_refused_back">The full screen status will intercept the return</string>
+  <string name="error_refused_back">Fullscreen mode intercepts return key event</string>
   <string name="error_connect_server">Failed to connect</string>
   <string name="error_stream_closed">Disconnected</string>
   <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above)</string>
-  <string name="error_transferred_app_failed">application transfer failed, transfer will restart after two seconds</string>
+  <string name="error_transfer_app_failed">application transfer failed, transfer will restart after two seconds</string>
+  <string name="error_transferred_app_not_found">The transferred application has been closed, and an attempt has been made to transfer the foreground application again</string>
+
+  <!-- 提示 -->
+  <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_is_audio">Enable audio</string>
-  <string name="option_is_audio_detail">When turned on, it will attempt to transmit audio, and the controlled end needs to be Android 12 and above</string>
-  <string name="option_max_size">Max Size</string>
-  <string name="option_max_size_detail">Sets the maximum size of the screen length and width</string>
-  <string name="option_max_fps">Max Fps</string>
-  <string name="option_max_fps_detail">Maximum frame rate limit, the lower the value, the more sluggish the picture, but the smaller the traffic, the delay will be reduced</string>
+  <string name="option_is_audio_detail">Works with Android 12 and above</string>
+  <string name="option_max_size">Resolution</string>
+  <string name="option_max_size_detail">Set max resolution</string>
+  <string name="option_max_fps">Max FPS</string>
+  <string name="option_max_fps_detail">Frame per seconds</string>
   <string name="option_max_video_bit">Max Video Bit</string>
-  <string name="option_max_video_bit_detail">The larger the bit rate, the smaller the video loss, and the larger the video volume. You are advised to set the value to 4. If the bit rate is too high, the delay increases</string>
+  <string name="option_max_video_bit_detail">Set stream bitrate. Suggested = 4, high value may increase latency</string>
   <string name="option_use_h265">Use H265</string>
-  <string name="option_use_h265_detail">H265 is preferred, the video size is small and the delay is low. The actual situation is mainly supported. If the video is abnormal, try to close it</string>
+  <string name="option_use_h265_detail">Enable H265 when available, disable it when encountered display issues</string>
   <string name="option_use_opus">Use Opus</string>
-  <string name="option_use_opus_detail">OPUS is preferred, the audio volume is small and the delay is low, and the actual support is mainly</string>
+  <string name="option_use_opus_detail">Enable Opus when available</string>
   <string name="option_default_full">Default full screen</string>
-  <string name="option_default_full_detail">After this function is enabled, the system enters the full-screen state directly after the connection is successful</string>
+  <string name="option_default_full_detail">Automatically enter full screen after connection</string>
   <string name="option_set_resolution">Screen aspect ratio free scaling (experimental)</string>
-  <string name="option_set_resolution_detail">After this function is enabled, the screen aspect ratio can be freely set (experimental function, manual resolution recovery in case of error)</string>
+  <string name="option_set_resolution_detail">Screen aspect ratio can be freely set (experimental function, manual resolution recovery in case of error)</string>
 
   <!-- 设备列表展开 -->
   <string name="start_display_mirroring">Display mirroring</string>
-  <string name="start_create_display">Application transfer</string>
+  <string name="start_application_transfer">Application transfer</string>
 
 </resources>
