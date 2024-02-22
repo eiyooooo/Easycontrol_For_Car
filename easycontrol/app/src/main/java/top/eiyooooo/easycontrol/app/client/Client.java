@@ -141,6 +141,10 @@ public class Client {
       adb.runAdbCmd("rm /data/local/tmp/easycontrol_* ");
       adb.pushFile(AppData.main.getResources().openRawResource(R.raw.easycontrol_server), serverName);
     }
+    if (mode == 1) {
+      if (AppData.setting.getForceDesktopMode()) adb.runAdbCmd("settings put global force_desktop_mode_on_external_displays 1");
+      else adb.runAdbCmd("settings put global force_desktop_mode_on_external_displays 0");
+    }
     shell = adb.getShell();
     int ScreenMode = (AppData.setting.getTurnOnScreenIfStart() ? 1 : 0) * 1000
             + (AppData.setting.getTurnOffScreenIfStart() ? 1 : 0) * 100

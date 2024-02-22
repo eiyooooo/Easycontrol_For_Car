@@ -86,6 +86,7 @@ public class SetActivity extends Activity {
     setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_default_mini_on_outside), getString(R.string.set_display_default_mini_on_outside_detail), AppData.setting.getDefaultMiniOnOutside(), isChecked -> AppData.setting.setDefaultMiniOnOutside(isChecked)).getRoot());
     setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_default_show_nav_bar), getString(R.string.set_display_default_show_nav_bar_detail), AppData.setting.getDefaultShowNavBar(), isChecked -> AppData.setting.setDefaultShowNavBar(isChecked)).getRoot());
     // 其他
+    setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_force_desktop_mode), getString(R.string.set_force_desktop_mode_detail), AppData.setting.getForceDesktopMode(), isChecked -> AppData.setting.setForceDesktopMode(isChecked)).getRoot());
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_if_start_default_usb), getString(R.string.set_if_start_default_usb_detail), AppData.setting.getNeedStartDefaultUsbDevice(), isChecked -> AppData.setting.setNeedStartDefaultUsbDevice(isChecked)).getRoot());
 
     String defaultDevice = AppData.setting.getDefaultDevice();

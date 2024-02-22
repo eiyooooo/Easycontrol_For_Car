@@ -187,6 +187,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getForceDesktopMode() {
+    return sharedPreferences.getBoolean("ForceDesktopMode", false);
+  }
+
+  public void setForceDesktopMode(boolean value) {
+    editor.putBoolean("ForceDesktopMode", value);
+    editor.apply();
+  }
+
   public Setting(SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
     this.editor = sharedPreferences.edit();

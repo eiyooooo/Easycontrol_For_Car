@@ -35,8 +35,6 @@ public final class VirtualDisplay {
             throw new Exception("Virtual display is not supported before Android 11");
         }
 
-        // 未设置强制桌面模式
-
         displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(FakeContext.get());
 
         // 获取width、height、density
@@ -83,7 +81,7 @@ public final class VirtualDisplay {
         try {
             applications = getStackList();
 
-            if (applications.second.isEmpty()) {
+            if (firstVisibleApp == 0 || applications.second.isEmpty()) {
                 int localVisibleApp = 0;
                 for (application a : applications.first) {
                     if (a.visible) {
