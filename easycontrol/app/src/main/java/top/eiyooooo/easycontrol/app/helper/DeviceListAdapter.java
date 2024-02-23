@@ -138,10 +138,14 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
       device.isAudio = isChecked;
       AppData.dbHelper.update(device);
     });
+    View isAudioParent = (View) devicesItemDetailBinding.isAudio.getParent();
+    isAudioParent.setOnClickListener(v -> devicesItemDetailBinding.isAudio.toggle());
     devicesItemDetailBinding.defaultFull.setOnCheckedChangeListener((buttonView, isChecked) -> {
       device.defaultFull = isChecked;
       AppData.dbHelper.update(device);
     });
+    View defaultFullParent = (View) devicesItemDetailBinding.defaultFull.getParent();
+    defaultFullParent.setOnClickListener(v -> devicesItemDetailBinding.defaultFull.toggle());
     devicesItemDetailBinding.displayMirroring.setOnClickListener(v -> startDevice(device, 0));
     devicesItemDetailBinding.createDisplay.setOnClickListener(v -> startDevice(device, 1));
   }
