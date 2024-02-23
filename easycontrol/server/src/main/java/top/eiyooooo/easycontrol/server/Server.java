@@ -87,6 +87,7 @@ public final class Server {
           postDelayed(() -> Device.changeScreenPowerMode(Display.STATE_UNKNOWN), 2000);
       }
       if (Options.mode == 1) VirtualDisplay.applicationMonitor();
+      else ControlPacket.sendDisplayId(Device.displayId);
       synchronized (object) {
         object.wait();
       }
