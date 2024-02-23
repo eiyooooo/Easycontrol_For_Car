@@ -20,12 +20,12 @@ import android.view.MotionEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import top.eiyooooo.easycontrol.server.helper.VideoEncode;
 import top.eiyooooo.easycontrol.server.helper.ControlPacket;
+import top.eiyooooo.easycontrol.server.helper.VirtualDisplay;
 import top.eiyooooo.easycontrol.server.wrappers.ClipboardManager;
 import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
 import top.eiyooooo.easycontrol.server.wrappers.InputManager;
@@ -134,7 +134,8 @@ public final class Device {
       // 修改分辨率
       Pair<Integer, Integer> newDeivceSize = new Pair<>((isPortrait ? newWidth : newHeight), (isPortrait ? newHeight : newWidth));
       newDeivceSize = new Pair<>(newDeivceSize.first + 4 & ~7, newDeivceSize.second + 4 & ~7);
-      Device.execReadOutput("wm size " + newDeivceSize.first + "x" + newDeivceSize.second);
+      if (Options.mode == 1) VirtualDisplay.updateSize(newDeivceSize);
+      else Device.execReadOutput("wm size " + newDeivceSize.first + "x" + newDeivceSize.second);
       // 更新，需延迟一段时间，否则会导致画面卡顿，尚未查清原因
       Thread.sleep(500);
       getDeivceSize();

@@ -72,7 +72,6 @@ public class Client {
     uuid = device.uuid;
     this.mode = mode;
     this.isUsbDevice = usbDevice != null;
-    if (device.setResolution & mode == 1) PublicTools.logToast("应用流转模式下暂不支持自由缩放哦");
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
       handlerThread.start();

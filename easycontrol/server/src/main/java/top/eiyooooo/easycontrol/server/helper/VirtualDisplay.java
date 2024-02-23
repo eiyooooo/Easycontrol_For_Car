@@ -57,6 +57,14 @@ public final class VirtualDisplay {
         return virtualDisplay.getDisplay().getDisplayId();
     }
 
+    public static void updateSize(Pair<Integer, Integer> newSize) {
+        if (virtualDisplay != null) {
+            width = newSize.first;
+            height = newSize.second;
+            virtualDisplay.resize(width, height, density);
+        }
+    }
+
     public static void release() {
         for (application a : applications.second) {
             if (firstVisibleApp != 0 && a.id == firstVisibleApp) continue;

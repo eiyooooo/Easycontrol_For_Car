@@ -60,7 +60,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public synchronized void changeToFull() {
     hide(false);
-    if (device.setResolution & mode == 0) controlPacket.sendChangeSizeEvent(FullActivity.getResolution());
+    if (device.setResolution) controlPacket.sendChangeSizeEvent(FullActivity.getResolution());
     Intent intent = new Intent(AppData.main, FullActivity.class);
     int i = 0;
     for (Client client : Client.allClient) {
