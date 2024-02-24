@@ -238,9 +238,9 @@ public final class Device {
   }
 
   public static void rotateDevice() {
-    boolean accelerometerRotation = !WindowManager.isRotationFrozen();
-    WindowManager.freezeRotation(deviceRotation == 0 || deviceRotation == 3 ? 1 : 0);
-    if (accelerometerRotation) WindowManager.thawRotation();
+    boolean accelerometerRotation = !WindowManager.isRotationFrozen(displayId);
+    WindowManager.freezeRotation(displayId, deviceRotation == 0 || deviceRotation == 3 ? 1 : 0);
+    if (accelerometerRotation) WindowManager.thawRotation(displayId);
   }
 
   public static String execReadOutput(String cmd) throws IOException, InterruptedException {
