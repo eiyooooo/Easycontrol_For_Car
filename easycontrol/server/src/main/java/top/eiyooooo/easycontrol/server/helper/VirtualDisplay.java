@@ -3,9 +3,11 @@ package top.eiyooooo.easycontrol.server.helper;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
+import android.media.MediaCodec;
 import android.os.Build;
 import android.util.Pair;
 import android.view.Display;
+import android.view.Surface;
 import top.eiyooooo.easycontrol.server.entity.Device;
 
 import static top.eiyooooo.easycontrol.server.Server.postDelayed;
@@ -53,7 +55,8 @@ public final class VirtualDisplay {
             flags |= VIRTUAL_DISPLAY_FLAG_TRUSTED | VIRTUAL_DISPLAY_FLAG_OWN_DISPLAY_GROUP | VIRTUAL_DISPLAY_FLAG_ALWAYS_UNLOCKED;
         }
 
-        virtualDisplay = displayManager.createVirtualDisplay("easycontrol", width, height, density, null, flags);
+        Surface surface = MediaCodec.createPersistentInputSurface();
+        virtualDisplay = displayManager.createVirtualDisplay("easycontrol", width, height, density, surface, flags);
         return virtualDisplay.getDisplay().getDisplayId();
     }
 

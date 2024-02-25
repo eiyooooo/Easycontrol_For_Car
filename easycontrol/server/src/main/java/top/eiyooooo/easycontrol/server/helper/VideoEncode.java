@@ -32,11 +32,9 @@ public final class VideoEncode {
   public static void init() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException, ErrnoException {
     useH265 = Options.useH265 && Device.isEncoderSupport("hevc");
     Server.write(ByteBuffer.wrap(new byte[]{(byte) (useH265 ? 1 : 0)}));
-    if (Options.mode == 0) {
-      // 创建显示器
-      display = SurfaceControl.createDisplay("easycontrol", Build.VERSION.SDK_INT < Build.VERSION_CODES.R || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME)));
-      System.out.println(display);
-    }
+    // 创建显示器
+    display = SurfaceControl.createDisplay("easycontrol", Build.VERSION.SDK_INT < Build.VERSION_CODES.R || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME)));
+    System.out.println(display);
     // 创建Codec
     createEncodecFormat();
     startEncode();
@@ -68,10 +66,7 @@ public final class VideoEncode {
     encedec.configure(encodecFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
     // 绑定Display和Surface
     surface = encedec.createInputSurface();
-    if (Options.mode == 1)
-      VirtualDisplay.virtualDisplay.setSurface(surface);
-    else
-      setDisplaySurface(display, surface);
+    setDisplaySurface(display, surface);
     // 启动编码
     encedec.start();
     ControlPacket.sendVideoSizeEvent();

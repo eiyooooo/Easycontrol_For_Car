@@ -95,10 +95,6 @@ public final class Device {
     }
 
   private static void getVideoSize() {
-    if (Options.mode == 1) {
-      videoSize = new Pair<>(deviceSize.first, deviceSize.second);
-      return;
-    }
     boolean isPortrait = deviceSize.first < deviceSize.second;
     int major = isPortrait ? deviceSize.second : deviceSize.first;
     int minor = isPortrait ? deviceSize.first : deviceSize.second;
