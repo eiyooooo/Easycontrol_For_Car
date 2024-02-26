@@ -50,7 +50,7 @@ public class Client {
   private final Thread loadingTimeOutThread;
   private final Thread keepAliveThread;
   private static final int timeoutDelay = 5 * 1000;
-  private static long lastKeepAliveTime;
+  private long lastKeepAliveTime;
 
   private static final String serverName = "/data/local/tmp/easycontrol_for_car_server_" + BuildConfig.VERSION_CODE + ".jar";
   private static final boolean supportH265 = PublicTools.isDecoderSupport("hevc");
