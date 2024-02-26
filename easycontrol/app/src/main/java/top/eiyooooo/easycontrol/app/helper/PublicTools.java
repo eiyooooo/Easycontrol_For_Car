@@ -345,7 +345,10 @@ public class PublicTools {
 
   // 获取网关地址
   public static String getGateway() {
-    return decodeIntToIp(AppData.wifiManager.getDhcpInfo().gateway, 4);
+    int ip = AppData.wifiManager.getDhcpInfo().gateway;
+    // 没有wifi时，设置为1.1.1.1
+    if (ip == 0) ip = 16843009;
+    return decodeIntToIp(ip, 4);
   }
 
   // 获取子网地址
@@ -353,6 +356,10 @@ public class PublicTools {
     DhcpInfo dhcpInfo = AppData.wifiManager.getDhcpInfo();
     int gateway = dhcpInfo.gateway;
     int ipAddress = dhcpInfo.ipAddress;
+    if (ipAddress == 0) {
+      ipAddress = 16843009;
+      return decodeIntToIp(ipAddress, 4);
+    }
     // 因为dhcpInfo.netmask兼容性不好，部分设备获取值为0，所以此处使用对比方法
     int len;
     if (((gateway >> 8) & 0xff) == ((ipAddress >> 8) & 0xff)) len = 3;
