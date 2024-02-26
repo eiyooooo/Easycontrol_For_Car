@@ -77,6 +77,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
           else if (action.equals("changeToFull")) client.clientView.changeToFull();
           else if (action.equals("changeToMini")) client.clientView.changeToMini(0);
           else if (action.equals("buttonPower")) client.controlPacket.sendPowerEvent();
+          else if (action.equals("buttonWake")) client.controlPacket.sendKeyEvent(224, 0);
+          else if (action.equals("buttonLock")) client.controlPacket.sendKeyEvent(223, 0);
           else if (action.equals("buttonLight")) client.controlPacket.sendLightEvent(1);
           else if (action.equals("buttonLightOff")) client.controlPacket.sendLightEvent(0);
           else if (action.equals("buttonBack")) client.controlPacket.sendKeyEvent(4, 0);
@@ -84,6 +86,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
           else if (action.equals("buttonSwitch")) client.controlPacket.sendKeyEvent(187, 0);
           else if (action.equals("buttonRotate")) client.controlPacket.sendRotateEvent();
           else if (action.equals("close")) client.release(null);
+          else if (action.equals("runShell")) {
+            String cmd = intent.getStringExtra("cmd");
+            if (cmd == null) return;
+            try {
+              client.adb.runAdbCmd(cmd);
+            } catch (Exception ignored) {}
+          }
           return;
         }
       }
