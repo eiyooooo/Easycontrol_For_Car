@@ -48,7 +48,7 @@
   <string name="set_other_locale">语言切换(中文/English)</string>
   <string name="set_other_locale_code">OK, you may need to restart the APP</string>
   <string name="set_about">关于</string>
-  <string name="set_about_ip">查看本机IP</string>
+  <string name="set_about_ip">查看本机IP及扫描设备</string>
   <string name="set_about_website">项目主页</string>
   <string name="set_about_how_to_use">使用说明</string>
   <string name="set_about_privacy">隐私政策</string>
@@ -59,6 +59,11 @@
   <string name="ip_ipv4">IPv4(点击复制)</string>
   <string name="ip_ipv6">IPv6(点击复制)</string>
   <string name="ip_copy">已复制</string>
+  <string name="ip_scan_device_title">扫描设备</string>
+  <string name="ip_scanning_device">扫描中…</string>
+  <string name="ip_scan_finish">扫描完成(点击复制)</string>
+  <string name="ip_scan_finish_none">扫描完成(无设备)</string>
+  <string name="ip_scan_device_local">本机</string>
 
   <!-- 查看密钥页面 -->
   <string name="adb_key_pub">公钥(Base64编码)</string>

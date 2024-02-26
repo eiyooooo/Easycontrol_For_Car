@@ -19,13 +19,13 @@ import android.view.*;
 import android.widget.*;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -386,6 +386,36 @@ public class PublicTools {
       }
     }
     return builder.toString();
+  }
+
+  // 扫描局域网设备
+  public static ArrayList<String> scanAddress() {
+    ArrayList<String> scannedAddresses = new ArrayList<>();
+    ExecutorService executor = Executors.newFixedThreadPool(256);
+    ArrayList<String> ipv4List = getIp().first;
+    for (String ipv4 : ipv4List) {
+      Matcher matcher = Pattern.compile("(\\d+\\.\\d+\\.\\d+)").matcher(ipv4);
+      if (matcher.find()) {
+        String subnet = matcher.group(1);
+        for (int i = 1; i <= 255; i++) {
+          String host = subnet + "." + i;
+          executor.execute(() -> {
+            try {
+              Socket socket = new Socket();
+              socket.connect(new InetSocketAddress(host, 5555), 800);
+              socket.close();
+              // 忽略本机
+              if (!host.equals(ipv4)) scannedAddresses.add(host + ":5555");
+            } catch (Exception ignored) {}
+          });
+        }
+      }
+    }
+    executor.shutdown();
+    try {
+      while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {}
+    } catch (InterruptedException ignored) {}
+    return scannedAddresses;
   }
 
   // 浏览器打开

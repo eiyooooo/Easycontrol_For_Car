@@ -48,6 +48,8 @@ public class IpActivity extends Activity {
       });
       ipActivity.ipv6.addView(text.getRoot());
     }
+    // 扫描局域网地址
+    scanAddress(context);
   }
 
   // 设置返回按钮监听
@@ -55,4 +57,21 @@ public class IpActivity extends Activity {
     ipActivity.backButton.setOnClickListener(v -> finish());
   }
 
+  // 扫描局域网地址
+  private void scanAddress(Context context) {
+    new Thread(() -> {
+      ArrayList<String> scannedAddresses = PublicTools.scanAddress();
+      AppData.uiHandler.post(() -> {
+        if (scannedAddresses.isEmpty()) ipActivity.scanning.setText(R.string.ip_scan_finish_none);
+        else ipActivity.scanning.setText(R.string.ip_scan_finish);
+        for (String i : scannedAddresses) {
+          ItemTextBinding text = PublicTools.createTextCard(context, i, () -> {
+            AppData.clipBoard.setPrimaryClip(ClipData.newPlainText(ClipDescription.MIMETYPE_TEXT_PLAIN, i));
+            Toast.makeText(context, getString(R.string.ip_copy), Toast.LENGTH_SHORT).show();
+          });
+          ipActivity.scanned.addView(text.getRoot());
+        }
+      });
+    }).start();
+  }
 }
