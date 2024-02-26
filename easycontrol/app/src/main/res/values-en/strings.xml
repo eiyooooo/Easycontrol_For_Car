@@ -28,6 +28,10 @@
   <string name="set_display_default_show_nav_bar_detail">Sets whether the navigation bar is displayed by default in small window and full screen modes</string>
   <string name="set_display_default_mini_on_outside">Minimize when touching outside the small window</string>
   <string name="set_display_default_mini_on_outside_detail">(Small window mode) Minimized when touching outside the small window</string>
+  <string name="set_display_mini_recover_on_timeout">Floating window auto minimize</string>
+  <string name="set_display_mini_recover_on_timeout_detail">Touch outside of floating window to minimize it</string>
+  <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
+  <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
   <string name="set_other">Other</string>
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
   <string name="set_force_desktop_mode_detail">Input method can be synchronized during application transfer, and the foreground application will not be transferred after the first transferred application is closed (Not recommended to enable, this desktop mode is not Samsung dex mode or similar function)</string>

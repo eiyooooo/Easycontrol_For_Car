@@ -160,6 +160,24 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getMiniRecoverOnTimeout() {
+    return sharedPreferences.getBoolean("miniRecoverOnTimeout", false);
+  }
+
+  public void setMiniRecoverOnTimeout(boolean value) {
+    editor.putBoolean("miniRecoverOnTimeout", value);
+    editor.apply();
+  }
+
+  public boolean getFullToMiniOnExit() {
+    return sharedPreferences.getBoolean("fullToMiniOnExit", true);
+  }
+
+  public void setFullToMiniOnExit(boolean value) {
+    editor.putBoolean("fullToMiniOnExit", value);
+    editor.apply();
+  }
+
   public String getDefaultDevice() {
     return sharedPreferences.getString("defaultDevice", "");
   }

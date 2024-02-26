@@ -213,10 +213,9 @@ public class SmallView extends ViewOutlineProvider {
   // 设置焦点监听
   @SuppressLint("ClickableViewAccessibility")
   private void setFloatVideoListener() {
-    boolean defaultMiniOnOutside = AppData.setting.getDefaultMiniOnOutside();
     smallView.getRoot().setOnTouchHandle(event -> {
       if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-        if (defaultMiniOnOutside) clientView.changeToMini();
+        if (AppData.setting.getDefaultMiniOnOutside()) clientView.changeToMini(1);
         else if (smallViewParams.flags != LayoutParamsFlagNoFocus) {
           smallView.editText.clearFocus();
           smallViewParams.flags = LayoutParamsFlagNoFocus;
@@ -324,7 +323,7 @@ public class SmallView extends ViewOutlineProvider {
       barViewTimer();
     });
     smallView.buttonMini.setOnClickListener(v -> {
-      clientView.changeToMini();
+      clientView.changeToMini(0);
       barViewTimer();
     });
     smallView.buttonFull.setOnClickListener(v -> {

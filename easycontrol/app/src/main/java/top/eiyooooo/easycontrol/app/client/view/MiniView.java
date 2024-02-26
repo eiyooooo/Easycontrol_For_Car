@@ -20,6 +20,8 @@ import top.eiyooooo.easycontrol.app.databinding.ModuleMiniViewBinding;
 public class MiniView {
 
   private final ClientView clientView;
+  private Thread timeoutListenerThread;
+  private long lastTouchTime = 0;
 
   // 迷你悬浮窗
   private final ModuleMiniViewBinding miniView = ModuleMiniViewBinding.inflate(LayoutInflater.from(AppData.main));
@@ -27,7 +29,7 @@ public class MiniView {
     WindowManager.LayoutParams.WRAP_CONTENT,
     WindowManager.LayoutParams.WRAP_CONTENT,
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_PHONE,
-    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
     PixelFormat.TRANSLUCENT
   );
 
@@ -46,7 +48,7 @@ public class MiniView {
     miniView.bar.setBackgroundTintList(ColorStateList.valueOf(AppData.main.getResources().getColor(barColor)));
   }
 
-  public void show() {
+  public void show(int mode) {
     miniViewParams.y = clientView.device.mini_y;
     // 设置监听控制
     setBarListener();
@@ -57,6 +59,13 @@ public class MiniView {
         AppData.windowManager.addView(miniView.getRoot(), miniViewParams);
       }
     }));
+    // 超时检测
+    if (mode != 0 && AppData.setting.getMiniRecoverOnTimeout()) {
+      lastTouchTime = System.currentTimeMillis();
+      if (timeoutListenerThread != null) timeoutListenerThread.interrupt();
+      timeoutListenerThread = new Thread(() -> timeoutListener(mode));
+      timeoutListenerThread.start();
+    }
   }
 
   public void hide() {
@@ -64,6 +73,7 @@ public class MiniView {
       miniView.getRoot().setVisibility(View.GONE);
       AppData.windowManager.removeView(miniView.getRoot());
       AppData.dbHelper.update(clientView.device);
+      if (timeoutListenerThread != null) timeoutListenerThread.interrupt();
     } catch (Exception ignored) {
     }
   }
@@ -75,6 +85,9 @@ public class MiniView {
     AtomicInteger oldYy = new AtomicInteger();
     miniView.getRoot().setOnTouchListener((v, event) -> {
       switch (event.getActionMasked()) {
+        case MotionEvent.ACTION_OUTSIDE:
+          lastTouchTime = System.currentTimeMillis();
+          break;
         case MotionEvent.ACTION_DOWN: {
           yy.set((int) event.getRawY());
           oldYy.set(miniViewParams.y);
@@ -95,4 +108,19 @@ public class MiniView {
     });
   }
 
+  // 超时监听
+  private void timeoutListener(int mode) {
+    try {
+      long now;
+      while (!Thread.interrupted()) {
+        Thread.sleep(1);
+        now = System.currentTimeMillis();
+        if (now - lastTouchTime > 5000) {
+          if (mode == 1) AppData.uiHandler.post(clientView::changeToSmall);
+          else if (mode == 2) AppData.uiHandler.post(clientView::changeToFull);
+          return;
+        }
+      }
+    } catch (Exception ignored) {}
+  }
 }

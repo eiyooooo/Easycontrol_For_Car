@@ -26,8 +26,12 @@
   <string name="set_display_auto_back_on_start_default_detail">启动时打开默认后是否自动返回桌面</string>
   <string name="set_display_default_show_nav_bar">默认显示导航栏</string>
   <string name="set_display_default_show_nav_bar_detail">设置小窗和全屏模式默认是否显示导航栏</string>
-  <string name="set_display_default_mini_on_outside">触摸外界时最小化</string>
-  <string name="set_display_default_mini_on_outside_detail">(小窗模式)触摸小窗以外位置时最小化</string>
+  <string name="set_display_default_mini_on_outside">触摸外界时挂起</string>
+  <string name="set_display_default_mini_on_outside_detail">(小窗模式)触摸小窗以外位置时自动最小化</string>
+  <string name="set_display_mini_recover_on_timeout">挂起后自动恢复</string>
+  <string name="set_display_mini_recover_on_timeout_detail">在触发自动最小化后五秒内无操作自动恢复为原模式</string>
+  <string name="set_display_full_to_mini_on_exit">全屏意外退出时挂起</string>
+  <string name="set_display_full_to_mini_on_exit_detail">在全屏模式下意外退出时自动最小化(关闭时为自动小窗)</string>
   <string name="set_other">其他</string>
   <string name="set_force_desktop_mode">应用流转时强制桌面模式</string>
   <string name="set_force_desktop_mode_detail">开启后输入法可同步流转，首个流转应用关闭后不会重新流转前台应用(不建议开启此功能，此桌面模式非三星dex模式或类似功能)</string>

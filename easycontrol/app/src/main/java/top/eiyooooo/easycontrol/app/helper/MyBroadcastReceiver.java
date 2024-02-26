@@ -75,7 +75,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         if (Objects.equals(client.uuid, uuid)) {
           if (action.equals("changeToSmall")) client.clientView.changeToSmall();
           else if (action.equals("changeToFull")) client.clientView.changeToFull();
-          else if (action.equals("changeToMini")) client.clientView.changeToMini();
+          else if (action.equals("changeToMini")) client.clientView.changeToMini(0);
           else if (action.equals("buttonPower")) client.controlPacket.sendPowerEvent();
           else if (action.equals("buttonLight")) client.controlPacket.sendLightEvent(1);
           else if (action.equals("buttonLightOff")) client.controlPacket.sendLightEvent(0);

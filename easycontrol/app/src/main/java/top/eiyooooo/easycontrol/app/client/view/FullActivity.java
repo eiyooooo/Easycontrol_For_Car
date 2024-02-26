@@ -51,7 +51,10 @@ public class FullActivity extends Activity implements SensorEventListener {
   protected void onPause() {
     AppData.sensorManager.unregisterListener(this);
     if (isChangingConfigurations()) fullActivity.textureViewLayout.removeView(clientView.textureView);
-    else if (clientView != null) clientView.changeToMini();
+    else if (clientView != null) {
+      if (AppData.setting.getFullToMiniOnExit()) clientView.changeToMini(2);
+      else clientView.changeToSmall();
+    }
     super.onPause();
   }
 
@@ -109,7 +112,7 @@ public class FullActivity extends Activity implements SensorEventListener {
       setNavBarHide(fullActivity.navBar.getVisibility() == View.GONE);
       barViewTimer();
     });
-    fullActivity.buttonMini.setOnClickListener(v -> clientView.changeToMini());
+    fullActivity.buttonMini.setOnClickListener(v -> clientView.changeToMini(0));
     fullActivity.buttonFullExit.setOnClickListener(v -> clientView.changeToSmall());
     fullActivity.buttonClose.setOnClickListener(v -> clientView.onClose.run());
     fullActivity.buttonLight.setOnClickListener(v -> {

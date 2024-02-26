@@ -76,9 +76,9 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     smallView.show();
   }
 
-  public synchronized void changeToMini() {
+  public synchronized void changeToMini(int mode) {
     hide(false);
-    miniView.show();
+    miniView.show(mode);
   }
 
   public synchronized void hide(boolean isRelease) {
