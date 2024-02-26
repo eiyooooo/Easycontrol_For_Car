@@ -96,8 +96,6 @@ public final class Server {
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0);
-      else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
       // 释放资源
       release();
     }
@@ -243,19 +241,28 @@ public final class Server {
 
   // 释放资源
   private static void release() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
       try {
         switch (i) {
-          case 0:
+          case 0: {
+            if (timeoutClose || Integer.parseInt(Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -c 'easycontrol.server'").trim()) == 1) {
+              if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0);
+              else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
+            }
+            break;
+          }
+          case 1: {
             inputStream.close();
             socket.close();
             break;
-          case 1:
-            if (Options.mode == 1)  VirtualDisplay.release();
+          }
+          case 2: {
+            if (Options.mode == 1) VirtualDisplay.release();
             VideoEncode.release();
             AudioEncode.release();
             break;
-          case 2:
+          }
+          case 3: {
             if (Device.needReset) {
               if (Device.resetInfo_Width != 0 && Device.resetInfo_Height != 0)
                 Device.execReadOutput("wm size " + Device.resetInfo_Width + "x" + Device.resetInfo_Height);
@@ -270,11 +277,14 @@ public final class Server {
               if (Device.resetInfo_Density != 0)
                 Device.execReadOutput("wm density " + Device.resetInfo_Density);
             }
-            if (Options.keepAwake) Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
-          case 3:
+            if (Options.keepAwake)
+              Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
+          }
+          case 4: {
             if (timeoutClose)
               Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
             break;
+          }
         }
       } catch (Exception ignored) {
       }
