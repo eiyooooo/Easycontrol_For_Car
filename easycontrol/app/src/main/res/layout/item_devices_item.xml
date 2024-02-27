@@ -16,7 +16,7 @@
     android:id="@+id/device_icon"
     android:layout_width="26dp"
     android:layout_height="26dp"
-    android:src="@drawable/wifi"
+    android:src="@drawable/wifi_checking_connection"
     android:tint="@color/onCardBackground" />
 
   <TextView

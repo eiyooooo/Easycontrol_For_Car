@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -83,6 +86,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     }
     // 获取设备
     Device device = devicesList.get(groupPosition);
+    if (device.connection == -1) checkConnection(device);
     setView(convertView, device, isExpanded, groupPosition);
     return convertView;
   }
@@ -111,7 +115,14 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     // 设置展开图标
     devicesItemBinding.deviceExpand.setRotation(isExpanded ? 270 : 180);
     // 设置卡片值
-    devicesItemBinding.deviceIcon.setImageResource(device.isLinkDevice() ? R.drawable.link : R.drawable.wifi);
+    if (device.isLinkDevice())
+      devicesItemBinding.deviceIcon.setImageResource(R.drawable.link);
+    else if (device.connection == 0)
+      devicesItemBinding.deviceIcon.setImageResource(R.drawable.wifi_checking_connection);
+    else if (device.connection == 1)
+      devicesItemBinding.deviceIcon.setImageResource(R.drawable.wifi_can_connect);
+    else
+      devicesItemBinding.deviceIcon.setImageResource(R.drawable.wifi_can_not_connect);
     devicesItemBinding.deviceName.setText(device.name);
     // 单击事件
     devicesItemBinding.getRoot().setOnClickListener(v -> {
@@ -148,6 +159,50 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     defaultFullParent.setOnClickListener(v -> devicesItemDetailBinding.defaultFull.toggle());
     devicesItemDetailBinding.displayMirroring.setOnClickListener(v -> startDevice(device, 0));
     devicesItemDetailBinding.createDisplay.setOnClickListener(v -> startDevice(device, 1));
+  }
+
+  // 检查连接
+  private final Object checkingConnection = new Object();
+  private Thread checkingConnectionThread;
+  private void checkConnection(Device device) {
+    device.connection = 0;
+
+    if (checkingConnectionThread != null) checkingConnectionThread.interrupt();
+    checkingConnectionThread = new Thread(() -> {
+      try {
+        Thread.sleep(1000);
+        synchronized (checkingConnection) {
+          checkingConnection.notifyAll();
+        }
+      } catch (InterruptedException ignored) {
+      }
+    });
+    checkingConnectionThread.start();
+
+    new Thread(() -> {
+      try {
+        if (!device.isLinkDevice()) {
+          Pair<String, Integer> address = PublicTools.getIpAndPort(device.address);
+          Socket socket = new Socket();
+          socket.connect(new InetSocketAddress(address.first, address.second), 800);
+          socket.close();
+        }
+        synchronized (checkingConnection) {
+          checkingConnection.wait();
+          if (device.connection == 0) {
+            device.connection = 1;
+            for (Device d : devicesList) {
+              if (d.uuid.equals(device.uuid)) {
+                AppData.uiHandler.post(() -> expandableListView.collapseGroup(devicesList.indexOf(d)));
+                AppData.uiHandler.postDelayed(() -> expandableListView.expandGroup(devicesList.indexOf(d)), 500);
+              }
+            }
+          }
+        }
+      } catch (Exception ignored) {
+        device.connection = 2;
+      }
+    }).start();
   }
 
   // 卡片长按事件
