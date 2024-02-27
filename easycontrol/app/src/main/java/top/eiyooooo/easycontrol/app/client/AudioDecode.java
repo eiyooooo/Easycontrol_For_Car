@@ -62,6 +62,14 @@ public class AudioDecode {
     }
   }
 
+  public void playAudio(boolean play) {
+    if (play) {
+      audioTrack.flush();
+      audioTrack.play();
+    }
+    else audioTrack.pause();
+  }
+
   private final LinkedBlockingQueue<byte[]> intputDataQueue = new LinkedBlockingQueue<>();
   private final LinkedBlockingQueue<Integer> intputBufferQueue = new LinkedBlockingQueue<>();
 
@@ -129,7 +137,6 @@ public class AudioDecode {
       // 4
       audioTrack = audioTrackBuild.build();
     } else audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
-    audioTrack.play();
   }
 
   // 创建音频放大器

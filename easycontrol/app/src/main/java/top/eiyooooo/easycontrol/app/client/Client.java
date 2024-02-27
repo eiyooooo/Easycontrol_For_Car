@@ -51,6 +51,7 @@ public class Client {
   private final Thread keepAliveThread;
   private static final int timeoutDelay = 5 * 1000;
   private long lastKeepAliveTime;
+  public int multiLink = 0; // 0为单连接，1为多连接主，2为多连接从
 
   private static final String serverName = "/data/local/tmp/easycontrol_for_car_server_" + BuildConfig.VERSION_CODE + ".jar";
   private static final boolean supportH265 = PublicTools.isDecoderSupport("hevc");
@@ -62,8 +63,10 @@ public class Client {
 
   public Client(Device device, UsbDevice usbDevice, int mode) {
     for (Client client : allClient) {
-      if (client.uuid.equals(device.uuid) && usbDevice != null) {
-        this.adb = client.adb;
+      if (client.uuid.equals(device.uuid)) {
+        if (client.multiLink == 0) client.multiLink = 1;
+        this.multiLink = 2;
+        if (usbDevice != null) this.adb = client.adb;
         break;
       }
     }
@@ -208,7 +211,10 @@ public class Client {
           case AUDIO_EVENT:
             byte[] audioFrame = controlPacket.readFrame(bufferStream);
             if (audioDecode != null) audioDecode.decodeIn(audioFrame);
-            else audioDecode = new AudioDecode(useOpus, audioFrame, handler);
+            else {
+              audioDecode = new AudioDecode(useOpus, audioFrame, handler);
+              if (multiLink != 2) playAudio(true);
+            }
             break;
           case CLIPBOARD_EVENT:
             controlPacket.nowClipboardText = new String(bufferStream.readByteArray(bufferStream.readInt()).array());
@@ -275,18 +281,29 @@ public class Client {
     status = -1;
     allClient.remove(this);
     if (error != null) PublicTools.logToast(error);
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
       try {
         switch (i) {
           case 0:
+            if (multiLink == 1) {
+              for (Client client : allClient) {
+                if (client.uuid.equals(uuid) && client.multiLink == 2) {
+                  client.multiLink = 1;
+                  client.playAudio(true);
+                  break;
+                }
+              }
+            }
+            break;
+          case 1:
             keepAliveThread.interrupt();
             executeStreamInThread.interrupt();
             if (handlerThread != null) handlerThread.quit();
             break;
-          case 1:
+          case 2:
             AppData.uiHandler.post(() -> clientView.hide(true));
             break;
-          case 2:
+          case 3:
             bufferStream.close();
             boolean closeAdb = true;
             if (isUsbDevice) {
@@ -299,7 +316,7 @@ public class Client {
             }
             if (closeAdb) adb.close();
             break;
-          case 3:
+          case 4:
             videoDecode.release();
             if (audioDecode != null) audioDecode.release();
             break;
@@ -343,5 +360,9 @@ public class Client {
   private void changeMode(int mode) {
     this.mode = mode;
     clientView.changeMode(mode);
+  }
+
+  public void playAudio(boolean play) {
+    if (audioDecode != null) audioDecode.playAudio(play);
   }
 }
