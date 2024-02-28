@@ -117,7 +117,11 @@ public class PublicTools {
     // 创建View
     createDeviceOptionSet(context, itemAddDeviceBinding.options, device);
     // 特殊设备不允许修改
-    if (!device.isNormalDevice()) itemAddDeviceBinding.address.setEnabled(false);
+    if (!device.isNormalDevice()) {
+      itemAddDeviceBinding.addressTitle.setVisibility(View.GONE);
+      itemAddDeviceBinding.address.setVisibility(View.GONE);
+      itemAddDeviceBinding.scan.setVisibility(View.GONE);
+    }
     // 是否显示高级选项
     itemAddDeviceBinding.isOptions.setOnClickListener(v -> itemAddDeviceBinding.options.setVisibility(itemAddDeviceBinding.isOptions.isChecked() ? View.VISIBLE : View.GONE));
     // 扫描按钮监听
