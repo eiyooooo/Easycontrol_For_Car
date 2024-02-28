@@ -96,17 +96,15 @@ public class SetActivity extends Activity {
       defaultDevice = AppData.dbHelper.getByUUID(defaultDevice).address;
       setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default), defaultDevice, () -> {
         AppData.setting.setDefaultDevice("");
-        setActivity.setOther.removeViewAt(1);
-        setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default), getString(R.string.set_other_no_default), () -> {
-          Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show();
-        }).getRoot(), 1);
+        setActivity.setOther.removeViewAt(2);
+        setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default), getString(R.string.set_other_no_default), () ->
+                Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show()).getRoot(), 2);
         Toast.makeText(this, getString(R.string.set_other_clear_default_code), Toast.LENGTH_SHORT).show();
       }).getRoot());
     }
     else {
-      setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default), getString(R.string.set_other_no_default), () -> {
-        Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show();
-      }).getRoot());
+      setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default), getString(R.string.set_other_no_default), () ->
+              Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show()).getRoot());
     }
 
     String defaultUsbDevice = AppData.setting.getDefaultUsbDevice();
@@ -114,17 +112,15 @@ public class SetActivity extends Activity {
       defaultUsbDevice = AppData.dbHelper.getByUUID(defaultUsbDevice).uuid;
       setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default_usb), defaultUsbDevice, () -> {
         AppData.setting.setDefaultUsbDevice("");
-        setActivity.setOther.removeViewAt(2);
-        setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default_usb), getString(R.string.set_other_no_default), () -> {
-          Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show();
-        }).getRoot(), 2);
+        setActivity.setOther.removeViewAt(3);
+        setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default_usb), getString(R.string.set_other_no_default), () ->
+                Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show()).getRoot(), 3);
         Toast.makeText(this, getString(R.string.set_other_clear_default_usb_code), Toast.LENGTH_SHORT).show();
       }).getRoot());
     }
     else {
-      setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default_usb), getString(R.string.set_other_no_default), () -> {
-        Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show();
-      }).getRoot());
+      setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_other_clear_default_usb), getString(R.string.set_other_no_default), () ->
+              Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show()).getRoot());
     }
 
     setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_about_ip), () -> startActivity(new Intent(this, IpActivity.class))).getRoot());
