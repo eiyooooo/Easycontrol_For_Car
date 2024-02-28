@@ -19,6 +19,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -164,8 +167,12 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   // 检查连接
   private final Object checkingConnection = new Object();
   private Thread checkingConnectionThread;
+  private ExecutorService checkConnectionExecutor;
   private void checkConnection(Device device) {
     device.connection = 0;
+
+    if (checkConnectionExecutor == null)
+      checkConnectionExecutor = Executors.newFixedThreadPool(devicesList.size() + 1);
 
     if (checkingConnectionThread != null) checkingConnectionThread.interrupt();
     checkingConnectionThread = new Thread(() -> {
@@ -174,12 +181,16 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
         synchronized (checkingConnection) {
           checkingConnection.notifyAll();
         }
+        checkConnectionExecutor.shutdown();
+        while (!checkConnectionExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {}
+        AppData.uiHandler.post(this::notifyDataSetChanged);
+        checkConnectionExecutor = null;
       } catch (InterruptedException ignored) {
       }
     });
     checkingConnectionThread.start();
 
-    new Thread(() -> {
+    checkConnectionExecutor.execute(() -> {
       try {
         if (!device.isLinkDevice()) {
           Pair<String, Integer> address = PublicTools.getIpAndPort(device.address);
@@ -193,16 +204,20 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
             device.connection = 1;
             for (Device d : devicesList) {
               if (d.uuid.equals(device.uuid)) {
-                AppData.uiHandler.post(() -> expandableListView.collapseGroup(devicesList.indexOf(d)));
-                AppData.uiHandler.postDelayed(() -> expandableListView.expandGroup(devicesList.indexOf(d)), 500);
+                AppData.uiHandler.post(() -> expandableListView.expandGroup(devicesList.indexOf(d)));
               }
             }
           }
         }
       } catch (Exception ignored) {
         device.connection = 2;
+        for (Device d : devicesList) {
+          if (d.uuid.equals(device.uuid)) {
+            AppData.uiHandler.post(() -> expandableListView.collapseGroup(devicesList.indexOf(d)));
+          }
+        }
       }
-    }).start();
+    });
   }
 
   // 卡片长按事件
