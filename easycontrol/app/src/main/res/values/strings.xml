@@ -5,7 +5,8 @@
   <!-- 主页 -->
   <string name="main_poem">行车不规范，亲人两行泪</string>
   <string name="car_version_message">如果你喜欢车机版的话\n可以在车机版Github仓库上Star哦🙇</string>
-  <string name="main_float_permission">请授予悬浮窗权限</string>
+  <string name="main_float_permission">请授予悬浮窗权限\n否则软件无法使用</string>
+  <string name="main_float_permission_button">前往设置</string>
 
   <!-- 设置页面 -->
   <string name="set_default">默认参数</string>

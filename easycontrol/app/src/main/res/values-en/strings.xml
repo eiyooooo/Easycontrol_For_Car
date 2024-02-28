@@ -5,7 +5,8 @@
   <!-- 主页 -->
   <string name="main_poem">Unregulated driving, loved ones end up in tears.</string>
   <string name="car_version_message">If you like the car version\nYou can left a star on the car version GitHub repository🙇</string>
-  <string name="main_float_permission">Please grant hover window privileges</string>
+  <string name="main_float_permission">Please grant floating window permission.\nOtherwise the software cannot be used.</string>
+  <string name="main_float_permission_button">Go to setting</string>
 
   <!-- 设置页面 -->
   <string name="set_default">Default settings</string>
