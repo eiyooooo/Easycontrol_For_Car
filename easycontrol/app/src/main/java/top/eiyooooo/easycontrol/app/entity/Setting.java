@@ -214,6 +214,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getTryStartDefaultInAppTransfer() {
+    return sharedPreferences.getBoolean("tryStartDefaultInAppTransfer", false);
+  }
+
+  public void setTryStartDefaultInAppTransfer(boolean value) {
+    editor.putBoolean("tryStartDefaultInAppTransfer", value);
+    editor.apply();
+  }
+
   public Setting(SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
     this.editor = sharedPreferences.edit();

@@ -38,6 +38,8 @@
   <string name="set_force_desktop_mode_detail">开启后输入法可同步流转，首个流转应用关闭后不会重新流转前台应用(不建议开启此功能，此桌面模式非三星dex模式或类似功能)</string>
   <string name="set_if_start_default_usb">启动时打开默认USB设备</string>
   <string name="set_if_start_default_usb_detail">启动APP时若USB设备已连接并已授权则自动打开</string>
+  <string name="set_try_start_default_in_app_transfer">打开默认设备时尝试应用流转</string>
+  <string name="set_try_start_default_in_app_transfer_detail">启动APP后打开默认设备时尝试应用流转</string>
   <string name="set_other_clear_default">清除默认无线设备</string>
   <string name="set_other_clear_default_usb">清除默认USB设备</string>
   <string name="set_other_clear_default_code">已清除默认无线设备</string>

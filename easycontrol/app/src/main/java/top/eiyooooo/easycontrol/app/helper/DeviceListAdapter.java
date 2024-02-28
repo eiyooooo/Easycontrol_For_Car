@@ -188,8 +188,8 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
         AppData.uiHandler.post(this::notifyDataSetChanged);
         checkConnectionExecutor = null;
         if (!startedDefault) {
-          AppData.uiHandler.postDelayed(() -> startDefaultUSB(0), 1000);
-          AppData.uiHandler.postDelayed(() -> startDefault(0), 2000);
+          AppData.uiHandler.postDelayed(() -> startDefaultUSB(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0), 1000);
+          AppData.uiHandler.postDelayed(() -> startDefault(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0), 2000);
           startedDefault = true;
         }
       } catch (InterruptedException ignored) {
