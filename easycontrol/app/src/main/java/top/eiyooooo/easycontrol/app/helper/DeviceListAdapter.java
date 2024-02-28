@@ -5,6 +5,7 @@ import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   public final HashMap<String, UsbDevice> linkDevices = new HashMap<>();
   private final Context context;
   private final ExpandableListView expandableListView;
+  private static boolean startedDefault = false;
 
 
   public DeviceListAdapter(Context c, ExpandableListView expandableListView) {
@@ -185,6 +187,11 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
         while (!checkConnectionExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {}
         AppData.uiHandler.post(this::notifyDataSetChanged);
         checkConnectionExecutor = null;
+        if (!startedDefault) {
+          AppData.uiHandler.postDelayed(() -> startDefaultUSB(0), 1000);
+          AppData.uiHandler.postDelayed(() -> startDefault(0), 2000);
+          startedDefault = true;
+        }
       } catch (InterruptedException ignored) {
       }
     });
@@ -287,14 +294,10 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     devicesList.addAll(tmp2);
   }
 
-  public void startByUUID(String uuid) {
+  public void startByUUID(String uuid, int mode) {
     for (Device device : devicesList) {
-      if (Objects.equals(device.uuid, uuid)) startDevice(device);
+      if (Objects.equals(device.uuid, uuid)) startDevice(device, mode);
     }
-  }
-
-  public void startDevice(Device device) {
-    startDevice(device, 0);
   }
 
   public void startDevice(Device device, int mode) {
@@ -303,6 +306,46 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
       if (usbDevice == null) return;
       new Client(device, usbDevice, mode);
     } else new Client(device, null, mode);
+  }
+
+  // 启动默认USB设备
+  public void startDefaultUSB(int mode) {
+    if (AppData.setting.getNeedStartDefaultUsbDevice()) {
+      String defaultUsbDevice = AppData.setting.getDefaultUsbDevice();
+      if (!defaultUsbDevice.isEmpty()) {
+        for (Device device : devicesList) {
+          if (Objects.equals(device.uuid, defaultUsbDevice)) {
+            startDevice(device, mode);
+            // 返回桌面
+            if (AppData.setting.getDefaultDevice().isEmpty() && AppData.setting.getAutoBackOnStartDefault()) {
+              Intent home = new Intent(Intent.ACTION_MAIN);
+              home.addCategory(Intent.CATEGORY_HOME);
+              AppData.main.startActivity(home);
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // 启动默认设备
+  public void startDefault(int mode) {
+    String defaultDevice = AppData.setting.getDefaultDevice();
+    if (!defaultDevice.isEmpty()) {
+      for (Device device : devicesList) {
+        if (Objects.equals(device.uuid, defaultDevice)) {
+          startDevice(device, mode);
+          // 返回桌面
+          if (AppData.setting.getAutoBackOnStartDefault()) {
+            Intent home = new Intent(Intent.ACTION_MAIN);
+            home.addCategory(Intent.CATEGORY_HOME);
+            AppData.main.startActivity(home);
+          }
+          break;
+        }
+      }
+    }
   }
 
   public void update() {

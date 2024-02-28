@@ -64,12 +64,12 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     String action = intent.getStringExtra("action");
     if (action == null) return;
     if (action.equals("startDefault")) {
-      startDefault();
+      deviceListAdapter.startDefault(intent.getIntExtra("mode", 0));
       return;
     }
     String uuid = intent.getStringExtra("uuid");
     if (uuid == null) return;
-    if (action.equals("start")) deviceListAdapter.startByUUID(uuid);
+    if (action.equals("start")) deviceListAdapter.startByUUID(uuid, intent.getIntExtra("mode", 0));
     else {
       for (Client client : Client.allClient) {
         if (Objects.equals(client.uuid, uuid)) {
@@ -106,46 +106,6 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_ATTACHED)) onConnectUsb(context, usbDevice);
     else if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_DETACHED)) onCutUsb(usbDevice);
     else if (Objects.equals(action, ACTION_USB_PERMISSION)) if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) onGetUsbPer(usbDevice);
-  }
-
-  // 启动默认设备
-  public void startDefault() {
-    String defaultDevice = AppData.setting.getDefaultDevice();
-    if (!defaultDevice.equals("")) {
-      for (Device device : deviceListAdapter.devicesList) {
-        if (Objects.equals(device.uuid, defaultDevice)) {
-          deviceListAdapter.startDevice(device);
-          // 返回桌面
-          if (AppData.setting.getAutoBackOnStartDefault()) {
-            Intent home = new Intent(Intent.ACTION_MAIN);
-            home.addCategory(Intent.CATEGORY_HOME);
-            AppData.main.startActivity(home);
-          }
-          break;
-        }
-      }
-    }
-  }
-
-  // 启动默认USB设备
-  public void startDefaultUSB() {
-    if (AppData.setting.getNeedStartDefaultUsbDevice()) {
-      String defaultUsbDevice = AppData.setting.getDefaultUsbDevice();
-      if (!defaultUsbDevice.equals("")) {
-        for (Device device : deviceListAdapter.devicesList) {
-          if (Objects.equals(device.uuid, defaultUsbDevice)) {
-            deviceListAdapter.startDevice(device);
-            // 返回桌面
-            if (!AppData.setting.getDefaultDevice().equals("") && AppData.setting.getAutoBackOnStartDefault()) {
-              Intent home = new Intent(Intent.ACTION_MAIN);
-              home.addCategory(Intent.CATEGORY_HOME);
-              AppData.main.startActivity(home);
-            }
-            break;
-          }
-        }
-      }
-    }
   }
 
   // 检查已连接设备

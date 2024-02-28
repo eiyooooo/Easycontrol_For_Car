@@ -55,9 +55,6 @@ public class MainActivity extends Activity {
     myBroadcastReceiver.register(this);
     // 检查已连接设备
     myBroadcastReceiver.checkConnectedUsb(this);
-    // 启动默认设备
-    AppData.uiHandler.postDelayed(myBroadcastReceiver::startDefault, 1000);
-    AppData.uiHandler.postDelayed(myBroadcastReceiver::startDefaultUSB, 2000);
   }
 
   @Override
