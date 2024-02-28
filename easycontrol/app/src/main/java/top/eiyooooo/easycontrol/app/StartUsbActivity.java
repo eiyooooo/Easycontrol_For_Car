@@ -22,7 +22,7 @@ public class StartUsbActivity extends Activity {
       super.onCreate(savedInstanceState);
 
       // 初始化
-      AppData.init(this);
+      if (AppData.main == null) AppData.init(this);
 
       // 检查USB
       ArrayList<Pair<String, UsbDevice>> UsbDevices = new ArrayList<>();
@@ -96,6 +96,7 @@ public class StartUsbActivity extends Activity {
 
       // 启动USB设备
       if (device != null) {
+          Toast.makeText(this, "通过此方法启动时某些功能无法正确工作，建议通过打开app启动", Toast.LENGTH_SHORT).show();
           new Client(device, UsbDevice.second);
       }
       else {

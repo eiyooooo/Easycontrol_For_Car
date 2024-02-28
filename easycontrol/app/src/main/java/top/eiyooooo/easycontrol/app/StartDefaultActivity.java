@@ -26,12 +26,14 @@ public class StartDefaultActivity extends Activity {
     }
 
     // 初始化
-    AppData.init(this);
+    if (AppData.main == null) AppData.init(this);
     // 启动默认设备
     if (!AppData.setting.getDefaultDevice().equals("")) {
       Device device = AppData.dbHelper.getByUUID(AppData.setting.getDefaultDevice());
-      if (device != null)
+      if (device != null) {
+        Toast.makeText(this, "通过此方法启动时某些功能无法正确工作，建议通过打开app启动", Toast.LENGTH_SHORT).show();
         new Client(device, null);
+      }
       else {
         Toast.makeText(this, "默认设备不存在", Toast.LENGTH_SHORT).show();
         finish();
