@@ -59,9 +59,11 @@
   <string name="ip_ipv4">IPv4(Click to copy)</string>
   <string name="ip_ipv6">IPv6(Click to copy)</string>
   <string name="ip_copy">Copied</string>
+  <string name="ip_scan_device">Scan</string>
   <string name="ip_scan_device_title">Scan device</string>
   <string name="ip_scanning_device">Scanning…</string>
-  <string name="ip_scan_finish">Scan finished(Click to copy)</string>
+  <string name="ip_scan_finish">Scan finished</string>
+  <string name="ip_scan_finish_copy">Scan finished(Click to copy)</string>
   <string name="ip_scan_finish_none">Scan finished(No device)</string>
   <string name="ip_scan_device_local">Local</string>
 

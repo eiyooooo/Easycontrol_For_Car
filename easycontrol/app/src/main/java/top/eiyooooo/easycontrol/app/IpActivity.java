@@ -59,11 +59,17 @@ public class IpActivity extends Activity {
 
   // 扫描局域网地址
   private void scanAddress(Context context) {
+    ipActivity.scanned.removeAllViews();
+    ipActivity.scanning.setOnClickListener(null);
     new Thread(() -> {
       ArrayList<String> scannedAddresses = PublicTools.scanAddress();
       AppData.uiHandler.post(() -> {
         if (scannedAddresses.isEmpty()) ipActivity.scanning.setText(R.string.ip_scan_finish_none);
         else ipActivity.scanning.setText(R.string.ip_scan_finish);
+        ipActivity.scanning.setOnClickListener(v -> {
+          scanAddress(context);
+          ipActivity.scanning.setText(R.string.ip_scanning_device);
+        });
         for (String i : scannedAddresses) {
           ItemTextBinding text = PublicTools.createTextCard(context, i, () -> {
             AppData.clipBoard.setPrimaryClip(ClipData.newPlainText(ClipDescription.MIMETYPE_TEXT_PLAIN, i));

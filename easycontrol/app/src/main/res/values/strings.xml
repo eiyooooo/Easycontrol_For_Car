@@ -59,9 +59,11 @@
   <string name="ip_ipv4">IPv4(点击复制)</string>
   <string name="ip_ipv6">IPv6(点击复制)</string>
   <string name="ip_copy">已复制</string>
+  <string name="ip_scan_device">扫描</string>
   <string name="ip_scan_device_title">扫描设备</string>
   <string name="ip_scanning_device">扫描中…</string>
-  <string name="ip_scan_finish">扫描完成(点击复制)</string>
+  <string name="ip_scan_finish">扫描完成</string>
+  <string name="ip_scan_finish_copy">扫描完成(点击复制)</string>
   <string name="ip_scan_finish_none">扫描完成(无设备)</string>
   <string name="ip_scan_device_local">本机</string>
 

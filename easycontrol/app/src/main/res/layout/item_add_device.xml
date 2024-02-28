@@ -23,6 +23,7 @@
     android:textSize="@dimen/smallFont" />
 
   <TextView
+    android:id="@+id/address_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
@@ -30,15 +31,36 @@
     android:textColor="@color/onCardBackground"
     android:textSize="@dimen/smallFont" />
 
-  <EditText
-    android:id="@+id/address"
+  <GridLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]-.:*"
-    android:hint="@string/add_device_address_hint"
-    android:textColor="@color/onCardBackground"
-    android:textColorHint="@color/onCardBackgroundSecond"
-    android:textSize="@dimen/smallFont" />
+    android:columnCount="2" >
+
+    <EditText
+      android:id="@+id/address"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_columnWeight="5"
+      android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]-.:*"
+      android:hint="@string/add_device_address_hint"
+      android:textColor="@color/onCardBackground"
+      android:textColorHint="@color/onCardBackgroundSecond"
+      android:textSize="@dimen/smallFont" />
+
+    <Button
+      android:id="@+id/scan"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_columnWeight="1"
+      android:layout_gravity="end"
+      android:background="@drawable/background_cron"
+      android:backgroundTint="@color/button"
+      android:gravity="center"
+      android:text="@string/ip_scan_device"
+      android:textColor="@color/onButton"
+      android:textSize="@dimen/smallFont" />
+
+  </GridLayout>
 
   <CheckBox
     android:id="@+id/is_options"

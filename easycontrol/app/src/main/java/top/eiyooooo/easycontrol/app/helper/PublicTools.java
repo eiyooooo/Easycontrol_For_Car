@@ -120,6 +120,28 @@ public class PublicTools {
     if (!device.isNormalDevice()) itemAddDeviceBinding.address.setEnabled(false);
     // 是否显示高级选项
     itemAddDeviceBinding.isOptions.setOnClickListener(v -> itemAddDeviceBinding.options.setVisibility(itemAddDeviceBinding.isOptions.isChecked() ? View.VISIBLE : View.GONE));
+    // 扫描按钮监听
+    itemAddDeviceBinding.scan.setOnClickListener(v -> {
+      itemAddDeviceBinding.addressTitle.setText(context.getString(R.string.ip_scanning_device));
+      itemAddDeviceBinding.scan.setEnabled(false);
+      new Thread(() -> {
+        ArrayList<String> scannedAddresses = scanAddress();
+        AppData.uiHandler.post(() -> {
+          if (scannedAddresses.isEmpty()) Toast.makeText(context, context.getString(R.string.ip_scan_finish_none), Toast.LENGTH_SHORT).show();
+          else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(context.getString(R.string.ip_scan_finish));
+            builder.setItems(scannedAddresses.toArray(new String[0]), (dialog1, which) -> {
+              String address = scannedAddresses.get(which);
+              itemAddDeviceBinding.address.setText(address);
+            });
+            builder.show();
+          }
+          itemAddDeviceBinding.addressTitle.setText(context.getString(R.string.add_device_address));
+          itemAddDeviceBinding.scan.setEnabled(true);
+        });
+      }).start();
+    });
     // 设置确认按钮监听
     itemAddDeviceBinding.ok.setOnClickListener(v -> {
       if (device.type == Device.TYPE_NORMAL && String.valueOf(itemAddDeviceBinding.address.getText()).equals("")) return;
