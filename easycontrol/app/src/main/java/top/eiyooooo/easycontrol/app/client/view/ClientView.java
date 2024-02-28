@@ -37,6 +37,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   private Pair<Integer, Integer> videoSize;
   private Pair<Integer, Integer> maxSize;
   private Pair<Integer, Integer> surfaceSize;
+  public boolean lastTouchIsInside = true;
 
   public ClientView(Device device, int mode, ControlPacket controlPacket, PublicTools.MyFunction onReady, PublicTools.MyFunction onClose) {
     this.device = device;

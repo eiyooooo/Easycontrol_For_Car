@@ -13,6 +13,7 @@ import android.view.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.client.ControlPacket;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
@@ -215,7 +216,20 @@ public class SmallView extends ViewOutlineProvider {
   private void setFloatVideoListener() {
     smallView.getRoot().setOnTouchHandle(event -> {
       if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-        if (AppData.setting.getDefaultMiniOnOutside()) clientView.changeToMini(1);
+        clientView.lastTouchIsInside = false;
+        if (AppData.setting.getDefaultMiniOnOutside()) {
+          if (Client.allClient.size() > 1) {
+            new Thread(() -> {
+              try {
+                Thread.sleep(100);
+                for (Client client : Client.allClient)
+                  if (client.clientView.lastTouchIsInside) return;
+                AppData.uiHandler.post(() -> clientView.changeToMini(1));
+              } catch (InterruptedException ignored) {}
+            }).start();
+          }
+          else clientView.changeToMini(1);
+        }
         else if (smallViewParams.flags != LayoutParamsFlagNoFocus) {
           smallView.editText.clearFocus();
           smallViewParams.flags = LayoutParamsFlagNoFocus;
@@ -227,6 +241,7 @@ public class SmallView extends ViewOutlineProvider {
           }));
         }
       } else {
+        clientView.lastTouchIsInside = true;
         changeBar(1);
         barTimer();
         if (smallViewParams.flags != LayoutParamsFlagFocus) {

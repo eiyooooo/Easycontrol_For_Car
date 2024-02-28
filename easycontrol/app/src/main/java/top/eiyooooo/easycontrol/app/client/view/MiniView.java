@@ -21,7 +21,7 @@ public class MiniView {
 
   private final ClientView clientView;
   private Thread timeoutListenerThread;
-  private long lastTouchTime = 0;
+  private long lastTouchOutsideTime = 0;
 
   // 迷你悬浮窗
   private final ModuleMiniViewBinding miniView = ModuleMiniViewBinding.inflate(LayoutInflater.from(AppData.main));
@@ -61,7 +61,7 @@ public class MiniView {
     }));
     // 超时检测
     if (mode != 0 && AppData.setting.getMiniRecoverOnTimeout()) {
-      lastTouchTime = System.currentTimeMillis();
+      lastTouchOutsideTime = System.currentTimeMillis();
       if (timeoutListenerThread != null) timeoutListenerThread.interrupt();
       timeoutListenerThread = new Thread(() -> timeoutListener(mode));
       timeoutListenerThread.start();
@@ -86,20 +86,24 @@ public class MiniView {
     miniView.getRoot().setOnTouchListener((v, event) -> {
       switch (event.getActionMasked()) {
         case MotionEvent.ACTION_OUTSIDE:
-          lastTouchTime = System.currentTimeMillis();
+          clientView.lastTouchIsInside = false;
+          lastTouchOutsideTime = System.currentTimeMillis();
           break;
         case MotionEvent.ACTION_DOWN: {
+          clientView.lastTouchIsInside = true;
           yy.set((int) event.getRawY());
           oldYy.set(miniViewParams.y);
           break;
         }
         case MotionEvent.ACTION_MOVE: {
+          clientView.lastTouchIsInside = true;
           miniViewParams.y = oldYy.get() + (int) event.getRawY() - yy.get();
           clientView.device.mini_y = miniViewParams.y;
           AppData.windowManager.updateViewLayout(miniView.getRoot(), miniViewParams);
           break;
         }
         case MotionEvent.ACTION_UP:
+          clientView.lastTouchIsInside = true;
           int flipY = (int) (yy.get() - event.getRawY());
           if (flipY * flipY < 16) clientView.changeToSmall();
           break;
@@ -115,7 +119,7 @@ public class MiniView {
       while (!Thread.interrupted()) {
         Thread.sleep(1);
         now = System.currentTimeMillis();
-        if (now - lastTouchTime > 5000) {
+        if (now - lastTouchOutsideTime > 5000) {
           if (mode == 1) AppData.uiHandler.post(clientView::changeToSmall);
           else if (mode == 2) AppData.uiHandler.post(clientView::changeToFull);
           return;
