@@ -35,6 +35,7 @@
       android:exported="false" />
     <activity
       android:name=".SetActivity"
+      android:configChanges="keyboardHidden|screenSize|orientation"
       android:exported="false" />
     <activity
       android:name=".client.view.FullActivity"
