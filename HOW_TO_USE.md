@@ -8,24 +8,30 @@
 	- 打开“USB调试(安全调试)”（MIUI设备）
 	- 打开“USB安装”（如果有则打开）
 	- 打开“关闭权限监控”（如果有则打开）
-#### 注意: 重启被控端手机后，需要重新进行上述操作
+#### 注意: 重启被控端手机后，需要重新检查上述操作
 
 ## 软件使用
 1. 简单使用-有线连接
-	1. 主控端安装易控车机版，打开软件进行悬浮窗授权
+	1. 主控端安装易控车机版，给予悬浮窗授权，打开软件
 	2. 利用数据线将主控端与被控端连接，主控端易控车机版界面允许易控车机版访问设备
-	3. 点击主控端易控车机版列表中第一行出现的新设备
-	4. 被控端授权允许主控端连接（请勾选一律允许）
+	3. 点击主控端易控车机版列表中出现的新有线设备
+	4. 选择屏幕镜像或应用流转模式进行连接
+	5. 被控端授权允许主控端连接（可勾选一律允许）
 	
 2. 简单使用-无线连接
-	1. 主控端安装易控车机版，打开软件进行悬浮窗授权
+	1. 主控端安装易控车机版，给予悬浮窗授权，打开软件
 	2. 确保主控端能够访问被控端（例如在一个wifi下面）
-	3. 打开被控端无线调试（并非开发者选项中的无线调试），可使用上面有线连接，随后长按设备点击“打开无线”按钮实现
-	4. 主控端易控车机版界面点击右上角添加设备，在设备地址处输入被控端地址，地址格式：
-		- IPv4：192.168.43.1:5555
-		- IPv6：[2408:8462:2510:1e05:c39:3262:632d:1a3d]:5555
-		- 域名：ex.com:5555
-	5. 点击刚添加的新设备，被控端授权允许主控端连接（请勾选一律允许）
+	3.  - 打开被控端无线调试（并非开发者选项中的无线调试）
+	    - 可使用上面有线连接，随后长按设备点击“打开无线”按钮实现
+	4. 主控端易控车机版界面点击右上角添加设备
+	    - 在设备地址处输入被控端地址（地址:端口）
+		- 地址格式（例）：
+			- IPv4：192.168.43.1:5555
+			- IPv6：[2408:8462:2510:1e05:c39:3262:632d:1a3d]:5555
+			- 域名：example.com:5555
+		- 点击扫描，扫描C类地址（掩码为255.255.255.0）下的设备
+	5. 选择屏幕镜像或应用流转模式进行连接
+	6. 被控端授权允许主控端连接（可勾选一律允许）
 
 3. 界面使用
 	1. 工具栏
@@ -54,43 +60,55 @@
 		
 		广播地址为："**top.eiyooooo.easycontrol.app.CONTROL**"，需要向意向也就是Intent填入想要做的动作
 		- 启动默认设备：
-			action：startDefault
+			- action：startDefault
+		    - mode：0, 1 （可选，默认为0，0:屏幕镜像，1:应用流转）
 		- 启动目标设备：
-			action：start
-			uuid：设备ID
+			- action：start
+			- uuid：设备ID
+			- mode：0, 1 （可选，默认为0，0:屏幕镜像，1:应用流转）
 		- 目标设备变成小窗：
-			action：changeToSmall
-			uuid：设备ID
+			- action：changeToSmall
+			- uuid：设备ID
 		- 目标设备最小化：
-			action：changeToMini
-			uuid：设备ID
+			- action：changeToMini
+			- uuid：设备ID
 		- 目标设备全屏：
-			action：changeToFull
-			uuid：设备ID
+			- action：changeToFull
+			- uuid：设备ID
 		- 目标设备按下电源键：
-			action：buttonPower
-			uuid：设备ID
+			- action：buttonPower
+			- uuid：设备ID
+		- 目标设备唤醒：
+			- action：buttonWake
+			- uuid：设备ID
+		- 目标设备锁定：
+			- action：buttonLock
+			- uuid：设备ID
 		- 目标设备打开背光：
-			action：buttonLight
-			uuid：设备ID
+			- action：buttonLight
+			- uuid：设备ID
 		- 目标设备关闭背光：
-			action：buttonLightOff
-			uuid：设备ID
+			- action：buttonLightOff
+			- uuid：设备ID
 		- 目标设备按下返回键：
-			action：buttonBack
-			uuid：设备ID
+			- action：buttonBack
+			- uuid：设备ID
 		- 目标设备按下桌面键：
-			action：buttonHome
-			uuid：设备ID
+			- action：buttonHome
+			- uuid：设备ID
 		- 目标设备按下最近任务键：
-			action：buttonSwitch
-			uuid：设备ID
+			- action：buttonSwitch
+			- uuid：设备ID
 		- 目标设备旋转屏幕：
-			action：buttonRotate
-			uuid：设备ID
+			- action：buttonRotate
+			- uuid：设备ID
 		- 目标设备关闭投屏：
-			action：close
-			uuid：设备ID
+			- action：close
+			- uuid：设备ID
+		- 目标设备执行命令：
+			- action：runShell
+			- uuid：设备ID
+			- cmd: 命令
 
 	2. 可通过快捷方式直接启动默认USB或无线设备
 		- StartUsbActivity启动默认USB设备
