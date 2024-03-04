@@ -4,14 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 
 import java.util.UUID;
 
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import top.eiyooooo.easycontrol.app.databinding.ActivityMainBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemRequestPermissionBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -63,26 +62,21 @@ public class MainActivity extends Activity {
     super.onDestroy();
   }
 
-  // 检查权限
-  private boolean haveOverlayPermission() {
-    // 检查悬浮窗权限，防止某些设备如鸿蒙不兼容
-    try {
-      return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this);
-    } catch (Exception ignored) {
-      return true;
-    }
+  @Override
+  protected void onResume() {
+    if (!haveOverlayPermission()) createAlert();
+    super.onResume();
   }
 
-  // 创建Client加载框
+  // 检查权限
+  private boolean haveOverlayPermission() {
+    return XXPermissions.isGranted(this, Permission.SYSTEM_ALERT_WINDOW);
+  }
+
+  // 创建无权限提示
   private void createAlert() {
     ItemRequestPermissionBinding requestPermissionView = ItemRequestPermissionBinding.inflate(LayoutInflater.from(this));
-    requestPermissionView.buttonGoToSet.setOnClickListener(v -> {
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        intent.setData(Uri.parse("package:$packageName"));
-        startActivity(intent);
-      }
-    });
+    requestPermissionView.buttonGoToSet.setOnClickListener(v -> XXPermissions.with(this).permission(Permission.SYSTEM_ALERT_WINDOW).request(null));
     Dialog dialog = PublicTools.createDialog(this, false, requestPermissionView.getRoot());
     dialog.show();
     checkPermissionDelay(dialog);
