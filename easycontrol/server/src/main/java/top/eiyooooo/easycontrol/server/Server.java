@@ -241,53 +241,54 @@ public final class Server {
 
   // 释放资源
   private static void release() {
-    for (int i = 0; i < 5; i++) {
+    // 1
+    try {
+      inputStream.close();
+      socket.close();
+    } catch (Exception ignored) {}
+
+    // 2
+    if (Options.mode == 1) VirtualDisplay.release();
+    VideoEncode.release();
+    AudioEncode.release();
+
+    // 3
+    if (Device.needReset) {
       try {
-        switch (i) {
-          case 0: {
-            if (timeoutClose || Integer.parseInt(Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -c 'easycontrol.server'").trim()) == 1) {
-              if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0);
-              else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
-            }
-            break;
-          }
-          case 1: {
-            inputStream.close();
-            socket.close();
-            break;
-          }
-          case 2: {
-            if (Options.mode == 1) VirtualDisplay.release();
-            VideoEncode.release();
-            AudioEncode.release();
-            break;
-          }
-          case 3: {
-            if (Device.needReset) {
-              if (Device.resetInfo_Width != 0 && Device.resetInfo_Height != 0)
-                Device.execReadOutput("wm size " + Device.resetInfo_Width + "x" + Device.resetInfo_Height);
-              else
-                Device.execReadOutput("wm size reset");
+        if (Device.realDeviceSize != null)
+          Device.execReadOutput("wm size " + Device.realDeviceSize.first + "x" + Device.realDeviceSize.second);
+        else
+          Device.execReadOutput("wm size reset");
+      } catch (Exception ignored) {}
 
-              try {
-                Thread.sleep(500);
-              } catch (InterruptedException ignored) {
-              }
+      try {
+        if (Device.realDeviceDensity != 0)
+          Device.execReadOutput("wm density " + Device.realDeviceDensity);
+        else
+          Device.execReadOutput("wm density reset");
+      } catch (Exception ignored) {}
+    }
 
-              if (Device.resetInfo_Density != 0)
-                Device.execReadOutput("wm density " + Device.resetInfo_Density);
-            }
-            if (Options.keepAwake)
-              Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
-          }
-          case 4: {
-            if (timeoutClose)
-              Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
-            break;
-          }
-        }
-      } catch (Exception ignored) {
+    // 4
+    if (Options.keepAwake) {
+      try {
+        Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
+      } catch (Exception ignored) {}
+    }
+
+    // 5
+    try {
+      if (timeoutClose || Integer.parseInt(Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -c 'easycontrol.server'").trim()) == 1) {
+        if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0);
+        else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
       }
+    } catch (Exception ignored) {}
+
+    // 6
+    if (timeoutClose) {
+      try {
+        Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
+      } catch (Exception ignored) {}
     }
   }
 

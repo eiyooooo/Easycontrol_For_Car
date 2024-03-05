@@ -314,7 +314,7 @@ public class Client {
                 }
               }
             }
-            if (closeAdb) adb.close();
+            if (closeAdb || adb != null) AppData.uiHandler.postDelayed(() -> adb.close(), 3000);
             break;
           case 4:
             videoDecode.release();

@@ -60,10 +60,19 @@ public final class VirtualDisplay {
         return virtualDisplay.getDisplay().getDisplayId();
     }
 
-    public static void updateSize(Pair<Integer, Integer> newSize) {
+    public static void resize(int newWidth, int newHeight) {
         if (virtualDisplay != null) {
-            width = newSize.first;
-            height = newSize.second;
+            width = newWidth;
+            height = newHeight;
+            virtualDisplay.resize(width, height, density);
+        }
+    }
+
+    public static void resize(int newWidth, int newHeight, int newDensity) {
+        if (virtualDisplay != null) {
+            width = newWidth;
+            height = newHeight;
+            density = newDensity;
             virtualDisplay.resize(width, height, density);
         }
     }

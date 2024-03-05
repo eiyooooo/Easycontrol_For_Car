@@ -33,14 +33,13 @@ import top.eiyooooo.easycontrol.server.wrappers.SurfaceControl;
 import top.eiyooooo.easycontrol.server.wrappers.WindowManager;
 
 public final class Device {
-  private static Pair<Integer, Integer> realDeviceSize;
+  public static Pair<Integer, Integer> realDeviceSize;
+  public static int realDeviceDensity;
   public static Pair<Integer, Integer> deviceSize;
+  public static int deviceDensity;
   public static int deviceRotation;
   public static Pair<Integer, Integer> videoSize;
   public static boolean needReset = false;
-  public static int resetInfo_Width = 0;
-  public static int resetInfo_Height = 0;
-  public static int resetInfo_Density = 0;
   public static int oldScreenOffTimeout = 60000;
 
   public static int displayId = Display.DEFAULT_DISPLAY;
@@ -49,7 +48,6 @@ public final class Device {
   public static void init() throws IOException, InterruptedException {
     getRealDeviceSize();
     getDeivceSize();
-    getResetInfo();
     // 旋转监听
     setRotationListener();
     // 剪切板监听
@@ -62,6 +60,7 @@ public final class Device {
   private static void getRealDeviceSize() {
     DisplayInfo displayInfo = DisplayManager.getDisplayInfo(displayId);
     realDeviceSize = displayInfo.size;
+    realDeviceDensity = displayInfo.density;
     deviceRotation = displayInfo.rotation;
     if (deviceRotation == 1 || deviceRotation == 3) realDeviceSize = new Pair<>(realDeviceSize.second, realDeviceSize.first);
   }
@@ -69,30 +68,11 @@ public final class Device {
   private static void getDeivceSize() {
     DisplayInfo displayInfo = DisplayManager.getDisplayInfo(displayId);
     deviceSize = displayInfo.size;
+    deviceDensity = displayInfo.density;
     deviceRotation = displayInfo.rotation;
     layerStack = displayInfo.layerStack;
     getVideoSize();
   }
-
-    private static void getResetInfo() {
-        try {
-          String output = Device.execReadOutput("wm size");
-          Matcher matcher = Pattern.compile("(?<=Override size: )\\d+x\\d+").matcher(output);
-          if (matcher.find()) {
-            String match = matcher.group();
-            String[] dimensions = match.split("x");
-            resetInfo_Width = Integer.parseInt(dimensions[0]);
-            resetInfo_Height = Integer.parseInt(dimensions[1]);
-          }
-
-          output = Device.execReadOutput("wm density");
-          matcher = Pattern.compile("(?<=Override density: )\\d+").matcher(output);
-          if (matcher.find()) {
-              resetInfo_Density = Integer.parseInt(matcher.group());
-          }
-        } catch (Exception ignored) {
-        }
-    }
 
   private static void getVideoSize() {
     boolean isPortrait = deviceSize.first < deviceSize.second;
@@ -109,32 +89,38 @@ public final class Device {
   }
 
   // 修改分辨率
-  public static void changeDeviceSize(float reSize) {
+  public static void changeDeviceSize(float targetRatio) {
     try {
-      needReset = true;
-      // 竖向比例最大为1
-      if (reSize > 1) reSize = 1;
-      boolean isPortrait = realDeviceSize.first < realDeviceSize.second;
-      int major = isPortrait ? realDeviceSize.second : realDeviceSize.first;
-      int minor = isPortrait ? realDeviceSize.first : realDeviceSize.second;
+      if (targetRatio > 4 || targetRatio < 0.25 || realDeviceSize == null) return;
 
-      int newWidth;
-      int newHeight;
-      if ((float) minor / (float) major > reSize) {
-        newWidth = (int) (reSize * major);
-        newHeight = major;
+      needReset = true;
+
+      boolean differentOrientation = (targetRatio > 1 && deviceSize.first < deviceSize.second) || (targetRatio < 1 && deviceSize.first > deviceSize.second);
+
+      if (targetRatio > 1) targetRatio = 1 / targetRatio;
+
+      float ratioChange = targetRatio / ((float) realDeviceSize.first / realDeviceSize.second);
+
+      int newWidth, newHeight;
+      if (realDeviceSize.first < realDeviceSize.second) {
+        newWidth = (int) (realDeviceSize.first * ratioChange);
+        newHeight = realDeviceSize.second;
       } else {
-        newWidth = minor;
-        newHeight = (int) (minor / reSize);
+        newWidth = realDeviceSize.first;
+        newHeight = (int) (realDeviceSize.second * ratioChange);
       }
-      // 修改分辨率
-      Pair<Integer, Integer> newDeivceSize = new Pair<>((isPortrait ? newWidth : newHeight), (isPortrait ? newHeight : newWidth));
-      newDeivceSize = new Pair<>(newDeivceSize.first + 4 & ~7, newDeivceSize.second + 4 & ~7);
-      if (Options.mode == 1) VirtualDisplay.updateSize(newDeivceSize);
-      else Device.execReadOutput("wm size " + newDeivceSize.first + "x" + newDeivceSize.second);
-      // 更新，需延迟一段时间，否则会导致画面卡顿，尚未查清原因
+      newWidth = newWidth + 8 & ~15;
+      newHeight = newHeight + 8 & ~15;
+      if (newWidth == newHeight) newWidth -= 16;
+
+      if (Options.mode == 1) VirtualDisplay.resize(newWidth, newHeight);
+      else Device.execReadOutput("wm size " + newWidth + "x" + newHeight);
       Thread.sleep(500);
+
       getDeivceSize();
+
+      if (differentOrientation) rotateDevice();
+
       VideoEncode.isHasChangeConfig = true;
     } catch (Exception ignored) {
     }
