@@ -1,10 +1,12 @@
 package top.eiyooooo.easycontrol.app.helper;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -13,16 +15,22 @@ import android.media.MediaCodecList;
 import android.net.DhcpInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -172,35 +180,35 @@ public class PublicTools {
     ArrayAdapter<String> maxFpsAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxFpsList);
     ArrayAdapter<String> maxVideoBitAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxVideoBitList);
     // 添加参数视图
-    fatherLayout.addView(PublicTools.createSwitchCard(context, context.getString(R.string.option_is_audio), context.getString(R.string.option_is_audio_detail), setDefault ? AppData.setting.getDefaultIsAudio() : device.isAudio, isChecked -> {
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_is_audio), context.getString(R.string.option_is_audio_detail), setDefault ? AppData.setting.getDefaultIsAudio() : device.isAudio, isChecked -> {
       if (setDefault) AppData.setting.setDefaultIsAudio(isChecked);
       else device.isAudio = isChecked;
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSpinnerCard(context, context.getString(R.string.option_max_size), context.getString(R.string.option_max_size_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxSize() : device.maxSize), maxSizeAdapter, str -> {
+    fatherLayout.addView(createSpinnerCard(context, context.getString(R.string.option_max_size), context.getString(R.string.option_max_size_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxSize() : device.maxSize), maxSizeAdapter, str -> {
       if (setDefault) AppData.setting.setDefaultMaxSize(Integer.parseInt(str));
       else device.maxSize = Integer.parseInt(str);
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSpinnerCard(context, context.getString(R.string.option_max_fps), context.getString(R.string.option_max_fps_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxFps() : device.maxFps), maxFpsAdapter, str -> {
+    fatherLayout.addView(createSpinnerCard(context, context.getString(R.string.option_max_fps), context.getString(R.string.option_max_fps_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxFps() : device.maxFps), maxFpsAdapter, str -> {
       if (setDefault) AppData.setting.setDefaultMaxFps(Integer.parseInt(str));
       else device.maxFps = Integer.parseInt(str);
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSpinnerCard(context, context.getString(R.string.option_max_video_bit), context.getString(R.string.option_max_video_bit_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxVideoBit() : device.maxVideoBit), maxVideoBitAdapter, str -> {
+    fatherLayout.addView(createSpinnerCard(context, context.getString(R.string.option_max_video_bit), context.getString(R.string.option_max_video_bit_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxVideoBit() : device.maxVideoBit), maxVideoBitAdapter, str -> {
       if (setDefault) AppData.setting.setDefaultMaxVideoBit(Integer.parseInt(str));
       else device.maxVideoBit = Integer.parseInt(str);
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSwitchCard(context, context.getString(R.string.option_use_h265), context.getString(R.string.option_use_h265_detail), setDefault ? AppData.setting.getDefaultUseH265() : device.useH265, isChecked -> {
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_use_h265), context.getString(R.string.option_use_h265_detail), setDefault ? AppData.setting.getDefaultUseH265() : device.useH265, isChecked -> {
       if (setDefault) AppData.setting.setDefaultUseH265(isChecked);
       else device.useH265 = isChecked;
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSwitchCard(context, context.getString(R.string.option_use_opus), context.getString(R.string.option_use_opus_detail), setDefault ? AppData.setting.getDefaultUseOpus() : device.useOpus, isChecked -> {
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_use_opus), context.getString(R.string.option_use_opus_detail), setDefault ? AppData.setting.getDefaultUseOpus() : device.useOpus, isChecked -> {
       if (setDefault) AppData.setting.setDefaultUseOpus(isChecked);
       else device.useOpus = isChecked;
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSwitchCard(context, context.getString(R.string.option_default_full), context.getString(R.string.option_default_full_detail), setDefault ? AppData.setting.getDefaultFull() : device.defaultFull, isChecked -> {
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_default_full), context.getString(R.string.option_default_full_detail), setDefault ? AppData.setting.getDefaultFull() : device.defaultFull, isChecked -> {
       if (setDefault) AppData.setting.setDefaultFull(isChecked);
       else device.defaultFull = isChecked;
     }).getRoot());
-    fatherLayout.addView(PublicTools.createSwitchCard(context, context.getString(R.string.option_set_resolution), context.getString(R.string.option_set_resolution_detail), setDefault ? AppData.setting.getDefaultSetResolution() : device.setResolution, isChecked -> {
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_set_resolution), context.getString(R.string.option_set_resolution_detail), setDefault ? AppData.setting.getDefaultSetResolution() : device.setResolution, isChecked -> {
       if (setDefault) AppData.setting.setDefaultSetResolution(isChecked);
       else device.setResolution = isChecked;
     }).getRoot());
@@ -468,6 +476,379 @@ public class PublicTools {
   public static void logToast(String str) {
     Log.e("Easycontrol", str);
     AppData.uiHandler.post(() -> Toast.makeText(AppData.main, str, Toast.LENGTH_SHORT).show());
+  }
+
+  // 权限
+  public static Intent getOverlayPermissionIntent(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isMiui() && isMiuiOptimization()) {
+        Intent intent = getMiuiPermissionPageIntent(context);
+        intent = addSubIntentToMainIntent(intent, getApplicationDetailsIntent(context));
+        return intent;
+      }
+      Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+      intent.setData(Uri.parse("package:" + context.getPackageName()));
+      if (areActivityIntent(context, intent)) return intent;
+      intent = getApplicationDetailsIntent(context);
+      return intent;
+    }
+
+    if (isEmui()) {
+      Intent intent = getEmuiWindowPermissionPageIntent(context);
+      intent = addSubIntentToMainIntent(intent, getApplicationDetailsIntent(context));
+      return intent;
+    }
+
+    if (isMiui()) {
+      Intent intent = null;
+      if (isMiuiOptimization()) intent = getMiuiPermissionPageIntent(context);
+      intent = addSubIntentToMainIntent(intent, getApplicationDetailsIntent(context));
+      return intent;
+    }
+
+    if (isColorOs()) {
+      Intent intent = getColorOsWindowPermissionPageIntent(context);
+      intent = addSubIntentToMainIntent(intent, getApplicationDetailsIntent(context));
+      return intent;
+    }
+
+    if (isOriginOs()) {
+      Intent intent = getOriginOsWindowPermissionPageIntent(context);
+      intent = addSubIntentToMainIntent(intent, getApplicationDetailsIntent(context));
+      return intent;
+    }
+
+    if (isOneUi()) {
+      Intent intent = getOneUiPermissionPageIntent(context);
+      intent = addSubIntentToMainIntent(intent, getApplicationDetailsIntent(context));
+      return intent;
+    }
+
+    return getApplicationDetailsIntent(context);
+  }
+
+  private static Intent addSubIntentToMainIntent(Intent mainIntent, Intent subIntent) {
+    if (mainIntent == null && subIntent != null) return subIntent;
+    if (subIntent == null) return mainIntent;
+    Intent deepSubIntent = getDeepSubIntent(mainIntent);
+    deepSubIntent.putExtra("sub_intent_key", subIntent);
+    return mainIntent;
+  }
+
+  private static Intent getDeepSubIntent(Intent superIntent) {
+    Intent subIntent = getSubIntentInMainIntent(superIntent);
+    if (subIntent != null) return getDeepSubIntent(subIntent);
+    return superIntent;
+  }
+
+  private static Intent getSubIntentInMainIntent(Intent mainIntent) {
+    Intent subIntent;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) subIntent = mainIntent.getParcelableExtra("sub_intent_key", Intent.class);
+    else subIntent = mainIntent.getParcelableExtra("sub_intent_key");
+    return subIntent;
+  }
+
+  /** 华为手机管家 App 包名 */
+  private static final String EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.huawei.systemmanager";
+
+  /** 小米手机管家 App 包名 */
+  private static final String MIUI_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.miui.securitycenter";
+
+  /** OPPO 安全中心 App 包名 */
+  private static final String COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_1 = "com.oppo.safe";
+  private static final String COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_2 = "com.color.safecenter";
+  private static final String COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_3 = "com.oplus.safecenter";
+
+  /** vivo 安全中心 App 包名 */
+  private static final String ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.iqoo.secure";
+  private static Intent getMiuiPermissionPageIntent(Context context) {
+    Intent appPermEditorActionIntent = new Intent()
+            .setAction("miui.intent.action.APP_PERM_EDITOR")
+            .putExtra("extra_pkgname", context.getPackageName());
+    Intent xiaoMiMobileManagerAppIntent = getXiaoMiMobileManagerAppIntent(context);
+    Intent intent = null;
+    if (areActivityIntent(context, appPermEditorActionIntent)) intent = appPermEditorActionIntent;
+    if (areActivityIntent(context, xiaoMiMobileManagerAppIntent)) intent = addSubIntentToMainIntent(intent, xiaoMiMobileManagerAppIntent);
+    return intent;
+  }
+
+  private static Intent getXiaoMiMobileManagerAppIntent(Context context) {
+    Intent intent = context.getPackageManager().getLaunchIntentForPackage(MIUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
+    if (areActivityIntent(context, intent)) return intent;
+    return null;
+  }
+
+  private static Intent getEmuiWindowPermissionPageIntent(Context context) {
+    Intent addViewMonitorActivityIntent = new Intent();
+    addViewMonitorActivityIntent.setClassName(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME, EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME + ".addviewmonitor.AddViewMonitorActivity");
+
+    Intent notificationManagementActivityIntent = new Intent();
+    notificationManagementActivityIntent.setClassName(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME, "com.huawei.notificationmanager.ui.NotificationManagmentActivity");
+
+    Intent huaWeiMobileManagerAppIntent = getHuaWeiMobileManagerAppIntent(context);
+
+    String romVersionName = getRomVersionName();
+    if (romVersionName == null) romVersionName = "";
+
+    Intent intent = null;
+    if (romVersionName.startsWith("3.0")) {
+      if (areActivityIntent(context, notificationManagementActivityIntent)) intent = notificationManagementActivityIntent;
+      if (areActivityIntent(context, addViewMonitorActivityIntent)) intent = addSubIntentToMainIntent(intent, addViewMonitorActivityIntent);
+    } else {
+      if (areActivityIntent(context, addViewMonitorActivityIntent)) intent = addViewMonitorActivityIntent;
+      if (areActivityIntent(context, notificationManagementActivityIntent)) intent = addSubIntentToMainIntent(intent, notificationManagementActivityIntent);
+    }
+
+    if (areActivityIntent(context, huaWeiMobileManagerAppIntent)) intent = addSubIntentToMainIntent(intent, huaWeiMobileManagerAppIntent);
+
+    return intent;
+  }
+
+  private static Intent getHuaWeiMobileManagerAppIntent(Context context) {
+    Intent intent = context.getPackageManager().getLaunchIntentForPackage(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
+    if (areActivityIntent(context, intent)) return intent;
+    return null;
+  }
+
+  private static Intent getColorOsWindowPermissionPageIntent(Context context) {
+    Intent permissionTopActivityActionIntent = new Intent("com.oppo.safe.permission.PermissionTopActivity");
+
+    Intent oppoSafeCenterAppIntent = getOppoSafeCenterAppIntent(context);
+
+    Intent intent = null;
+    if (areActivityIntent(context, permissionTopActivityActionIntent)) intent = permissionTopActivityActionIntent;
+    if (areActivityIntent(context, oppoSafeCenterAppIntent)) intent = addSubIntentToMainIntent(intent, oppoSafeCenterAppIntent);;
+
+    return intent;
+  }
+
+  private static Intent getOppoSafeCenterAppIntent(Context context) {
+    Intent intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_1);
+    if (areActivityIntent(context, intent)) return intent;
+    intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_2);
+    if (areActivityIntent(context, intent)) return intent;
+    intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_3);
+    if (areActivityIntent(context, intent)) return intent;
+    return null;
+  }
+
+  private static Intent getOriginOsWindowPermissionPageIntent(Context context) {
+    Intent intent = getVivoMobileManagerAppIntent(context);
+    if (areActivityIntent(context, intent)) return intent;
+    return null;
+  }
+
+  private static Intent getVivoMobileManagerAppIntent(Context context) {
+    Intent intent = context.getPackageManager().getLaunchIntentForPackage(ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME);
+    if (areActivityIntent(context, intent)) return intent;
+    return null;
+  }
+
+  private static Intent getOneUiPermissionPageIntent(Context context) {
+    Intent intent = new Intent();
+    intent.setClassName("com.android.settings", "com.android.settings.Settings$AppOpsDetailsActivity");
+    Bundle extraShowFragmentArguments = new Bundle();
+    extraShowFragmentArguments.putString("package", context.getPackageName());
+    intent.putExtra(":settings:show_fragment_args", extraShowFragmentArguments);
+    intent.setData(Uri.parse("package:" + context.getPackageName()));
+    if (areActivityIntent(context, intent)) return intent;
+    return null;
+  }
+
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+  private static boolean areActivityIntent(Context context, Intent intent) {
+    if (intent == null) return false;
+    PackageManager packageManager = context.getPackageManager();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return !packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY)).isEmpty();
+    return !packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
+  }
+
+  private static Intent getApplicationDetailsIntent(Context context) {
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    intent.setData(Uri.parse("package:" + context.getPackageName()));
+    if (areActivityIntent(context, intent)) return intent;
+
+    intent = new Intent(Settings.ACTION_APPLICATION_SETTINGS);
+    if (areActivityIntent(context, intent)) return intent;
+
+    intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+    if (areActivityIntent(context, intent)) return intent;
+    return new Intent(Settings.ACTION_SETTINGS);
+  }
+
+  private static boolean isMiui() {
+    return !TextUtils.isEmpty(getPropertyName(ROM_NAME_MIUI));
+  }
+
+  @SuppressLint("PrivateApi")
+  private static boolean isMiuiOptimization() {
+    try {
+      Class<?> clazz = Class.forName("android.os.SystemProperties");
+      Method getMethod = clazz.getMethod("get", String.class, String.class);
+      String ctsValue = String.valueOf(getMethod.invoke(clazz, "ro.miui.cts", ""));
+      Method getBooleanMethod = clazz.getMethod("getBoolean", String.class, boolean.class);
+      return Boolean.parseBoolean(String.valueOf(getBooleanMethod.invoke(clazz, "persist.sys.miui_optimization", !"1".equals(ctsValue))));
+    } catch (Exception ignored) {
+    }
+    return true;
+  }
+
+  private static boolean isEmui() {
+    return !TextUtils.isEmpty(getPropertyName(VERSION_PROPERTY_HUAWEI));
+  }
+
+  private static boolean isColorOs() {
+    for (String property : VERSION_PROPERTY_OPPO) {
+      String versionName = getPropertyName(property);
+      if (TextUtils.isEmpty(versionName)) continue;
+      return true;
+    }
+    return false;
+  }
+
+  private static boolean isOriginOs() {
+    return !TextUtils.isEmpty(getPropertyName(VERSION_PROPERTY_VIVO));
+  }
+
+  @SuppressLint("PrivateApi")
+  private static boolean isOneUi() {
+    return isRightRom(getBrand(), getManufacturer(), ROM_SAMSUNG);
+  }
+
+  private static boolean isRightRom(final String brand, final String manufacturer, final String... names) {
+    for (String name : names) {
+      if (brand.contains(name) || manufacturer.contains(name)) return true;
+    }
+    return false;
+  }
+
+  private static final String[] ROM_HUAWEI    = {"huawei"};
+  private static final String[] ROM_VIVO      = {"vivo"};
+  private static final String[] ROM_XIAOMI    = {"xiaomi"};
+  private static final String[] ROM_OPPO      = {"oppo"};
+  private static final String[] ROM_LEECO     = {"leeco", "letv"};
+  private static final String[] ROM_360       = {"360", "qiku"};
+  private static final String[] ROM_ZTE       = {"zte"};
+  private static final String[] ROM_ONEPLUS   = {"oneplus"};
+  private static final String[] ROM_NUBIA     = {"nubia"};
+  private static final String[] ROM_SAMSUNG = {"samsung"};
+  private static final String[] ROM_HONOR = {"honor"};
+  private static final String ROM_NAME_MIUI = "ro.miui.ui.version.name";
+  private static final String VERSION_PROPERTY_HUAWEI  = "ro.build.version.emui";
+  private static final String VERSION_PROPERTY_VIVO    = "ro.vivo.os.build.display.id";
+  private static final String VERSION_PROPERTY_XIAOMI  = "ro.build.version.incremental";
+  private static final String[] VERSION_PROPERTY_OPPO  = {"ro.build.version.opporom", "ro.build.version.oplusrom.display"};
+  private static final String VERSION_PROPERTY_LEECO   = "ro.letv.release.version";
+  private static final String VERSION_PROPERTY_360     = "ro.build.uiversion";
+  private static final String VERSION_PROPERTY_ZTE     = "ro.build.MiFavor_version";
+  private static final String VERSION_PROPERTY_ONEPLUS = "ro.rom.version";
+  private static final String VERSION_PROPERTY_NUBIA   = "ro.build.rom.id";
+  private static final String[] VERSION_PROPERTY_MAGIC = {"msc.config.magic.version", "ro.build.version.magic"};
+  private static String getRomVersionName() {
+    final String brand = getBrand();
+    final String manufacturer = getManufacturer();
+    if (isRightRom(brand, manufacturer, ROM_HUAWEI)) {
+      String version = getPropertyName(VERSION_PROPERTY_HUAWEI);
+      String[] temp = version.split("_");
+      if (temp.length > 1) {
+        return temp[1];
+      } else {
+        if (version.contains("EmotionUI")) return version.replaceFirst("EmotionUI\\s*", "");
+        return version;
+      }
+    }
+    if (isRightRom(brand, manufacturer, ROM_VIVO)) return getPropertyName(VERSION_PROPERTY_VIVO);
+    if (isRightRom(brand, manufacturer, ROM_XIAOMI)) return getPropertyName(VERSION_PROPERTY_XIAOMI);
+    if (isRightRom(brand, manufacturer, ROM_OPPO)) {
+      for (String property : VERSION_PROPERTY_OPPO) {
+        String versionName = getPropertyName(property);
+        if (TextUtils.isEmpty(property)) continue;
+        return versionName;
+      }
+      return "";
+    }
+    if (isRightRom(brand, manufacturer, ROM_LEECO)) return getPropertyName(VERSION_PROPERTY_LEECO);
+
+    if (isRightRom(brand, manufacturer, ROM_360)) return getPropertyName(VERSION_PROPERTY_360);
+    if (isRightRom(brand, manufacturer, ROM_ZTE)) return getPropertyName(VERSION_PROPERTY_ZTE);
+    if (isRightRom(brand, manufacturer, ROM_ONEPLUS)) return getPropertyName(VERSION_PROPERTY_ONEPLUS);
+    if (isRightRom(brand, manufacturer, ROM_NUBIA)) return getPropertyName(VERSION_PROPERTY_NUBIA);
+    if (isRightRom(brand, manufacturer, ROM_HONOR)) {
+      for (String property : VERSION_PROPERTY_MAGIC) {
+        String versionName = getPropertyName(property);
+        if (TextUtils.isEmpty(property)) continue;
+        return versionName;
+      }
+      return "";
+    }
+
+    return getPropertyName("");
+  }
+
+  private static String getBrand() {
+    return Build.BRAND.toLowerCase();
+  }
+
+  private static String getManufacturer() {
+    return Build.MANUFACTURER.toLowerCase();
+  }
+
+  private static String getPropertyName(final String propertyName) {
+    String result = "";
+    if (!TextUtils.isEmpty(propertyName)) result = getSystemProperty(propertyName);
+    return result;
+  }
+
+  private static String getSystemProperty(final String name) {
+    String prop = getSystemPropertyByShell(name);
+    if (!TextUtils.isEmpty(prop)) return prop;
+
+    prop = getSystemPropertyByStream(name);
+    if (!TextUtils.isEmpty(prop)) return prop;
+
+    if (Build.VERSION.SDK_INT < 28) return getSystemPropertyByReflect(name);
+    return prop;
+  }
+
+  private static String getSystemPropertyByShell(final String propName) {
+    BufferedReader input = null;
+    try {
+      Process p = Runtime.getRuntime().exec("getprop " + propName);
+      input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
+      String ret = input.readLine();
+      if (ret != null) return ret;
+    } catch (Exception ignored) {
+    } finally {
+      if (input != null) {
+        try {
+          input.close();
+        } catch (Exception ignored) {
+        }
+      }
+    }
+    return "";
+  }
+
+  private static String getSystemPropertyByStream(final String key) {
+    try {
+      Properties prop = new Properties();
+      FileInputStream is = new FileInputStream(new File(Environment.getRootDirectory(), "build.prop"));
+      prop.load(is);
+      return prop.getProperty(key, "");
+    } catch (Exception ignored) {
+    }
+    return "";
+  }
+
+  @SuppressLint("PrivateApi")
+  private static String getSystemPropertyByReflect(String key) {
+    try {
+      Class<?> clz = Class.forName("android.os.SystemProperties");
+      Method getMethod = clz.getMethod("get", String.class, String.class);
+      return (String) getMethod.invoke(clz, key, "");
+    } catch (Exception ignored) {
+    }
+    return "";
   }
 
   public interface MyFunction {

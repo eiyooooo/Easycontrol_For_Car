@@ -2,15 +2,16 @@ package top.eiyooooo.easycontrol.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 
 import java.util.UUID;
 
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.XXPermissions;
 import top.eiyooooo.easycontrol.app.databinding.ActivityMainBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemRequestPermissionBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -70,13 +71,20 @@ public class MainActivity extends Activity {
 
   // 检查权限
   private boolean haveOverlayPermission() {
-    return XXPermissions.isGranted(this, Permission.SYSTEM_ALERT_WINDOW);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return Settings.canDrawOverlays(this);
+    else {
+      AppOpsManager appOps = (AppOpsManager) this.getSystemService(APP_OPS_SERVICE);
+      if (appOps != null) {
+        int mode = appOps.checkOpNoThrow("android:system_alert_window", android.os.Process.myUid(), this.getPackageName());
+        return mode == AppOpsManager.MODE_ALLOWED || mode == AppOpsManager.MODE_IGNORED;
+      } else return true;
+    }
   }
 
   // 创建无权限提示
   private void createAlert() {
     ItemRequestPermissionBinding requestPermissionView = ItemRequestPermissionBinding.inflate(LayoutInflater.from(this));
-    requestPermissionView.buttonGoToSet.setOnClickListener(v -> XXPermissions.with(this).permission(Permission.SYSTEM_ALERT_WINDOW).request(null));
+    requestPermissionView.buttonGoToSet.setOnClickListener(v -> startActivity(PublicTools.getOverlayPermissionIntent(this)));
     Dialog dialog = PublicTools.createDialog(this, false, requestPermissionView.getRoot());
     dialog.show();
     checkPermissionDelay(dialog);
