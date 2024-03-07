@@ -30,6 +30,7 @@ public class SmallView extends ViewOutlineProvider {
   private boolean RemoteIsPortrait = true;
   private int InitSize = 0;
   private boolean InitPos = false;
+  private boolean needSetResolution = true;
   private boolean lightState;
   int longEdge;
   int shortEdge;
@@ -95,6 +96,11 @@ public class SmallView extends ViewOutlineProvider {
           smallViewParams.y = clientView.device.small_free_y = (longEdge - layoutParams.height) / 2;
           AppData.windowManager.updateViewLayout(smallView.getRoot(), smallViewParams);
           InitPos = true;
+        }
+
+        if (needSetResolution) {
+          clientView.controlPacket.sendChangeSizeEvent((float) clientView.device.small_free_width / (float) clientView.device.small_free_height);
+          needSetResolution = false;
         }
 
         if (!InitPos) {
@@ -183,6 +189,7 @@ public class SmallView extends ViewOutlineProvider {
   public void show() {
     // 初始化
     InitPos = false;
+    needSetResolution = true;
     smallView.barView.setVisibility(View.GONE);
     smallView.bar.setVisibility(View.VISIBLE);
     barTimer();
@@ -485,8 +492,9 @@ public class SmallView extends ViewOutlineProvider {
           }
         }
       } else if (clientView.device.setResolution & event.getActionMasked() == MotionEvent.ACTION_UP) {
-        clientView.controlPacket.sendChangeSizeEvent((float) clientView.textureView.getWidth() / (float) clientView.textureView.getHeight());
+        needSetResolution = true;
         InitPos = false;
+        clientView.updateMaxSize(new Pair<>(clientView.textureView.getWidth(), clientView.textureView.getHeight()));
       }
       return true;
     });
