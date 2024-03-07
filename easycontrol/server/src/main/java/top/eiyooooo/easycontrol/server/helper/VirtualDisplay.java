@@ -9,11 +9,12 @@ import android.util.Pair;
 import android.view.Display;
 import android.view.Surface;
 import top.eiyooooo.easycontrol.server.entity.Device;
+import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
+import top.eiyooooo.easycontrol.server.wrappers.WindowManager;
 
 import static top.eiyooooo.easycontrol.server.Server.postDelayed;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,16 +40,15 @@ public final class VirtualDisplay {
 
         displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(FakeContext.get());
 
-        // 获取width、height、density
-        String dumpsysDisplayOutput = Device.execReadOutput("dumpsys display");
-        Pattern regex = Pattern.compile(
-                "^    mOverrideDisplayInfo=DisplayInfo\\{\".*?, displayId " + Display.DEFAULT_DISPLAY
-                        + ".*?real ([0-9]+) x ([0-9]+).*?, " + "density ([0-9]+)", Pattern.MULTILINE);
-        Matcher m = regex.matcher(dumpsysDisplayOutput);
-        if (!m.find()) throw new Exception("Could not get display info from \"dumpsys display\" output");
-        width = Integer.parseInt(Objects.requireNonNull(m.group(1)));
-        height = Integer.parseInt(Objects.requireNonNull(m.group(2)));
-        density = Integer.parseInt(Objects.requireNonNull(m.group(3)));
+        DisplayInfo displayInfo = top.eiyooooo.easycontrol.server.wrappers.DisplayManager.getDisplayInfo(Display.DEFAULT_DISPLAY);
+        if (displayInfo.rotation == 1 || displayInfo.rotation == 3) {
+            width = displayInfo.size.second;
+            height = displayInfo.size.first;
+        } else {
+            width = displayInfo.size.first;
+            height = displayInfo.size.second;
+        }
+        density = displayInfo.density;
 
         int flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC | DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY | VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL | DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -57,7 +57,10 @@ public final class VirtualDisplay {
 
         Surface surface = MediaCodec.createPersistentInputSurface();
         virtualDisplay = displayManager.createVirtualDisplay("easycontrol", width, height, density, surface, flags);
-        return virtualDisplay.getDisplay().getDisplayId();
+
+        int displayId = virtualDisplay.getDisplay().getDisplayId();
+        WindowManager.freezeRotation(displayId, displayInfo.rotation);
+        return displayId;
     }
 
     public static void resize(int newWidth, int newHeight) {

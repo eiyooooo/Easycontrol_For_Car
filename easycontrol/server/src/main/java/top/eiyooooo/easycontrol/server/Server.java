@@ -58,9 +58,11 @@ public final class Server {
       setManagers();
       if (Options.mode == 1) {
         try {
-            Device.displayId = VirtualDisplay.create();
-            } catch (Exception e) {
-            Options.mode = 0;
+          Device.keyEvent(224, 0);
+          Thread.sleep(500);
+          Device.displayId = VirtualDisplay.create();
+        } catch (Exception e) {
+          Options.mode = 0;
         }
       }
       Device.init();
