@@ -107,7 +107,7 @@
   <string name="error_refused_back">Fullscreen mode intercepts return key event</string>
   <string name="error_connect_server">Failed to connect</string>
   <string name="error_stream_closed">Disconnected</string>
-  <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above)</string>
+  <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above, and non HyperOS device)</string>
   <string name="error_transfer_app_failed">application transfer failed, transfer will restart after two seconds</string>
   <string name="error_transferred_app_not_found">The transferred application has been closed, and an attempt has been made to transfer the foreground application again</string>
 

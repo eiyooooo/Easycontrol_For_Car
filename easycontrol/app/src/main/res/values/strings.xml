@@ -107,7 +107,7 @@
   <string name="error_refused_back">全屏状态会拦截返回</string>
   <string name="error_connect_server">连接被控端失败</string>
   <string name="error_stream_closed">连接断开</string>
-  <string name="error_create_display">被控端不支持应用流转(需安卓11及以上)</string>
+  <string name="error_create_display">被控端不支持应用流转(需安卓11及以上、非HyperOS)</string>
   <string name="error_transfer_app_failed">应用流转失败，两秒后重新开始流转</string>
   <string name="error_transferred_app_not_found">流转应用已关闭，已经尝试重新流转前台应用</string>
 
