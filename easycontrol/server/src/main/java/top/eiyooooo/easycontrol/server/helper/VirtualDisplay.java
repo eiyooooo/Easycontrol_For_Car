@@ -34,9 +34,12 @@ public final class VirtualDisplay {
 
     @SuppressLint("WrongConstant")
     public static int create() throws Exception {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             throw new Exception("Virtual display is not supported before Android 11");
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && ((Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("xiaomi")
+                || (Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("redmi")))
+            throw new Exception("HyperOS devices have an unresolved bug after creating a virtual display");
 
         displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(FakeContext.get());
 
