@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
 
   // 设置按钮监听
   private void setButtonListener() {
-    mainActivity.buttonScan.setOnClickListener(v -> deviceListAdapter.update());
+    mainActivity.buttonRefresh.setOnClickListener(v -> deviceListAdapter.update());
     mainActivity.buttonAdd.setOnClickListener(v -> PublicTools.createAddDeviceView(this, Device.getDefaultDevice(UUID.randomUUID().toString(), Device.TYPE_NORMAL), deviceListAdapter).show());
     mainActivity.buttonSet.setOnClickListener(v -> startActivity(new Intent(this, SetActivity.class)));
   }
