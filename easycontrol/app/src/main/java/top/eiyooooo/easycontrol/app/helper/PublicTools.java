@@ -168,7 +168,6 @@ public class PublicTools {
   }
 
   // 创建设备参数设置页面
-  private static final String[] maxSizeList = new String[]{"2560", "1920", "1600", "1280", "1024", "800"};
   private static final String[] maxFpsList = new String[]{"90", "60", "40", "30", "20", "10"};
   private static final String[] maxVideoBitList = new String[]{"12", "8", "4", "2", "1"};
 
@@ -176,7 +175,7 @@ public class PublicTools {
     // Device为null，则视为设置默认参数
     boolean setDefault = device == null;
     // 数组适配器
-    ArrayAdapter<String> maxSizeAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxSizeList);
+    ArrayAdapter<String> maxSizeAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, new String[]{context.getString(R.string.option_max_size_original), "2560", "1920", "1600", "1280", "1024", "800"});
     ArrayAdapter<String> maxFpsAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxFpsList);
     ArrayAdapter<String> maxVideoBitAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxVideoBitList);
     // 添加参数视图
@@ -185,6 +184,7 @@ public class PublicTools {
       else device.isAudio = isChecked;
     }).getRoot());
     fatherLayout.addView(createSpinnerCard(context, context.getString(R.string.option_max_size), context.getString(R.string.option_max_size_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxSize() : device.maxSize), maxSizeAdapter, str -> {
+      if (str.equals(context.getString(R.string.option_max_size_original))) str = "0";
       if (setDefault) AppData.setting.setDefaultMaxSize(Integer.parseInt(str));
       else device.maxSize = Integer.parseInt(str);
     }).getRoot());

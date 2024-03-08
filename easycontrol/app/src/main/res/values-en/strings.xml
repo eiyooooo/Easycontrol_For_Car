@@ -119,6 +119,7 @@
   <string name="option_is_audio_detail">Works with Android 12 and above</string>
   <string name="option_max_size">Resolution</string>
   <string name="option_max_size_detail">Set max resolution</string>
+  <string name="option_max_size_original">Original resolution</string>
   <string name="option_max_fps">Max FPS</string>
   <string name="option_max_fps_detail">Frame per seconds</string>
   <string name="option_max_video_bit">Max Video Bit</string>

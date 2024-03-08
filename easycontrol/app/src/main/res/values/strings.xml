@@ -119,6 +119,7 @@
   <string name="option_is_audio_detail">开启后将尝试传输音频，被控端需要安卓12或以上</string>
   <string name="option_max_size">最大大小</string>
   <string name="option_max_size_detail">设置画面长和宽的最大大小</string>
+  <string name="option_max_size_original">原始分辨率</string>
   <string name="option_max_fps">最大帧率</string>
   <string name="option_max_fps_detail">最大帧率限制，值越低画面越卡顿，但流量也越小，延迟也会降低</string>
   <string name="option_max_video_bit">最大码率</string>
