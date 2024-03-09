@@ -62,13 +62,10 @@
   <string name="ip_ipv4">IPv4(Click to copy)</string>
   <string name="ip_ipv6">IPv6(Click to copy)</string>
   <string name="ip_copy">Copied</string>
-  <string name="ip_scan_device">Scan</string>
   <string name="ip_scan_device_title">Scan device</string>
   <string name="ip_scanning_device">Scanning…</string>
-  <string name="ip_scan_finish">Scan finished</string>
   <string name="ip_scan_finish_copy">Scan finished(Click to copy)</string>
   <string name="ip_scan_finish_none">Scan finished(No device)</string>
-  <string name="ip_scan_device_local">Local</string>
 
   <!-- 查看密钥页面 -->
   <string name="adb_key_pub">Public key (Base64 encoded)</string>
@@ -81,6 +78,10 @@
   <string name="add_device_name_hint">Non-null</string>
   <string name="add_device_address">Address:Port</string>
   <string name="add_device_address_hint">IPv4/v6 addresses or domain</string>
+  <string name="add_device_scan">Scan</string>
+  <string name="add_device_scanning">Scanning…</string>
+  <string name="add_device_scan_finish">Scan finished</string>
+  <string name="add_device_scan_address_finish_none">Scan finished(No device)</string>
   <string name="add_device_option">Advanced options</string>
   <string name="add_device_button">OK</string>
 

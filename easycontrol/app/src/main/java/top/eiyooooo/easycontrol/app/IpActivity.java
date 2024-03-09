@@ -65,7 +65,7 @@ public class IpActivity extends Activity {
       ArrayList<String> scannedAddresses = PublicTools.scanAddress();
       AppData.uiHandler.post(() -> {
         if (scannedAddresses.isEmpty()) ipActivity.scanning.setText(R.string.ip_scan_finish_none);
-        else ipActivity.scanning.setText(R.string.ip_scan_finish);
+        else ipActivity.scanning.setText(R.string.ip_scan_finish_copy);
         ipActivity.scanning.setOnClickListener(v -> {
           scanAddress(context);
           ipActivity.scanning.setText(R.string.ip_scanning_device);

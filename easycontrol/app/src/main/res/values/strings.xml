@@ -62,13 +62,10 @@
   <string name="ip_ipv4">IPv4(点击复制)</string>
   <string name="ip_ipv6">IPv6(点击复制)</string>
   <string name="ip_copy">已复制</string>
-  <string name="ip_scan_device">扫描</string>
   <string name="ip_scan_device_title">扫描设备</string>
   <string name="ip_scanning_device">扫描中…</string>
-  <string name="ip_scan_finish">扫描完成</string>
   <string name="ip_scan_finish_copy">扫描完成(点击复制)</string>
   <string name="ip_scan_finish_none">扫描完成(无设备)</string>
-  <string name="ip_scan_device_local">本机</string>
 
   <!-- 查看密钥页面 -->
   <string name="adb_key_pub">公钥(Base64编码)</string>
@@ -81,6 +78,10 @@
   <string name="add_device_name_hint">不可为空</string>
   <string name="add_device_address">地址:端口号</string>
   <string name="add_device_address_hint">支持IPv4/v6地址、域名</string>
+  <string name="add_device_scan">扫描</string>
+  <string name="add_device_scanning">扫描中…</string>
+  <string name="add_device_scan_finish">扫描完成</string>
+  <string name="add_device_scan_address_finish_none">扫描完成(无设备)</string>
   <string name="add_device_option">高级选项</string>
   <string name="add_device_button">确认</string>
 

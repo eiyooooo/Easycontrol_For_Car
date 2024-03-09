@@ -48,7 +48,7 @@
       android:textSize="@dimen/smallFont" />
 
     <Button
-      android:id="@+id/scan"
+      android:id="@+id/scan_address"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_columnWeight="1"
@@ -56,7 +56,7 @@
       android:background="@drawable/background_cron"
       android:backgroundTint="@color/button"
       android:gravity="center"
-      android:text="@string/ip_scan_device"
+      android:text="@string/add_device_scan"
       android:textColor="@color/onButton"
       android:textSize="@dimen/smallFont" />
 
