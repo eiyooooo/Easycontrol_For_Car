@@ -32,8 +32,8 @@ public class BufferStream {
     this.underlySocketFunction = underlySocketFunction;
   }
 
-  public void pushSource(byte[] bytes) {
-    if (bytes != null) source.write(ByteBuffer.wrap(bytes));
+  public void pushSource(ByteBuffer byteBuffer) {
+    if (byteBuffer != null) source.write(byteBuffer);
   }
 
   public byte readByte() throws InterruptedException, IOException {
