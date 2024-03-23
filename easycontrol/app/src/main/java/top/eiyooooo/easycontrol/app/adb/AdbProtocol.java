@@ -96,7 +96,7 @@ public class AdbProtocol {
     public int arg0;
     public int arg1;
     public int payloadLength;
-    public byte[] payload = null;
+    public ByteBuffer payload = null;
 
     public static AdbMessage parseAdbMessage(AdbChannel channel) throws IOException, InterruptedException {
       AdbMessage msg = new AdbMessage();
@@ -106,7 +106,7 @@ public class AdbProtocol {
       msg.arg0 = buffer.getInt();
       msg.arg1 = buffer.getInt();
       msg.payloadLength = buffer.getInt();
-      if (msg.payloadLength > 0) msg.payload = channel.read(msg.payloadLength).array();
+      if (msg.payloadLength > 0) msg.payload = channel.read(msg.payloadLength);
 
       return msg;
     }

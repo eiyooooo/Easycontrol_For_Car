@@ -26,12 +26,12 @@ public class AdbKeyPair {
     this.publicKeyBytes = publicKeyBytes;
   }
 
-  public byte[] signPayload(byte[] payload) throws Exception {
+  public byte[] signPayload(ByteBuffer payload) throws Exception {
     if (payload == null) return new byte[]{0};
     Cipher cipher = Cipher.getInstance("RSA/ECB/NoPadding");
     cipher.init(Cipher.ENCRYPT_MODE, privateKey);
     cipher.update(SIGNATURE_PADDING);
-    return cipher.doFinal(payload);
+    return cipher.doFinal(payload.array());
   }
 
   public static void setAdbBase64(AdbBase64 adbBase64) {
