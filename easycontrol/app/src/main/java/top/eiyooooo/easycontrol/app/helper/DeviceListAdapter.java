@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import top.eiyooooo.easycontrol.app.adb.Adb;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
@@ -187,6 +188,18 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
         while (!checkConnectionExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {}
         AppData.uiHandler.post(this::notifyDataSetChanged);
         checkConnectionExecutor = null;
+        for (Device d : devicesList) {
+          if (d.adb == null) {
+            try {
+              if (d.isLinkDevice()) {
+                d.adb = new Adb(linkDevices.get(d.uuid), AppData.keyPair);
+              } else if (d.connection == 1) {
+                d.adb = new Adb(d.address, AppData.keyPair);
+              }
+            } catch (Exception ignored) {
+            }
+          }
+        }
         if (!startedDefault) {
           AppData.uiHandler.postDelayed(() -> startDefaultUSB(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0), 1000);
           AppData.uiHandler.postDelayed(() -> startDefault(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0), 2000);
@@ -286,12 +299,25 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     ArrayList<Device> tmp1 = new ArrayList<>();
     ArrayList<Device> tmp2 = new ArrayList<>();
     for (Device device : rawDevices) {
-      if (device.isLinkDevice() && linkDevices.containsKey(device.uuid)) tmp1.add(device);
-      else if (device.isNormalDevice()) tmp2.add(device);
+      if (device.isLinkDevice() && linkDevices.containsKey(device.uuid))
+        inheritDevicesList(tmp1, device);
+      else if (device.isNormalDevice())
+        inheritDevicesList(tmp2, device);
     }
     devicesList.clear();
     devicesList.addAll(tmp1);
     devicesList.addAll(tmp2);
+  }
+
+  private void inheritDevicesList(ArrayList<Device> newList, Device device) {
+    for (Device d : devicesList) {
+      if (d.uuid.equals(device.uuid)) {
+        d.connection = -1;
+        newList.add(d);
+        return;
+      }
+    }
+    newList.add(device);
   }
 
   public void startByUUID(String uuid, int mode) {

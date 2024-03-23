@@ -1,8 +1,11 @@
 package top.eiyooooo.easycontrol.app.entity;
 
+import top.eiyooooo.easycontrol.app.adb.Adb;
+
 public class Device {
   public static final int TYPE_NORMAL = 1;
   public static final int TYPE_LINK = 2;
+  public Adb adb;
 
   public final String uuid;
   public final int type;

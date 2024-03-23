@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 
+import android.util.Pair;
 import top.eiyooooo.easycontrol.app.buffer.BufferNew;
 import top.eiyooooo.easycontrol.app.buffer.BufferStream;
+import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 // 此部分代码摘抄借鉴了tananaev大佬的开源代码(https://github.com/tananaev/adblib)以及开源库dadb(https://github.com/mobile-dev-inc/dadb)
 // 因为官方adb协议文档写的十分糟糕，因此此部分代码的实现参考了cstyan大佬所整理的文档，再次进行感谢：https://github.com/cstyan/adbDocumentation
@@ -22,8 +24,9 @@ public class Adb {
   private final Thread handleInThread = new Thread(this::handleIn);
   private final Thread handleOutThread = new Thread(this::handleOut);
 
-  public Adb(String host, int port, AdbKeyPair keyPair) throws Exception {
-    channel = new TcpChannel(host, port);
+  public Adb(String address, AdbKeyPair keyPair) throws Exception {
+    Pair<String, Integer> addressPair = PublicTools.getIpAndPort(address);
+    channel = new TcpChannel(addressPair.first, addressPair.second);
     connect(keyPair);
   }
 

@@ -45,7 +45,6 @@ public class Client {
   public final ClientView clientView;
   public final String uuid;
   public int mode; // 0为屏幕镜像模式，1为应用流转模式
-  private final boolean isUsbDevice;
   private Thread startThread;
   private final Thread loadingTimeOutThread;
   private final Thread keepAliveThread;
@@ -62,11 +61,11 @@ public class Client {
   }
 
   public Client(Device device, UsbDevice usbDevice, int mode) {
+    if (device.adb != null) adb = device.adb;
     for (Client client : allClient) {
       if (client.uuid.equals(device.uuid)) {
         if (client.multiLink == 0) client.multiLink = 1;
         this.multiLink = 2;
-        if (usbDevice != null) this.adb = client.adb;
         break;
       }
     }
@@ -74,7 +73,6 @@ public class Client {
     // 初始化
     uuid = device.uuid;
     this.mode = mode;
-    this.isUsbDevice = usbDevice != null;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
       handlerThread.start();
@@ -131,10 +129,8 @@ public class Client {
 
   // 连接ADB
   private static Adb connectADB(Device device, UsbDevice usbDevice) throws Exception {
-    if (usbDevice == null) {
-      Pair<String, Integer> address = PublicTools.getIpAndPort(device.address);
-      return new Adb(address.first, address.second, AppData.keyPair);
-    } else return new Adb(usbDevice, AppData.keyPair);
+    if (usbDevice == null) return new Adb(device.address, AppData.keyPair);
+    else return new Adb(usbDevice, AppData.keyPair);
   }
 
   // 启动Server
@@ -305,16 +301,6 @@ public class Client {
             break;
           case 3:
             bufferStream.close();
-            boolean closeAdb = true;
-            if (isUsbDevice) {
-              for (Client client : allClient) {
-                if (client.uuid.equals(uuid)) {
-                  closeAdb = false;
-                  break;
-                }
-              }
-            }
-            if (closeAdb || adb != null) AppData.uiHandler.postDelayed(() -> adb.close(), 3000);
             break;
           case 4:
             videoDecode.release();
