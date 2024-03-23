@@ -1,297 +1,448 @@
-/*
- * 本项目大量借鉴学习了开源投屏软件：Scrcpy，在此对该项目表示感谢
- */
 package top.eiyooooo.easycontrol.server;
 
 import android.annotation.SuppressLint;
+import android.hardware.display.VirtualDisplay;
 import android.net.LocalServerSocket;
 import android.net.LocalSocket;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.IInterface;
-import android.system.ErrnoException;
-import android.system.Os;
+import android.view.Display;
+import android.view.SurfaceView;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
+import top.eiyooooo.easycontrol.server.utils.L;
+import top.eiyooooo.easycontrol.server.utils.Workarounds;
+import top.eiyooooo.easycontrol.server.wrappers.*;
 
 import java.io.DataInputStream;
-import java.io.FileDescriptor;
-import java.io.IOException;
+import java.io.DataOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
-import android.view.Display;
-import top.eiyooooo.easycontrol.server.entity.Device;
-import top.eiyooooo.easycontrol.server.entity.Options;
-import top.eiyooooo.easycontrol.server.helper.AudioEncode;
-import top.eiyooooo.easycontrol.server.helper.VideoEncode;
-import top.eiyooooo.easycontrol.server.helper.ControlPacket;
-import top.eiyooooo.easycontrol.server.helper.VirtualDisplay;
-import top.eiyooooo.easycontrol.server.wrappers.ClipboardManager;
-import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
-import top.eiyooooo.easycontrol.server.wrappers.InputManager;
-import top.eiyooooo.easycontrol.server.wrappers.SurfaceControl;
-import top.eiyooooo.easycontrol.server.wrappers.WindowManager;
+public class Server {
+    String serverId;
+    Channel channel;
+    private LocalSocket socket;
+    public DataInputStream inputStream;
+    public DataOutputStream outputStream;
 
-// 此部分代码摘抄借鉴了著名投屏软件Scrcpy的开源代码(https://github.com/Genymobile/scrcpy/tree/master/server)
-public final class Server {
-  private static LocalSocket socket;
-  private static FileDescriptor fileDescriptor;
-  public static DataInputStream inputStream;
-
-  private static final Object object = new Object();
-
-  private static final int timeoutDelay = 5 * 1000;
-
-  public static void main(String... args) {
-    try {
-      Thread timeOutThread = new Thread(() -> {
-        try {
-          Thread.sleep(timeoutDelay);
-          release();
-        } catch (InterruptedException ignored) {
+    public static void main(String... args) throws Exception {
+        String serverId = getServerId(args);
+        setManagers();
+        Workarounds.prepareMainLooper();
+        new Server(serverId);
+        while (true) {
+            Thread.sleep(1000);
         }
-      });
-      timeOutThread.start();
-      // 解析参数
-      Options.parse(args);
-      // 初始化
-      setManagers();
-      if (Options.mode == 1) {
+    }
+
+    private static String getServerId(String... args) {
+        String serverId = null;
+        for (String arg : args) {
+            int equalIndex = arg.indexOf('=');
+            if (equalIndex == -1) continue;
+            String key = arg.substring(0, equalIndex);
+            String value = arg.substring(equalIndex + 1);
+            if (key.equals("serverId")) serverId = value;
+        }
+        return serverId;
+    }
+
+    public Server(String serverId) {
+        this.serverId = serverId;
+        connect();
+        inputHandler();
+        this.channel = new Channel();
+    }
+
+    private void connect() {
+        String serverName = "easycontrol_for_car_server";
+        if (serverId != null) serverName += "_" + serverId;
+        L.d("Waiting for connection on '" + serverName + "'");
+        while (!Thread.interrupted()) {
+            try (LocalServerSocket serverSocket = new LocalServerSocket(serverName)) {
+                socket = serverSocket.accept();
+                inputStream = new DataInputStream(socket.getInputStream());
+                outputStream = new DataOutputStream(socket.getOutputStream());
+                L.d("Connected");
+                return;
+            } catch (Exception e) {
+                L.e("Server connect error, retrying");
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    private void closeConnect() {
         try {
-          Device.keyEvent(224, 0);
-          Thread.sleep(500);
-          Device.displayId = VirtualDisplay.create();
+            inputStream.close();
+            outputStream.close();
+            socket.close();
         } catch (Exception e) {
-          Options.mode = 0;
+            L.e("socket close error", e);
         }
-      }
-      Device.init();
-      // 连接
-      connectClient();
-      // 初始化子服务
-      boolean canAudio = AudioEncode.init();
-      VideoEncode.init();
-      // 启动
-      ArrayList<Thread> threads = new ArrayList<>();
-      threads.add(new Thread(Server::executeVideoOut));
-      if (canAudio) {
-        threads.add(new Thread(Server::executeAudioIn));
-        threads.add(new Thread(Server::executeAudioOut));
-      }
-      threads.add(new Thread(Server::executeControlIn));
-      for (Thread thread : threads) thread.setPriority(Thread.MAX_PRIORITY);
-      for (Thread thread : threads) thread.start();
-      // 程序运行
-      timeOutThread.interrupt();
-      if (Options.TurnOnScreenIfStart) {
-        Device.keyEvent(224, 0);
-        if (Options.TurnOffScreenIfStart)
-          postDelayed(() -> Device.changeScreenPowerMode(Display.STATE_UNKNOWN), 2000);
-      }
-      if (Options.mode == 1) VirtualDisplay.applicationMonitor();
-      else ControlPacket.sendDisplayId(Device.displayId);
-      synchronized (object) {
-        object.wait();
-      }
-      // 终止子服务
-      for (Thread thread : threads) thread.interrupt();
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      // 释放资源
-      release();
     }
-  }
 
-  public static void postDelayed(Runnable runnable, long delayMillis) {
-    new Thread(() -> {
-      try {
-        Thread.sleep(delayMillis);
-        runnable.run();
-      } catch (InterruptedException ignored) {
-      }
-    }).start();
-  }
-
-  private static Method GET_SERVICE_METHOD;
-
-  @SuppressLint({"DiscouragedPrivateApi", "PrivateApi"})
-  private static void setManagers() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    GET_SERVICE_METHOD = Class.forName("android.os.ServiceManager").getDeclaredMethod("getService", String.class);
-    // 1
-    WindowManager.init(getService("window", "android.view.IWindowManager"));
-    // 2
-    DisplayManager.init(Class.forName("android.hardware.display.DisplayManagerGlobal").getDeclaredMethod("getInstance").invoke(null));
-    // 3
-    Class<?> inputManagerClass;
-    try {
-      inputManagerClass = Class.forName("android.hardware.input.InputManagerGlobal");
-    } catch (ClassNotFoundException e) {
-      inputManagerClass = android.hardware.input.InputManager.class;
+    private void inputHandler() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!Thread.interrupted()) {
+                    try {
+                        int length = inputStream.readInt();
+                        byte[] bytes = new byte[length];
+                        inputStream.readFully(bytes);
+                        String input = new String(bytes, StandardCharsets.UTF_8);
+                        L.d("input: " + input);
+                        if (input.startsWith("/exit")) {
+                            closeConnect();
+                            System.exit(0);
+                        } else if (input.startsWith("/")) handleRequest(parseRequest(input));
+                        else postResponse("Unknown command");
+                    } catch (Exception e) {
+                        L.e("socket error", e);
+                        closeConnect();
+                        connect();
+                    }
+                }
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    try {
+                        String input = scanner.nextLine();
+                        if (input.startsWith("/exit")) {
+                            closeConnect();
+                            System.exit(0);
+                        } else if (input.startsWith("/")) handleRequest(parseRequest(input));
+                        else throw new Exception("Unknown command");
+                    } catch (Exception e) {
+                        L.e("consoleInputHandler error", e);
+                    }
+                }
+            }
+        }).start();
     }
-    InputManager.init(inputManagerClass.getDeclaredMethod("getInstance").invoke(null));
-    // 4
-    ClipboardManager.init(getService("clipboard", "android.content.IClipboard"));
-    // 5
-    SurfaceControl.init();
-  }
 
-  private static IInterface getService(String service, String type) {
-    try {
-      IBinder binder = (IBinder) GET_SERVICE_METHOD.invoke(null, service);
-      Method asInterfaceMethod = Class.forName(type + "$Stub").getMethod("asInterface", IBinder.class);
-      return (IInterface) asInterfaceMethod.invoke(null, binder);
-    } catch (Exception e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  private static void connectClient() throws IOException {
-    try (LocalServerSocket serverSocket = new LocalServerSocket("easycontrol")) {
-      socket = serverSocket.accept();
-      fileDescriptor = socket.getFileDescriptor();
-      inputStream = new DataInputStream(socket.getInputStream());
-    }
-  }
-
-  private static void executeVideoOut() {
-    try {
-      int frame = 0;
-      while (!Thread.interrupted()) {
-        if (VideoEncode.isHasChangeConfig) {
-          VideoEncode.isHasChangeConfig = false;
-          VideoEncode.stopEncode();
-          VideoEncode.startEncode();
+    private void postResponse(String response) {
+        try {
+            if (response == null) response = "null";
+            L.d("RESPONSE: " + response);
+            byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
+            outputStream.writeInt(responseBytes.length);
+            outputStream.write(responseBytes);
+        } catch (Exception e) {
+            L.e("postResponse error", e);
         }
-        VideoEncode.encodeOut();
-        frame++;
-        if (frame > 120) {
-          if (System.currentTimeMillis() - lastKeepAliveTime > timeoutDelay) {
-            timeoutClose = true;
-            throw new IOException("连接断开");
-          }
-          frame = 0;
+    }
+
+    private void postBitmapResponse(byte[] response) {
+        try {
+            if (response == null) response = "null".getBytes(StandardCharsets.UTF_8);
+            outputStream.writeInt(-response.length);
+            outputStream.write(response);
+        } catch (Exception e) {
+            L.e("postBitmapResponse error", e);
         }
-      }
-    } catch (Exception e) {
-      errorClose(e);
     }
-  }
 
-  private static void executeAudioIn() {
-    while (!Thread.interrupted()) AudioEncode.encodeIn();
-  }
+    private static HashMap<String, String> parseRequest(String input) {
+        HashMap<String, String> request = new HashMap<>();
 
-  private static void executeAudioOut() {
-    try {
-      while (!Thread.interrupted()) AudioEncode.encodeOut();
-    } catch (IOException | ErrnoException e) {
-      errorClose(e);
-    }
-  }
+        String[] parts = input.split("\\?");
+        String path = parts[0];
+        request.put("request", path);
+        if (parts.length == 1) return request;
 
-  private static long lastKeepAliveTime = System.currentTimeMillis();
-
-  private static void executeControlIn() {
-    try {
-      while (!Thread.interrupted()) {
-        switch (Server.inputStream.readByte()) {
-          case 1:
-            ControlPacket.handleTouchEvent();
-            break;
-          case 2:
-            ControlPacket.handleKeyEvent();
-            break;
-          case 3:
-            ControlPacket.handleClipboardEvent();
-            break;
-          case 4:
-            ControlPacket.sendKeepAlive();
-            lastKeepAliveTime = System.currentTimeMillis();
-            break;
-          case 5:
-            Device.changeDeviceSize(inputStream.readFloat());
-            break;
-          case 6:
-            Device.rotateDevice();
-            break;
-          case 7:
-            Device.changeScreenPowerMode(inputStream.readByte());
-            break;
-          case 8:
-            Device.changePower();
-            break;
+        String params = parts[1];
+        String[] keyValuePairs = params.split("&");
+        for (String pair : keyValuePairs) {
+            String[] keyValue = pair.split("=");
+            String key = keyValue[0];
+            String value = keyValue[1];
+            request.put(key, value);
         }
-      }
-    } catch (Exception e) {
-      errorClose(e);
-    }
-  }
-
-  public synchronized static void write(ByteBuffer byteBuffer) throws IOException, ErrnoException {
-    while (byteBuffer.remaining() > 0) Os.write(fileDescriptor, byteBuffer);
-  }
-
-  public static void errorClose(Exception e) {
-    e.printStackTrace();
-    synchronized (object) {
-      object.notify();
-    }
-  }
-
-  private static boolean timeoutClose = false;
-
-  // 释放资源
-  private static void release() {
-    // 1
-    try {
-      inputStream.close();
-      socket.close();
-    } catch (Exception ignored) {}
-
-    // 2
-    if (Options.mode == 1) VirtualDisplay.release();
-    VideoEncode.release();
-    AudioEncode.release();
-
-    // 3
-    if (Device.needReset) {
-      try {
-        if (Device.realDeviceSize != null)
-          Device.execReadOutput("wm size " + Device.realDeviceSize.first + "x" + Device.realDeviceSize.second);
-        else
-          Device.execReadOutput("wm size reset");
-      } catch (Exception ignored) {}
-
-      try {
-        if (Device.realDeviceDensity != 0)
-          Device.execReadOutput("wm density " + Device.realDeviceDensity);
-        else
-          Device.execReadOutput("wm density reset");
-      } catch (Exception ignored) {}
+        return request;
     }
 
-    // 4
-    if (Options.keepAwake) {
-      try {
-        Device.execReadOutput("settings put system screen_off_timeout " + Device.oldScreenOffTimeout);
-      } catch (Exception ignored) {}
+    Map<Integer, VirtualDisplay> cache = new HashMap<>();
+
+    private void handleRequest(HashMap<String, String> request) {
+        try {
+            switch (Objects.requireNonNull(request.get("request"))) {
+                case "/startScrcpy": {
+                    if (Scrcpy.started) throw new Exception("Scrcpy is already running");
+                    ArrayList<String> argsList = new ArrayList<>();
+                    for (String key : request.keySet()) {
+                        if (key.equals("request")) continue;
+                        String value = request.get(key);
+                        argsList.add(key + "=" + value);
+                    }
+                    String[] args = argsList.toArray(new String[0]);
+                    if (args.length > 0) {
+                        postResponse("startScrcpy args: " + Arrays.toString(args));
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Scrcpy.startScrcpy(args);
+                            }
+                        }).start();
+                    } else {
+                        postResponse("startScrcpy without args (DEV only)");
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Scrcpy.startScrcpy();
+                            }
+                        }).start();
+                    }
+                    break;
+                }
+                case "/getPhoneInfo": {
+                    postResponse(Channel.getPhoneInfo().toString());
+                    break;
+                }
+                case "/getRecentTasks": {
+                    String line1 = request.get("maxNum");
+                    String line2 = request.get("flags");
+                    String line3 = request.get("userId");
+
+                    int maxNum = 25;
+                    if (line1 != null) maxNum = Integer.parseInt(line1);
+                    int flags = 0;
+                    if (line2 != null) flags = Integer.parseInt(line2);
+                    int userId = 0;
+                    if (line3 != null) userId = Integer.parseInt(line3);
+
+                    postResponse(channel.getRecentTasksJson(maxNum, flags, userId).toString());
+                    break;
+                }
+                case "/getIcon": {
+                    String packageName = request.get("package");
+                    if (packageName == null) throw new Exception("parameter 'package' not found");
+                    postBitmapResponse(channel.getBitmapBytes(packageName));
+                    break;
+                }
+                case "/getAllAppInfo": {
+                    String line = request.get("app_type");
+                    if (line == null) throw new Exception("parameter 'app_type' not found");
+                    int appType = Integer.parseInt(line);
+                    postResponse(channel.getAllAppInfo(appType));
+                    break;
+                }
+                case "/getAppDetail": {
+                    String packageName = request.get("package");
+                    if (packageName == null) throw new Exception("parameter 'package' not found");
+                    postResponse(channel.getAppDetail(packageName));
+                    break;
+                }
+                case "/getAppMainActivity": {
+                    String packageName = request.get("package");
+                    if (packageName == null) throw new Exception("parameter 'package' not found");
+                    postResponse(channel.getAppMainActivity(packageName));
+                    break;
+                }
+                case "/createVirtualDisplay": {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+                        throw new Exception("Virtual display is not supported before Android 11");
+                    SurfaceView surfaceView = new SurfaceView(channel.context);
+                    String line1 = request.get("width");
+                    String line2 = request.get("height");
+                    String line3 = request.get("density");
+                    if (line1 != null && line2 == null)
+                        throw new Exception("parameter 'width' found, but 'height' not found");
+                    if (line1 == null && line2 != null)
+                        throw new Exception("parameter 'height' found, but 'width' not found");
+
+                    DisplayInfo defaultDisplay = DisplayManager.getDisplayInfo(Display.DEFAULT_DISPLAY);
+                    int width, height, density;
+                    if (line1 != null) {
+                        width = Integer.parseInt(line1);
+                        height = Integer.parseInt(line2);
+                    } else {
+                        int rotation = defaultDisplay.rotation;
+                        if (rotation == 1 || rotation == 3) {
+                            width = defaultDisplay.size.second;
+                            height = defaultDisplay.size.first;
+                        } else {
+                            width = defaultDisplay.size.first;
+                            height = defaultDisplay.size.second;
+                        }
+                    }
+                    if (line3 != null) density = Integer.parseInt(line3);
+                    else density = defaultDisplay.density;
+
+                    VirtualDisplay display = channel.createVirtualDisplay(surfaceView.getHolder().getSurface(), width, height, density);
+                    if (display == null) throw new Exception("Failed to create virtual display");
+                    int createdDisplayId = display.getDisplay().getDisplayId();
+                    cache.put(createdDisplayId, display);
+                    int[] displayIds = DisplayManager.getDisplayIds();
+                    for (int displayId : displayIds) {
+                        L.d(">>>display -> " + displayId);
+                    }
+                    postResponse("success create display, id -> " + createdDisplayId);
+                    break;
+                }
+                case "/resizeDisplay": {
+                    String line1 = request.get("id");
+                    String line2 = request.get("width");
+                    String line3 = request.get("height");
+                    String line4 = request.get("density");
+                    int id = 0;
+                    if (line1 != null) id = Integer.parseInt(line1);
+                    DisplayInfo display = DisplayManager.getDisplayInfo(id);
+                    if (display == null) throw new Exception("specified display not found");
+
+                    if (line2 == null && line3 == null && line4 == null)
+                        throw new Exception("please give parameter 'width'&'height' or 'density'");
+                    if (line2 != null && line3 == null)
+                        throw new Exception("parameter 'width' found, but 'height' not found");
+                    if (line2 == null && line3 != null)
+                        throw new Exception("parameter 'height' found, but 'width' not found");
+
+                    int width, height, density;
+                    if (line2 != null) {
+                        width = Integer.parseInt(line2);
+                        height = Integer.parseInt(line3);
+                    } else {
+                        width = display.size.first;
+                        height = display.size.second;
+                    }
+                    if (line4 != null) density = Integer.parseInt(line4);
+                    else density = display.density;
+
+                    if (id == 0) {
+                        if (line2 != null) Channel.execReadOutput("wm size " + width + "x" + height);
+                        if (line4 != null) Channel.execReadOutput("wm density " + density);
+                    } else {
+                        VirtualDisplay virtualDisplay = cache.get(id);
+                        if (virtualDisplay == null)
+                            throw new Exception("specified virtual display not found, it might not be created by this server");
+                        virtualDisplay.resize(width, height, density);
+                    }
+                    postResponse("success resize display, id -> " + id);
+                    break;
+                }
+                case "/releaseVirtualDisplay": {
+                    String id = request.get("id");
+                    if (id == null) throw new Exception("parameter 'id' not found");
+                    VirtualDisplay display = cache.get(Integer.parseInt(id));
+                    if (display == null)
+                        throw new Exception("specified virtual display not found, it might not be created by this server");
+                    JSONObject tasks = channel.getRecentTasksJson(25, 0, 0);
+                    JSONArray tasks_data = tasks.getJSONArray("data");
+                    for (int i = 0; i < tasks.length(); i++) {
+                        JSONObject task = tasks_data.getJSONObject(i);
+                        if (id.equals(String.valueOf(task.getInt("displayId")))) {
+                            try {
+                                Channel.execReadOutput("am display move-stack " + task.getInt("id") + " 0");
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }
+                    display.release();
+                    cache.remove(Integer.parseInt(id));
+                    postResponse("success release display, id -> " + id);
+                    break;
+                }
+                case "/openAppByPackage": {
+                    String packageName = request.get("package");
+                    String activity = request.get("activity");
+                    String id = request.get("displayId");
+
+                    if (packageName == null) throw new Exception("parameter 'package' not found");
+                    if (activity == null) activity = channel.getAppMainActivity(packageName);
+                    if (id == null) id = "0";
+
+                    String error = channel.openApp(packageName, activity, Integer.parseInt(id));
+                    if (error != null) throw new Exception(error);
+                    postResponse("success");
+                    break;
+                }
+                case "/stopAppByPackage": {
+                    String packageName = request.get("package");
+                    if (packageName == null) throw new Exception("parameter 'package' not found");
+                    String cmd = "am force-stop " + packageName;
+                    L.d("stopActivity activity cmd: " + cmd);
+                    Channel.execReadOutput(cmd);
+                    postResponse("success");
+                    break;
+                }
+                case "/getDisplayInfo": {
+                    int[] displayIds = DisplayManager.getDisplayIds();
+                    JSONArray jsonArray = new JSONArray();
+                    for (int displayId : displayIds) {
+                        DisplayInfo display = DisplayManager.getDisplayInfo(displayId);
+                        if (display == null) continue;
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("id", displayId);
+                        jsonObject.put("width", display.size.first);
+                        jsonObject.put("height", display.size.second);
+                        jsonObject.put("density", display.density);
+                        jsonObject.put("rotation", display.rotation);
+                        jsonArray.put(jsonObject);
+                    }
+                    postResponse(jsonArray.toString());
+                    break;
+                }
+                case "/runShell": {
+                    String cmd = request.get("cmd");
+                    if (cmd == null) throw new Exception("parameter 'cmd' not found");
+                    L.d("runShell cmd: " + cmd);
+                    postResponse(Channel.execReadOutput(cmd));
+                    break;
+                }
+                default:
+                    postResponse("Unknown request");
+            }
+        } catch (Exception e) {
+            postResponse(e.getMessage());
+            L.e("handleRequest error", e);
+        }
     }
 
-    // 5
-    try {
-      if (timeoutClose || Integer.parseInt(Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -c 'easycontrol.server'").trim()) == 1) {
-        if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0);
-        else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
-      }
-    } catch (Exception ignored) {}
+    private static Method GET_SERVICE_METHOD;
 
-    // 6
-    if (timeoutClose) {
-      try {
-        Device.execReadOutput("ps -ef | grep easycontrol.server | grep -v grep | grep -E \"^[a-z]+ +[0-9]+\" -o | grep -E \"[0-9]+\" -o | xargs kill -9");
-      } catch (Exception ignored) {}
+    @SuppressLint({"DiscouragedPrivateApi", "PrivateApi"})
+    private static void setManagers() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        GET_SERVICE_METHOD = Class.forName("android.os.ServiceManager").getDeclaredMethod("getService", String.class);
+        // 1
+        WindowManager.init(getService("window", "android.view.IWindowManager"));
+        // 2
+        DisplayManager.init(Class.forName("android.hardware.display.DisplayManagerGlobal").getDeclaredMethod("getInstance").invoke(null));
+        // 3
+        Class<?> inputManagerClass;
+        try {
+            inputManagerClass = Class.forName("android.hardware.input.InputManagerGlobal");
+        } catch (ClassNotFoundException e) {
+            inputManagerClass = android.hardware.input.InputManager.class;
+        }
+        InputManager.init(inputManagerClass.getDeclaredMethod("getInstance").invoke(null));
+        // 4
+        ClipboardManager.init(getService("clipboard", "android.content.IClipboard"));
+        // 5
+        SurfaceControl.init();
+        // 6
+        IPackageManager.init(getService("package", "android.content.pm.IPackageManager"));
     }
-  }
 
+    private static IInterface getService(String service, String type) {
+        try {
+            IBinder binder = (IBinder) GET_SERVICE_METHOD.invoke(null, service);
+            Method asInterfaceMethod = Class.forName(type + "$Stub").getMethod("asInterface", IBinder.class);
+            return (IInterface) asInterfaceMethod.invoke(null, binder);
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+    }
 }
