@@ -1,75 +1,68 @@
 package top.eiyooooo.easycontrol.app.buffer;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.concurrent.LinkedBlockingDeque;
 
-//本缓冲区为环形缓冲区，请自行设置最佳大小，数据写入会覆盖旧数据，若未读取就写入会造成未知后果
 public class Buffer {
-  private final int capacity;
-  private final byte[] buffer;
-  private int head = 0;
-  private int tail = 0;
+  private boolean isClosed = false;
+  private final LinkedBlockingDeque<ByteBuffer> dataQueue = new LinkedBlockingDeque<>();
 
-  private final Object writeLock = new Object();
-  private final Object readLock = new Object();
-
-  public Buffer(int capacity) {
-    this.capacity = capacity;
-    this.buffer = new byte[capacity];
+  public void write(ByteBuffer data) {
+    dataQueue.offerLast(data);
   }
 
-  public void write(byte[] data) {
-    synchronized (writeLock) {
-      int remainingBytes = capacity - tail;
-      if (data.length < remainingBytes) {
-        // 无需环回
-        System.arraycopy(data, 0, buffer, tail, data.length);
-        tail += data.length;
+  public synchronized ByteBuffer read(int len) throws InterruptedException, IOException {
+    if (len < 0 || isClosed) throw new IOException("Buffer error");
+    ByteBuffer data = ByteBuffer.allocate(len);
+    int bytesToRead = len;
+    while (bytesToRead > 0) {
+      ByteBuffer tmpData = dataQueue.takeFirst();
+      if (isClosed) throw new IOException("Buffer error");
+      int remaining = tmpData.remaining();
+      if (remaining <= bytesToRead) {
+        data.put(tmpData);
+        bytesToRead -= remaining;
       } else {
-        // 需环回
-        System.arraycopy(data, 0, buffer, tail, remainingBytes);
-        tail = data.length - remainingBytes;
-        System.arraycopy(data, remainingBytes, buffer, 0, tail);
-      }
-      synchronized (buffer) {
-        buffer.notify();
+        int oldLimit = tmpData.limit();
+        tmpData.limit(tmpData.position() + bytesToRead);
+        data.put(tmpData);
+        tmpData.limit(oldLimit);
+        dataQueue.offerFirst(tmpData);
+        bytesToRead = 0;
       }
     }
-  }
-
-  public byte[] read(int size) throws InterruptedException, IOException {
-    require(size);
-    byte[] data = new byte[size];
-    synchronized (readLock) {
-      int remainingBytes = capacity - head;
-      if (size < remainingBytes) {
-        // 无需环回
-        System.arraycopy(buffer, head, data, 0, size);
-        head += size;
-      } else {
-        // 需环回
-        System.arraycopy(buffer, head, data, 0, remainingBytes);
-        head = size - remainingBytes;
-        System.arraycopy(buffer, 0, data, remainingBytes, head);
-      }
-    }
+    data.flip();
     return data;
   }
 
-  private void require(long byteCount) throws InterruptedException {
-    while (true) {
-      if (getSize() >= byteCount) {
-        break;
-      } else {
-        synchronized (buffer) {
-          buffer.wait();
-        }
-      }
-    }
+  public synchronized ByteBuffer readNext() throws InterruptedException, IOException {
+    if (isClosed) throw new IOException("Buffer error");
+    ByteBuffer byteBuffer = dataQueue.takeFirst();
+    if (isClosed) throw new IOException("Buffer error");
+    return byteBuffer;
+  }
+
+  public ByteBuffer readByteArrayBeforeClose() {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Math.max(getSize(), 1));
+    for (ByteBuffer tmpBuffer : dataQueue) byteBuffer.put(tmpBuffer);
+    return byteBuffer;
+  }
+
+  public boolean isEmpty() {
+    return dataQueue.isEmpty();
   }
 
   public int getSize() {
-    if (tail >= head) return tail - head;
-    else return capacity - head + tail;
+    int size = 0;
+    for (ByteBuffer byteBuffer : dataQueue) size += byteBuffer.remaining();
+    return size;
+  }
+
+  public void close() {
+    if (isClosed) return;
+    isClosed = true;
+    dataQueue.offer(ByteBuffer.allocate(1));
   }
 
 }
