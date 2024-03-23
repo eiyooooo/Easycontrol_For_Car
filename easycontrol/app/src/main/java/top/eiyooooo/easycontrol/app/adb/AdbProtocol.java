@@ -20,8 +20,7 @@ public class AdbProtocol {
   public static final int CMD_WRTE = 0x45545257;
 
   public static final int CONNECT_VERSION = 0x01000000;
-  // 旧版本的adb服务端硬编码maxdata=4096，因此这里设置为4096，若你的设备较新，可将此值设置为1024*1024以提高效率
-  public static final int CONNECT_MAXDATA = 1024 * 1024;
+  public static final int CONNECT_MAXDATA = 15 * 1024;
 
   public static final byte[] CONNECT_PAYLOAD = "host::\0".getBytes();
 
