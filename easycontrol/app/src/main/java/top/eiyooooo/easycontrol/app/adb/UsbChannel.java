@@ -16,7 +16,7 @@ import java.nio.ByteOrder;
 import java.util.LinkedList;
 
 import top.eiyooooo.easycontrol.app.entity.AppData;
-import top.eiyooooo.easycontrol.app.buffer.BufferNew;
+import top.eiyooooo.easycontrol.app.buffer.Buffer;
 
 public class UsbChannel implements AdbChannel {
 
@@ -24,7 +24,7 @@ public class UsbChannel implements AdbChannel {
   private UsbInterface usbInterface = null;
   private UsbEndpoint endpointIn = null;
   private UsbEndpoint endpointOut = null;
-  private final BufferNew sourceBuffer = new BufferNew();
+  private final Buffer sourceBuffer = new Buffer();
   private final Thread readBackgroundThread = new Thread(this::readBackground);
   private final LinkedList<UsbRequest> mInRequestPool = new LinkedList<>();
 
@@ -79,7 +79,7 @@ public class UsbChannel implements AdbChannel {
   }
 
   @Override
-  public ByteBuffer read(int size) throws InterruptedException {
+  public ByteBuffer read(int size) throws InterruptedException, IOException {
     return sourceBuffer.read(size);
   }
 
@@ -98,6 +98,7 @@ public class UsbChannel implements AdbChannel {
         }
       }
     } catch (IOException ignored) {
+      sourceBuffer.close();
     }
   }
 
