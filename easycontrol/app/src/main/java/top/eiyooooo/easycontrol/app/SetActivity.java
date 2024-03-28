@@ -124,6 +124,7 @@ public class SetActivity extends Activity {
               Toast.makeText(this, getString(R.string.set_other_no_default), Toast.LENGTH_SHORT).show()).getRoot());
     }
 
+    setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_other_log), () -> startActivity(new Intent(this, LogActivity.class))).getRoot());
     setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_about_ip), () -> startActivity(new Intent(this, IpActivity.class))).getRoot());
     setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_other_custom_key), () -> startActivity(new Intent(this, AdbKeyActivity.class))).getRoot());
     setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_other_clear_key), () -> {

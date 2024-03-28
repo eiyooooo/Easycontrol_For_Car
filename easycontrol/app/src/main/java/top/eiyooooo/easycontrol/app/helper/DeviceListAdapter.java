@@ -34,7 +34,7 @@ import top.eiyooooo.easycontrol.app.databinding.ItemSetDeviceBinding;
 
 public class DeviceListAdapter extends BaseExpandableListAdapter {
 
-  public final ArrayList<Device> devicesList = new ArrayList<>();
+  public static final ArrayList<Device> devicesList = new ArrayList<>();
   public final HashMap<String, UsbDevice> linkDevices = new HashMap<>();
   private final Context context;
   private final ExpandableListView expandableListView;

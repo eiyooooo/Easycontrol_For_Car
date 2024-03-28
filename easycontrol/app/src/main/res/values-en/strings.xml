@@ -50,6 +50,7 @@
   <string name="set_other_clear_key_code">Regenerated</string>
   <string name="set_other_locale">Change language(中文/English)</string>
   <string name="set_other_locale_code">已切换，可能需要重启APP</string>
+  <string name="set_other_log">View log</string>
   <string name="set_about">About</string>
   <string name="set_about_ip">View local IP and scan device</string>
   <string name="set_about_website">Website</string>
@@ -66,6 +67,11 @@
   <string name="ip_scanning_device">Scanning…</string>
   <string name="ip_scan_finish_copy">Scan finished(Click to copy)</string>
   <string name="ip_scan_finish_none">Scan finished(No device)</string>
+
+  <!-- 查看日志页面 -->
+  <string name="log_title">Log</string>
+  <string name="log_other_devices">Other devices</string>
+  <string name="log_notify">An error occurred on a device, please check the log</string>
 
   <!-- 查看密钥页面 -->
   <string name="adb_key_pub">Public key (Base64 encoded)</string>

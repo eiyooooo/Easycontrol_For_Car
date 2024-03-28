@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/background"
+  android:orientation="vertical"
+  tools:context=".LogActivity">
+
+  <ImageView
+    android:id="@+id/back_button"
+    android:layout_width="54dp"
+    android:layout_height="54dp"
+    android:padding="15dp"
+    android:src="@drawable/chevron_left"
+    android:tint="@color/onBackground"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:text="@string/log_title"
+    android:textColor="@color/onBackground"
+    android:textSize="@dimen/middleFont" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:background="@drawable/background_cron"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
+
+    <Spinner
+      android:id="@+id/log_device"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:textColor="@color/onBackground"
+      android:textSize="@dimen/middleFont"
+      tools:text="placeholder"
+      tools:listitem="@layout/item_spinner_item"/>
+
+    <TextView
+      android:id="@+id/log_text"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="5dp"
+      android:textColor="@color/background"
+      android:textSize="@dimen/smallFont"
+      android:scrollbars="vertical"
+      android:fadeScrollbars="true"
+      android:background="@drawable/background_cron"
+      android:backgroundTint="@color/onBackground"
+      android:textIsSelectable="true"
+      android:padding="6dp"
+      tools:text="placeholder"/>
+
+  </LinearLayout>
+
+</LinearLayout>

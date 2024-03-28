@@ -34,6 +34,9 @@
       android:name=".IpActivity"
       android:exported="false" />
     <activity
+      android:name=".LogActivity"
+      android:exported="false" />
+    <activity
       android:name=".SetActivity"
       android:configChanges="keyboardHidden|screenSize|orientation"
       android:exported="false" />

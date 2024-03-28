@@ -50,6 +50,7 @@
   <string name="set_other_clear_key_code">已刷新</string>
   <string name="set_other_locale">语言切换(中文/English)</string>
   <string name="set_other_locale_code">OK, you may need to restart the APP</string>
+  <string name="set_other_log">查看日志</string>
   <string name="set_about">关于</string>
   <string name="set_about_ip">查看本机IP及扫描设备</string>
   <string name="set_about_website">项目主页</string>
@@ -66,6 +67,11 @@
   <string name="ip_scanning_device">扫描中…</string>
   <string name="ip_scan_finish_copy">扫描完成(点击复制)</string>
   <string name="ip_scan_finish_none">扫描完成(无设备)</string>
+
+  <!-- 查看日志页面 -->
+  <string name="log_title">日志</string>
+  <string name="log_other_devices">其他设备</string>
+  <string name="log_notify">某个设备出现错误，请查看日志</string>
 
   <!-- 查看密钥页面 -->
   <string name="adb_key_pub">公钥(Base64编码)</string>
