@@ -126,7 +126,7 @@
       android:layout_margin="4dp"
       android:focusable="false"
       android:src="@drawable/compress"
-      android:tint="@color/onCardBackground" />s
+      android:tint="@color/onCardBackground" />
 
     <ImageView
       android:id="@+id/button_close"
@@ -138,12 +138,12 @@
       android:tint="@color/alert" />
 
     <ImageView
-      android:id="@+id/button_light"
+      android:id="@+id/button_transfer"
       android:layout_width="38dp"
       android:layout_height="38dp"
       android:layout_margin="4dp"
       android:focusable="false"
-      android:src="@drawable/lightbulb"
+      android:src="@drawable/share_out"
       android:tint="@color/onCardBackground" />
 
     <ImageView

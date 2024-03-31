@@ -94,9 +94,18 @@
     android:layout_gravity="top|center_horizontal"
     android:layout_marginTop="45dp"
     android:background="@drawable/background_cron"
-    android:columnCount="4"
+    android:columnCount="5"
     android:elevation="6dp"
     android:padding="8dp">
+
+    <ImageView
+      android:id="@+id/reset_location"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/reset_location"
+      android:tint="@color/onCardBackground" />
 
     <ImageView
       android:id="@+id/button_nav_bar"
@@ -135,12 +144,21 @@
       android:tint="@color/onCardBackground" />
 
     <ImageView
-      android:id="@+id/reset_location"
+      android:id="@+id/button_transfer"
       android:layout_width="38dp"
       android:layout_height="38dp"
       android:layout_margin="2dp"
       android:focusable="false"
-      android:src="@drawable/reset_location"
+      android:src="@drawable/share_out"
+      android:tint="@color/onCardBackground" />
+
+    <ImageView
+      android:id="@+id/button_light"
+      android:layout_width="38dp"
+      android:layout_height="38dp"
+      android:layout_margin="2dp"
+      android:focusable="false"
+      android:src="@drawable/lightbulb"
       android:tint="@color/onCardBackground" />
 
     <ImageView

@@ -62,6 +62,47 @@
 
   </GridLayout>
 
+  <TextView
+    android:id="@+id/specified_app_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:text="@string/add_device_specify_app"
+    android:textColor="@color/onCardBackground"
+    android:textSize="@dimen/smallFont" />
+
+  <GridLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:columnCount="2" >
+
+    <EditText
+        android:id="@+id/specified_app"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="5"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]-.:*"
+        android:hint="@string/add_device_specify_app_hint"
+        android:textColor="@color/onCardBackground"
+        android:textColorHint="@color/onCardBackgroundSecond"
+        android:textSize="@dimen/smallFont" />
+
+    <Button
+        android:id="@+id/scan_remote_app_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_gravity="end"
+        android:background="@drawable/background_cron"
+        android:backgroundTint="@color/button"
+        android:gravity="center"
+        android:text="@string/add_device_scan"
+        android:textColor="@color/onButton"
+        android:textSize="@dimen/smallFont" />
+
+  </GridLayout>
+
+
   <CheckBox
     android:id="@+id/is_options"
     android:layout_width="wrap_content"

@@ -1,20 +1,29 @@
 package top.eiyooooo.easycontrol.app.adb;
 
+import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import android.util.Pair;
+import top.eiyooooo.easycontrol.app.BuildConfig;
+import top.eiyooooo.easycontrol.app.R;
 import top.eiyooooo.easycontrol.app.buffer.Buffer;
 import top.eiyooooo.easycontrol.app.buffer.BufferStream;
+import top.eiyooooo.easycontrol.app.entity.AppData;
+import top.eiyooooo.easycontrol.app.entity.Device;
+import top.eiyooooo.easycontrol.app.helper.L;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
-// 此部分代码摘抄借鉴了tananaev大佬的开源代码(https://github.com/tananaev/adblib)以及开源库dadb(https://github.com/mobile-dev-inc/dadb)
-// 因为官方adb协议文档写的十分糟糕，因此此部分代码的实现参考了cstyan大佬所整理的文档，再次进行感谢：https://github.com/cstyan/adbDocumentation
 public class Adb {
+  public static final HashMap<String, Adb> adbMap = new HashMap<>();
+
   private final AdbChannel channel;
   private int localIdPool = 1;
   private int MAX_DATA = AdbProtocol.CONNECT_MAXDATA;
@@ -25,14 +34,31 @@ public class Adb {
   private final Thread handleInThread = new Thread(this::handleIn);
   private final Thread handleOutThread = new Thread(this::handleOut);
 
-  public Adb(String host, int port, AdbKeyPair keyPair) throws Exception {
-    channel = new TcpChannel(host, port);
+  private final String uuid;
+  private static final String serverName = "/data/local/tmp/easycontrol_for_car_server_" + BuildConfig.VERSION_CODE + ".jar";
+  public Thread startServerThread = new Thread(this::startServer);
+  public BufferStream serverShell;
+
+  public Adb(String uuid, String address, AdbKeyPair keyPair) throws Exception {
+    this.uuid = uuid;
+    Pair<String, Integer> addressPair = PublicTools.getIpAndPort(address);
+    channel = new TcpChannel(addressPair.first, addressPair.second, false);
+    connect(keyPair);
+    startServerThread.start();
+  }
+
+  public Adb(String address, AdbKeyPair keyPair) throws Exception {
+    this.uuid = null;
+    Pair<String, Integer> addressPair = PublicTools.getIpAndPort(address);
+    channel = new TcpChannel(addressPair.first, addressPair.second, true);
     connect(keyPair);
   }
 
-  public Adb(UsbDevice usbDevice, AdbKeyPair keyPair) throws Exception {
+  public Adb(String uuid, UsbDevice usbDevice, AdbKeyPair keyPair) throws Exception {
+    this.uuid = uuid;
     channel = new UsbChannel(usbDevice);
     connect(keyPair);
+    startServerThread.start();
   }
 
   private void connect(AdbKeyPair keyPair) throws Exception {
@@ -49,13 +75,100 @@ public class Adb {
     }
     if (message.command != AdbProtocol.CMD_CNXN) {
       channel.close();
-      throw new Exception("ADB连接失败");
+      throw new Exception("ADB connect error");
     }
     MAX_DATA = message.arg1;
+    if (uuid == null) {
+      channel.close();
+      return;
+    }
     // 启动后台进程
     handleInThread.setPriority(Thread.MAX_PRIORITY);
     handleInThread.start();
     handleOutThread.start();
+  }
+
+  public void startServer() {
+    try {
+      if (BuildConfig.ENABLE_DEBUG_FEATURE || !runAdbCmd("ls /data/local/tmp/easycontrol_*").contains(serverName)) {
+        runAdbCmd("rm /data/local/tmp/easycontrol_* ");
+        pushFile(AppData.main.getResources().openRawResource(R.raw.easycontrol_server), serverName);
+      }
+      if (serverShell != null) serverShell.close();
+      String cmd = "CLASSPATH=" + serverName + " app_process / top.eiyooooo.easycontrol.server.Server\n";
+      serverShell = getShell();
+      serverShell.write(ByteBuffer.wrap(cmd.getBytes()));
+      waitingData(0);
+    } catch (Exception e) {
+      L.log(uuid, e);
+      PublicTools.logToast(AppData.main.getString(R.string.log_notify));
+    }
+  }
+
+  public static String getStringResponseFromServer(Device device, String request, String... args) throws Exception {
+    Adb adb = getAdb(device);
+    return adb.getStringResponse(request, args);
+  }
+
+  public static Drawable getDrawableResponseFromServer(Device device, String request, String... args) throws Exception {
+    Adb adb = getAdb(device);
+    return adb.getDrawableResponse(request, args);
+  }
+
+  private static Adb getAdb(Device device) throws Exception {
+    String uuid = device.uuid;
+    Adb adb = adbMap.get(uuid);
+    if (adb == null) throw new Exception("adb not start");
+    if (!adb.startServerThread.isAlive() && (adb.serverShell == null || adb.serverShell.isClosed())) {
+      adb.startServerThread = new Thread(adb::startServer);
+      adb.startServerThread.start();
+    }
+    if (adb.startServerThread.isAlive())
+      adb.startServerThread.join();
+    return adb;
+  }
+
+  private String getStringResponse(String request, String... args) throws Exception {
+    return new String(getResponse(request, args), StandardCharsets.UTF_8);
+  }
+
+  private Drawable getDrawableResponse(String request, String... args) throws Exception {
+    byte[] bitmap = getResponse(request, args);
+    return PublicTools.byteArrayBitmapToDrawable(bitmap);
+  }
+
+  private byte[] getResponse(String request, String[] args) throws Exception {
+    StringBuilder sb = new StringBuilder();
+    sb.append("/").append(request).append("?");
+    for (String arg : args) {
+      sb.append(arg).append("&");
+    }
+    sb.deleteCharAt(sb.length() - 1).append("\n");
+    String requestCmd = sb.toString();
+
+    serverShell.readAllBytes();
+    serverShell.write(ByteBuffer.wrap(requestCmd.getBytes()));
+    serverShell.readByteArray(requestCmd.length() + 1);
+    waitingData(4);
+    int len = serverShell.readInt();
+    return serverShell.readByteArray(len).array();
+  }
+
+  ArrayList<Integer> dataReceivingList = new ArrayList<>();
+  private void waitingData(int byteNum) throws InterruptedException {
+    dataReceivingList.clear();
+    while (true) {
+      int newSize = serverShell.getSize();
+      if (newSize == 0) continue;
+      if (byteNum > 0 && newSize > byteNum)
+        break;
+      dataReceivingList.add(newSize);
+      if (dataReceivingList.size() > 1) {
+        int oldSize = dataReceivingList.get(dataReceivingList.size() - 2);
+        if (oldSize == newSize) break;
+      }
+      Thread.sleep(400);
+    }
   }
 
   private BufferStream open(String destination, boolean canMultipleSend) throws InterruptedException {
@@ -162,7 +275,9 @@ public class Adb {
           }
         }
       }
-    } catch (Exception ignored) {
+    } catch (Exception e) {
+      L.log(uuid, e);
+      PublicTools.logToast(AppData.main.getString(R.string.log_notify));
       close();
     }
   }
@@ -174,7 +289,9 @@ public class Adb {
         if (!sendBuffer.isEmpty()) channel.write(sendBuffer.read(sendBuffer.getSize()));
         channel.flush();
       }
-    } catch (IOException | InterruptedException ignored) {
+    } catch (Exception e) {
+      L.log(uuid, e);
+      PublicTools.logToast(AppData.main.getString(R.string.log_notify));
       close();
     }
   }

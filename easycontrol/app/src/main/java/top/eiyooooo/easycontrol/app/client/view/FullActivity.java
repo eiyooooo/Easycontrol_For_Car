@@ -88,6 +88,8 @@ public class FullActivity extends Activity implements SensorEventListener {
   public void changeMode(int mode) {
     fullActivity.buttonSwitch.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
     fullActivity.buttonHome.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
+    if (mode == 0) fullActivity.buttonTransfer.setImageResource(R.drawable.share_out);
+    else fullActivity.buttonTransfer.setImageResource(R.drawable.share_in);
   }
 
   // 获取去除底部操作栏后的屏幕大小，用于修改分辨率使用
@@ -115,12 +117,22 @@ public class FullActivity extends Activity implements SensorEventListener {
     fullActivity.buttonMini.setOnClickListener(v -> clientView.changeToMini(0));
     fullActivity.buttonFullExit.setOnClickListener(v -> clientView.changeToSmall());
     fullActivity.buttonClose.setOnClickListener(v -> clientView.onClose.run());
-    fullActivity.buttonLight.setOnClickListener(v -> {
-      clientView.controlPacket.sendLightEvent(Display.STATE_ON);
+    if (clientView.mode == 1) fullActivity.buttonTransfer.setImageResource(R.drawable.share_in);
+    fullActivity.buttonTransfer.setOnClickListener(v -> {
+      clientView.changeMode.run(clientView.mode == 0 ? 1 : 0);
       barViewTimer();
     });
+    if (!clientView.lightState) fullActivity.buttonLightOff.setImageResource(R.drawable.lightbulb);
     fullActivity.buttonLightOff.setOnClickListener(v -> {
-      clientView.controlPacket.sendLightEvent(Display.STATE_UNKNOWN);
+      if (clientView.lightState) {
+        clientView.controlPacket.sendLightEvent(Display.STATE_UNKNOWN);
+        fullActivity.buttonLightOff.setImageResource(R.drawable.lightbulb);
+        clientView.lightState = false;
+      } else {
+        clientView.controlPacket.sendLightEvent(Display.STATE_ON);
+        fullActivity.buttonLightOff.setImageResource(R.drawable.lightbulb_off);
+        clientView.lightState = true;
+      }
       barViewTimer();
     });
     fullActivity.buttonPower.setOnClickListener(v -> {

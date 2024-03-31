@@ -12,9 +12,10 @@ public class TcpChannel implements AdbChannel {
   private final InputStream inputStream;
   private final OutputStream outputStream;
 
-  public TcpChannel(String host, int port) throws IOException {
+  public TcpChannel(String host, int port, boolean test) throws IOException {
     socket.setTcpNoDelay(true);
     socket.connect(new InetSocketAddress(host, port), 5000);
+    if (test) socket.setSoTimeout(2200);
     inputStream = socket.getInputStream();
     outputStream = socket.getOutputStream();
   }

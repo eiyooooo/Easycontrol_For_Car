@@ -11,6 +11,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
+import top.eiyooooo.easycontrol.app.adb.Adb;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.R;
@@ -123,11 +124,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
   // 当断开设备
   private void onCutUsb(UsbDevice usbDevice) {
-    for (Map.Entry<String, UsbDevice> entry : deviceListAdapter.linkDevices.entrySet()) {
+    for (Map.Entry<String, UsbDevice> entry : DeviceListAdapter.linkDevices.entrySet()) {
       UsbDevice tmp = entry.getValue();
       if (tmp.getVendorId() == usbDevice.getVendorId() && tmp.getProductId() == usbDevice.getProductId()) {
         for (Client client : Client.allClient) if (client.uuid.equals(entry.getKey())) client.release(AppData.main.getString(R.string.error_stream_closed));
-        deviceListAdapter.linkDevices.remove(entry.getKey());
+        DeviceListAdapter.linkDevices.remove(entry.getKey());
+        Adb.adbMap.remove(entry.getKey());
+        break;
       }
     }
     deviceListAdapter.update();
@@ -147,7 +150,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
           device = Device.getDefaultDevice(uuid, Device.TYPE_LINK);
           AppData.dbHelper.insert(device);
         }
-        deviceListAdapter.linkDevices.put(uuid, usbDevice);
+        DeviceListAdapter.linkDevices.put(uuid, usbDevice);
         deviceListAdapter.update();
         break;
       }

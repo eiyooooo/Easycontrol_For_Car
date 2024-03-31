@@ -31,7 +31,6 @@ public class SmallView extends ViewOutlineProvider {
   private int InitSize = 0;
   private boolean InitPos = false;
   private boolean needSetResolution = true;
-  private boolean lightState;
   int longEdge;
   int shortEdge;
 
@@ -52,7 +51,6 @@ public class SmallView extends ViewOutlineProvider {
   public SmallView(ClientView clientView) {
     this.clientView = clientView;
     smallViewParams.gravity = Gravity.START | Gravity.TOP;
-    lightState = !AppData.setting.getTurnOffScreenIfStart();
     // 设置默认导航栏状态
     setNavBarHide(AppData.setting.getDefaultShowNavBar());
     // 获取屏幕宽高
@@ -99,7 +97,7 @@ public class SmallView extends ViewOutlineProvider {
         }
 
         if (needSetResolution) {
-          clientView.controlPacket.sendChangeSizeEvent((float) clientView.device.small_free_width / (float) clientView.device.small_free_height);
+          clientView.changeSize((float) clientView.device.small_free_width / (float) clientView.device.small_free_height);
           needSetResolution = false;
         }
 
@@ -216,6 +214,8 @@ public class SmallView extends ViewOutlineProvider {
   public void changeMode(int mode) {
     smallView.buttonSwitch.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
     smallView.buttonHome.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
+    if (mode == 0) smallView.buttonTransfer.setImageResource(R.drawable.share_out);
+    else smallView.buttonTransfer.setImageResource(R.drawable.share_in);
   }
 
   // 设置焦点监听
@@ -356,17 +356,19 @@ public class SmallView extends ViewOutlineProvider {
       AppData.dbHelper.update(clientView.device);
       clientView.onClose.run();
     });
-    if (!lightState) smallView.buttonLightOff.setImageResource(R.drawable.lightbulb);
+    if (clientView.mode == 1) smallView.buttonTransfer.setImageResource(R.drawable.share_in);
+    smallView.buttonTransfer.setOnClickListener(v -> {
+      clientView.changeMode.run(clientView.mode == 0 ? 1 : 0);
+      barViewTimer();
+    });
+    smallView.buttonLight.setOnClickListener(v -> {
+      controlPacket.sendLightEvent(Display.STATE_ON);
+      clientView.lightState = true;
+      barViewTimer();
+    });
     smallView.buttonLightOff.setOnClickListener(v -> {
-      if (lightState) {
-        controlPacket.sendLightEvent(Display.STATE_UNKNOWN);
-        smallView.buttonLightOff.setImageResource(R.drawable.lightbulb);
-        lightState = false;
-      } else {
-        controlPacket.sendLightEvent(Display.STATE_ON);
-        smallView.buttonLightOff.setImageResource(R.drawable.lightbulb_off);
-        lightState = true;
-      }
+      controlPacket.sendLightEvent(Display.STATE_UNKNOWN);
+      clientView.lightState = false;
       barViewTimer();
     });
     smallView.resetLocation.setOnClickListener(v -> {

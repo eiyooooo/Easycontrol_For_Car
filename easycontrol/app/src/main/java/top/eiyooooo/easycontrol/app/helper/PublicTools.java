@@ -9,7 +9,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.hardware.usb.UsbDevice;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.net.DhcpInfo;
@@ -27,10 +32,7 @@ import android.widget.*;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import top.eiyooooo.easycontrol.app.R;
+import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.databinding.ItemAddDeviceBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemLoadingBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemSpinnerBinding;
@@ -97,6 +100,12 @@ public class PublicTools {
     return (int) (dp * AppData.realScreenSize.density);
   }
 
+  // Bitmap转Drawable
+  public static Drawable byteArrayBitmapToDrawable(byte[] bytes) {
+    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    return new BitmapDrawable(Resources.getSystem(), bitmap);
+  }
+
   // 创建弹窗
   public static Dialog createDialog(Context context, boolean canCancel, View view) {
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -122,6 +131,7 @@ public class PublicTools {
     // 设置值
     itemAddDeviceBinding.name.setText(device.name);
     itemAddDeviceBinding.address.setText(device.address);
+    itemAddDeviceBinding.specifiedApp.setText(device.specified_app);
     // 创建View
     createDeviceOptionSet(context, itemAddDeviceBinding.options, device);
     // 特殊设备不允许修改
@@ -154,11 +164,37 @@ public class PublicTools {
         });
       }).start();
     });
+    itemAddDeviceBinding.scanRemoteAppList.setOnClickListener(v -> {
+      UsbDevice usbDevice = DeviceListAdapter.linkDevices.get(device.uuid);
+      if (device.isLinkDevice() && usbDevice == null) return;
+      if (device.type == Device.TYPE_NORMAL && !String.valueOf(itemAddDeviceBinding.address.getText()).isEmpty()) device.address = String.valueOf(itemAddDeviceBinding.address.getText());
+      itemAddDeviceBinding.specifiedAppTitle.setText(context.getString(R.string.add_device_scanning));
+      itemAddDeviceBinding.scanRemoteAppList.setEnabled(false);
+      new Thread(() -> {
+        ArrayList<String> remoteAppList = Client.getAppList(device, device.isLinkDevice() ? usbDevice : null);
+        AppData.uiHandler.post(() -> {
+          if (remoteAppList.isEmpty()) Toast.makeText(context, context.getString(R.string.add_device_scan_specify_app_finish_error), Toast.LENGTH_SHORT).show();
+          else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(context.getString(R.string.add_device_scan_finish));
+            builder.setItems(remoteAppList.toArray(new String[0]), (dialog1, which) -> {
+              String app = remoteAppList.get(which);
+              if (app.contains("@")) app = app.split("@")[1];
+              itemAddDeviceBinding.specifiedApp.setText(app);
+            });
+            builder.show();
+          }
+          itemAddDeviceBinding.specifiedAppTitle.setText(context.getString(R.string.add_device_specify_app));
+          itemAddDeviceBinding.scanRemoteAppList.setEnabled(true);
+        });
+      }).start();
+    });
     // 设置确认按钮监听
     itemAddDeviceBinding.ok.setOnClickListener(v -> {
       if (device.type == Device.TYPE_NORMAL && String.valueOf(itemAddDeviceBinding.address.getText()).equals("")) return;
       device.name = String.valueOf(itemAddDeviceBinding.name.getText());
       device.address = String.valueOf(itemAddDeviceBinding.address.getText());
+      device.specified_app = String.valueOf(itemAddDeviceBinding.specifiedApp.getText());
       if (AppData.dbHelper.getByUUID(device.uuid) != null) AppData.dbHelper.update(device);
       else AppData.dbHelper.insert(device);
       deviceListAdapter.update();
@@ -867,8 +903,8 @@ public class PublicTools {
     void run(String str);
   }
 
-  public interface MyFunctionBytes {
-    void run(byte[] buffer);
+  public interface MyFunctionInt {
+    void run(int num);
   }
 
 }

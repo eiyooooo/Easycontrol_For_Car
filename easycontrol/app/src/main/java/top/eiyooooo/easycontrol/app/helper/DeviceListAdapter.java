@@ -7,7 +7,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,6 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -24,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import top.eiyooooo.easycontrol.app.adb.Adb;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
@@ -35,7 +33,7 @@ import top.eiyooooo.easycontrol.app.databinding.ItemSetDeviceBinding;
 public class DeviceListAdapter extends BaseExpandableListAdapter {
 
   public static final ArrayList<Device> devicesList = new ArrayList<>();
-  public final HashMap<String, UsbDevice> linkDevices = new HashMap<>();
+  public static final HashMap<String, UsbDevice> linkDevices = new HashMap<>();
   private final Context context;
   private final ExpandableListView expandableListView;
   private static boolean startedDefault = false;
@@ -120,8 +118,14 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     // 设置展开图标
     devicesItemBinding.deviceExpand.setRotation(isExpanded ? 270 : 180);
     // 设置卡片值
-    if (device.isLinkDevice())
-      devicesItemBinding.deviceIcon.setImageResource(R.drawable.link);
+    if (device.isLinkDevice()) {
+      if (device.connection == 1)
+        devicesItemBinding.deviceIcon.setImageResource(R.drawable.link_can_connect);
+      else if (device.connection == 0)
+        devicesItemBinding.deviceIcon.setImageResource(R.drawable.link_checking_connection);
+      else
+        devicesItemBinding.deviceIcon.setImageResource(R.drawable.link_can_not_connect);
+    }
     else if (device.connection == 0)
       devicesItemBinding.deviceIcon.setImageResource(R.drawable.wifi_checking_connection);
     else if (device.connection == 1)
@@ -173,18 +177,28 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   private void checkConnection(Device device) {
     device.connection = 0;
 
+    if (checkConnectionExecutor != null && checkConnectionExecutor.isShutdown() && checkingConnectionThread != null) {
+      try {
+        checkingConnectionThread.join();
+      } catch (Exception ignored) {
+      }
+    }
+
     if (checkConnectionExecutor == null)
       checkConnectionExecutor = Executors.newFixedThreadPool(devicesList.size() + 1);
 
     if (checkingConnectionThread != null) checkingConnectionThread.interrupt();
     checkingConnectionThread = new Thread(() -> {
       try {
-        Thread.sleep(1000);
+        Thread.sleep(1500);
+        checkConnectionExecutor.shutdown();
         synchronized (checkingConnection) {
           checkingConnection.notifyAll();
         }
-        checkConnectionExecutor.shutdown();
-        while (!checkConnectionExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {}
+        while (!checkConnectionExecutor.awaitTermination(600, TimeUnit.MILLISECONDS)) {
+          PublicTools.logToast(AppData.main.getString(R.string.error_need_auth));
+          checkConnectionExecutor.shutdownNow();
+        }
         AppData.uiHandler.post(this::notifyDataSetChanged);
         checkConnectionExecutor = null;
         if (!startedDefault) {
@@ -199,25 +213,31 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
 
     checkConnectionExecutor.execute(() -> {
       try {
-        if (!device.isLinkDevice()) {
-          Pair<String, Integer> address = PublicTools.getIpAndPort(device.address);
-          Socket socket = new Socket();
-          socket.connect(new InetSocketAddress(address.first, address.second), 800);
-          socket.close();
+        if (!Adb.adbMap.containsKey(device.uuid)) {
+          if (device.isLinkDevice()) {
+            Adb adb = new Adb(device.uuid, linkDevices.get(device.uuid), AppData.keyPair);
+            Adb.adbMap.put(device.uuid, adb);
+          }
+          else {
+            new Adb(device.address, AppData.keyPair);
+            Adb adb = new Adb(device.uuid, device.address, AppData.keyPair);
+            Adb.adbMap.put(device.uuid, adb);
+          }
         }
         synchronized (checkingConnection) {
           checkingConnection.wait();
-          if (device.connection == 0) {
-            device.connection = 1;
-            for (Device d : devicesList) {
-              if (d.uuid.equals(device.uuid)) {
-                AppData.uiHandler.post(() -> expandableListView.expandGroup(devicesList.indexOf(d)));
-              }
+        }
+        if (device.connection == 0) device.connection = 1;
+        if (device.connection == 1) {
+          for (Device d : devicesList) {
+            if (d.uuid.equals(device.uuid)) {
+              AppData.uiHandler.post(() -> expandableListView.expandGroup(devicesList.indexOf(d)));
             }
           }
         }
-      } catch (Exception ignored) {
+      } catch (Exception e) {
         device.connection = 2;
+        L.log(device.uuid, e);
         for (Device d : devicesList) {
           if (d.uuid.equals(device.uuid)) {
             AppData.uiHandler.post(() -> expandableListView.collapseGroup(devicesList.indexOf(d)));
@@ -286,12 +306,25 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     ArrayList<Device> tmp1 = new ArrayList<>();
     ArrayList<Device> tmp2 = new ArrayList<>();
     for (Device device : rawDevices) {
-      if (device.isLinkDevice() && linkDevices.containsKey(device.uuid)) tmp1.add(device);
-      else if (device.isNormalDevice()) tmp2.add(device);
+      if (device.isLinkDevice() && linkDevices.containsKey(device.uuid))
+        inheritDevicesList(tmp1, device);
+      else if (device.isNormalDevice())
+        inheritDevicesList(tmp2, device);
     }
     devicesList.clear();
     devicesList.addAll(tmp1);
     devicesList.addAll(tmp2);
+  }
+
+  private void inheritDevicesList(ArrayList<Device> newList, Device device) {
+    for (Device d : devicesList) {
+      if (d.uuid.equals(device.uuid)) {
+        d.connection = -1;
+        newList.add(d);
+        return;
+      }
+    }
+    newList.add(device);
   }
 
   public void startByUUID(String uuid, int mode) {

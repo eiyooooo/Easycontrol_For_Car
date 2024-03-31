@@ -9,15 +9,18 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Pair;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.view.View;
 import android.view.WindowManager;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
+import top.eiyooooo.easycontrol.app.helper.L;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
 import top.eiyooooo.easycontrol.app.BuildConfig;
 import top.eiyooooo.easycontrol.app.R;
@@ -44,8 +47,8 @@ public class Client {
   public final ControlPacket controlPacket = new ControlPacket(this::write);
   public final ClientView clientView;
   public final String uuid;
-  public int mode; // 0为屏幕镜像模式，1为应用流转模式
-  private final boolean isUsbDevice;
+  public int mode = 0; // 0为屏幕镜像模式，1为应用流转模式
+  public int displayId = 0;
   private Thread startThread;
   private final Thread loadingTimeOutThread;
   private final Thread keepAliveThread;
@@ -66,21 +69,18 @@ public class Client {
       if (client.uuid.equals(device.uuid)) {
         if (client.multiLink == 0) client.multiLink = 1;
         this.multiLink = 2;
-        if (usbDevice != null) this.adb = client.adb;
         break;
       }
     }
     allClient.add(this);
     // 初始化
     uuid = device.uuid;
-    this.mode = mode;
-    this.isUsbDevice = usbDevice != null;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
       handlerThread.start();
       handler = new Handler(handlerThread.getLooper());
     }
-    clientView = new ClientView(device, mode, controlPacket, () -> {
+    clientView = new ClientView(device, controlPacket, this::changeMode, () -> {
       status = 1;
       executeStreamInThread.start();
       AppData.uiHandler.post(this::executeOtherService);
@@ -109,7 +109,8 @@ public class Client {
     });
     startThread = new Thread(() -> {
       try {
-        if (adb == null) adb = connectADB(device, usbDevice);
+        adb = connectADB(device, usbDevice);
+        changeMode(mode);
         startServer(device);
         connectServer();
         AppData.uiHandler.post(() -> {
@@ -117,10 +118,11 @@ public class Client {
           else clientView.changeToSmall();
         });
       } catch (Exception e) {
-        release(Arrays.toString(e.getStackTrace()));
+        L.log(device.uuid, e);
+        release(AppData.main.getString(R.string.log_notify));
       } finally {
         if (loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
-        if (loadingTimeOutThread != null) loadingTimeOutThread.interrupt();
+        loadingTimeOutThread.interrupt();
         keepAliveThread.start();
       }
     });
@@ -131,37 +133,113 @@ public class Client {
 
   // 连接ADB
   private static Adb connectADB(Device device, UsbDevice usbDevice) throws Exception {
-    if (usbDevice == null) {
-      Pair<String, Integer> address = PublicTools.getIpAndPort(device.address);
-      return new Adb(address.first, address.second, AppData.keyPair);
-    } else return new Adb(usbDevice, AppData.keyPair);
+    if (Adb.adbMap.containsKey(device.uuid)) return Adb.adbMap.get(device.uuid);
+    if (usbDevice == null) return new Adb(device.uuid, device.address, AppData.keyPair);
+    else return new Adb(device.uuid, usbDevice, AppData.keyPair);
   }
 
   // 启动Server
   private void startServer(Device device) throws Exception {
-    if (BuildConfig.ENABLE_DEBUG_FEATURE || !adb.runAdbCmd("ls /data/local/tmp/easycontrol_*").contains(serverName)) {
-      adb.runAdbCmd("rm /data/local/tmp/easycontrol_* ");
-      adb.pushFile(AppData.main.getResources().openRawResource(R.raw.easycontrol_server), serverName);
-    }
-    if (mode == 1) {
-      if (AppData.setting.getForceDesktopMode()) adb.runAdbCmd("settings put global force_desktop_mode_on_external_displays 1");
-      else adb.runAdbCmd("settings put global force_desktop_mode_on_external_displays 0");
-    }
+    if (adb.serverShell == null || adb.serverShell.isClosed()) adb.startServer();
     shell = adb.getShell();
     int ScreenMode = (AppData.setting.getTurnOnScreenIfStart() ? 1 : 0) * 1000
             + (AppData.setting.getTurnOffScreenIfStart() ? 1 : 0) * 100
             + (AppData.setting.getTurnOffScreenIfStop() ? 1 : 0) * 10
             + (AppData.setting.getTurnOnScreenIfStop() ? 1 : 0);
-    shell.write(ByteBuffer.wrap(("app_process -Djava.class.path=" + serverName + " / top.eiyooooo.easycontrol.server.Server"
+    shell.write(ByteBuffer.wrap(("app_process -Djava.class.path=" + serverName + " / top.eiyooooo.easycontrol.server.Scrcpy"
       + " isAudio=" + (device.isAudio ? 1 : 0)
       + " maxSize=" + device.maxSize
       + " maxFps=" + device.maxFps
       + " maxVideoBit=" + device.maxVideoBit
-      + " mode=" + (mode == 1 ? 1 : 0)
+      + " displayId=" + displayId
       + " keepAwake=" + (AppData.setting.getKeepAwake() ? 1 : 0)
       + " ScreenMode=" + ScreenMode
       + " useH265=" + ((device.useH265 && supportH265) ? 1 : 0)
       + " useOpus=" + ((device.useOpus && supportOpus) ? 1 : 0) + " \n").getBytes()));
+    logger();
+  }
+
+  private Thread loggerThread;
+  private void logger() {
+    loggerThread = new Thread(() -> {
+      try {
+        while (!Thread.interrupted()) {
+          String log = new String(shell.readAllBytes().array(), StandardCharsets.UTF_8);
+          if (!log.isEmpty()) L.logWithoutTime(uuid, log);
+          Thread.sleep(1000);
+        }
+      } catch (Exception ignored) {
+      }
+    });
+    loggerThread.start();
+  }
+
+  private void tryCreateDisplay(Device device) {
+    try {
+      if (AppData.setting.getForceDesktopMode()) adb.runAdbCmd("settings put global force_desktop_mode_on_external_displays 1");
+      else adb.runAdbCmd("settings put global force_desktop_mode_on_external_displays 0");
+
+      String output = Adb.getStringResponseFromServer(device, "createVirtualDisplay");
+      if (output.contains("success")) {
+        displayId = Integer.parseInt(output.substring(output.lastIndexOf(" -> ") + 4));
+        clientView.displayId = displayId;
+        changeMode(1);
+      } else throw new Exception("");
+    } catch (Exception ignored) {
+      changeMode(0);
+      PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
+    }
+  }
+
+  private void appTransfer(Device device) {
+    try {
+      JSONArray tasksArray = null;
+      try {
+        JSONObject tasks = new JSONObject(Adb.getStringResponseFromServer(device, "getRecentTasks"));
+        tasksArray = tasks.getJSONArray("data");
+        for (int i = 0; i < tasksArray.length(); i++) {
+          if (Integer.parseInt(tasksArray.getJSONObject(i).getString("taskId")) <= 0) {
+            tasksArray.remove(i);
+            i--;
+          }
+        }
+      } catch (Exception ignored) {
+      }
+      if (!device.specified_app.isEmpty()) {
+        String checkApp = Adb.getStringResponseFromServer(device, "getAppMainActivity", "package=" + device.specified_app);
+        if (checkApp.isEmpty()) {
+          PublicTools.logToast(AppData.main.getString(R.string.error_app_not_found));
+        } else {
+          int appTaskId = 0;
+          if (tasksArray != null) {
+            for (int i = 0; i < tasksArray.length(); i++) {
+              if (tasksArray.getJSONObject(i).getString("topPackage").equals(device.specified_app)) {
+                try {
+                  appTaskId = tasksArray.getJSONObject(i).getInt("taskId");
+                } catch (JSONException ignored) {
+                }
+                break;
+              }
+            }
+          }
+          if (appTaskId == 0) {
+            String output = Adb.getStringResponseFromServer(device, "openAppByPackage", "package=" + device.specified_app, "displayId=" + displayId);
+            if (output.contains("failed")) throw new Exception("");
+          } else {
+            String output = adb.runAdbCmd("am display move-stack " + appTaskId + " " + displayId);
+            if (output.contains("Exception")) throw new Exception("");
+          }
+        }
+      } else {
+        if (tasksArray != null && tasksArray.length() > 0) {
+          String output = adb.runAdbCmd("am display move-stack " + tasksArray.getJSONObject(0).getInt("taskId") + " " + displayId);
+          if (output.contains("Exception")) throw new Exception("");
+        } else throw new Exception("");
+      }
+    } catch (Exception ignored) {
+      changeMode(0);
+      PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_failed));
+    }
   }
 
   // 连接Server
@@ -169,7 +247,7 @@ public class Client {
     Thread.sleep(50);
     for (int i = 0; i < 60; i++) {
       try {
-        bufferStream = adb.localSocketForward("easycontrol");
+        bufferStream = adb.localSocketForward("easycontrol_for_car_scrcpy");
         return;
       } catch (Exception ignored) {
         Thread.sleep(50);
@@ -184,7 +262,6 @@ public class Client {
   private static final int CLIPBOARD_EVENT = 3;
   private static final int CHANGE_SIZE_EVENT = 4;
   private static final int KEEP_ALIVE_EVENT = 5;
-  private static final int DISPLAY_ID_EVENT = 6;
 
   private void executeStreamIn() {
     try {
@@ -193,7 +270,6 @@ public class Client {
       boolean useOpus = true;
       if (bufferStream.readByte() == 1) useOpus = bufferStream.readByte() == 1;
       boolean useH265 = bufferStream.readByte() == 1;
-      boolean firstTransferComplete = false;
       // 循环处理报文
       while (!Thread.interrupted()) {
         switch (bufferStream.readByte()) {
@@ -227,31 +303,11 @@ public class Client {
           case KEEP_ALIVE_EVENT:
             lastKeepAliveTime = System.currentTimeMillis();
             break;
-          case DISPLAY_ID_EVENT:
-            int displayId = bufferStream.readByte();
-            if (mode == 1) {
-              if (displayId == 0) {
-                PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
-                changeMode(0);
-              }
-              else if (displayId < 0) PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_failed));
-              else {
-                if (!firstTransferComplete) {
-                  PublicTools.logToast(AppData.main.getString(R.string.tip_application_transfer));
-                  firstTransferComplete = true;
-                } else PublicTools.logToast(AppData.main.getString(R.string.error_transferred_app_not_found));
-              }
-            }
-            break;
         }
       }
-    } catch (Exception ignored) {
-      String serverError = "";
-      try {
-        serverError = new String(shell.readAllBytes().array());
-      } catch (IOException | InterruptedException ignored1) {
-      }
-      release(AppData.main.getString(R.string.error_stream_closed) + serverError);
+    } catch (Exception e) {
+      L.log(uuid, e);
+      release(AppData.main.getString(R.string.log_notify));
     }
   }
 
@@ -266,13 +322,9 @@ public class Client {
   private void write(ByteBuffer byteBuffer) {
     try {
       bufferStream.write(byteBuffer);
-    } catch (Exception ignored) {
-      String serverError = "";
-      try {
-        serverError = new String(shell.readAllBytes().array());
-      } catch (IOException | InterruptedException ignored1) {
-      }
-      release(AppData.main.getString(R.string.error_stream_closed) + serverError);
+    } catch (Exception e) {
+      L.log(uuid, e);
+      release(AppData.main.getString(R.string.log_notify));
     }
   }
 
@@ -281,7 +333,7 @@ public class Client {
     status = -1;
     allClient.remove(this);
     if (error != null) PublicTools.logToast(error);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
       try {
         switch (i) {
           case 0:
@@ -296,27 +348,22 @@ public class Client {
             }
             break;
           case 1:
+            if (loggerThread != null) loggerThread.interrupt();
+            String log = new String(shell.readAllBytes().array(), StandardCharsets.UTF_8);
+            if (!log.isEmpty()) L.logWithoutTime(uuid, log);
+            break;
+          case 2:
             keepAliveThread.interrupt();
             executeStreamInThread.interrupt();
             if (handlerThread != null) handlerThread.quit();
             break;
-          case 2:
+          case 3:
             AppData.uiHandler.post(() -> clientView.hide(true));
             break;
-          case 3:
-            bufferStream.close();
-            boolean closeAdb = true;
-            if (isUsbDevice) {
-              for (Client client : allClient) {
-                if (client.uuid.equals(uuid)) {
-                  closeAdb = false;
-                  break;
-                }
-              }
-            }
-            if (closeAdb || adb != null) AppData.uiHandler.postDelayed(() -> adb.close(), 3000);
-            break;
           case 4:
+            bufferStream.close();
+            break;
+          case 5:
             videoDecode.release();
             if (audioDecode != null) audioDecode.release();
             break;
@@ -339,6 +386,26 @@ public class Client {
     }).start();
   }
 
+  public static ArrayList<String> getAppList(Device device, UsbDevice usbDevice) {
+    try {
+      if (Adb.adbMap.get(device.uuid) == null) {
+        if (device.isLinkDevice()) Adb.adbMap.put(device.uuid, new Adb(device.uuid, usbDevice, AppData.keyPair));
+        else Adb.adbMap.put(device.uuid, new Adb(device.uuid, device.address, AppData.keyPair));
+      }
+      ArrayList<String> appList = new ArrayList<>();
+      String output = Adb.getStringResponseFromServer(device, "getAllAppInfo", "app_type=1");
+      String[] allAppInfo = output.split("<!@n@!>");
+      for (String info : allAppInfo) {
+        String[] appInfo = info.split("<!@r@!>");
+        if (appInfo.length > 1) appList.add(appInfo[1] + "@" + appInfo[0]);
+      }
+      return appList;
+    } catch (Exception e) {
+      L.log(device.uuid, e);
+      return new ArrayList<>();
+    }
+  }
+
   public static void restartOnTcpip(Device device, UsbDevice usbDevice, PublicTools.MyFunctionBoolean handle) {
     new Thread(() -> {
       try {
@@ -357,8 +424,29 @@ public class Client {
     return status == 1 && clientView != null;
   }
 
-  private void changeMode(int mode) {
+  public void changeMode(int mode) {
+    if (this.mode == mode) return;
     this.mode = mode;
+    if (mode == 0) {
+      try {
+        Adb.getStringResponseFromServer(clientView.device, "releaseVirtualDisplay", "id=" + displayId);
+      } catch (Exception ignored) {
+      }
+      displayId = 0;
+    } else if (mode == 1) {
+      tryCreateDisplay(clientView.device);
+      if (displayId == 0) return;
+    }
+    new Thread(() -> {
+      try {
+        while (!isStarted()) {
+          Thread.sleep(1000);
+        }
+        controlPacket.sendConfigChangedEvent(-displayId);
+        if (mode != 0) appTransfer(clientView.device);
+      } catch (Exception ignored) {
+      }
+    }).start();
     clientView.changeMode(mode);
   }
 

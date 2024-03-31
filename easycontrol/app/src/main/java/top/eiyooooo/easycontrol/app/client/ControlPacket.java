@@ -91,11 +91,11 @@ public class ControlPacket {
     write.run(ByteBuffer.wrap(new byte[]{4}));
   }
 
-  // 发送修改分辨率事件
-  public void sendChangeSizeEvent(float newSize) {
+  // 发送更新事件
+  public void sendConfigChangedEvent(int mode) {
     ByteBuffer byteBuffer = ByteBuffer.allocate(5);
     byteBuffer.put((byte) 5);
-    byteBuffer.putFloat(newSize);
+    byteBuffer.putInt(mode);
     byteBuffer.flip();
     write.run(byteBuffer);
   }

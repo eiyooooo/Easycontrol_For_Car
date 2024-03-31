@@ -84,10 +84,13 @@
   <string name="add_device_name_hint">Non-null</string>
   <string name="add_device_address">Address:Port</string>
   <string name="add_device_address_hint">IPv4/v6 addresses or domain</string>
+  <string name="add_device_specify_app">Transfer specified application (package name)</string>
+  <string name="add_device_specify_app_hint">Leave blank for recently-used app transfer</string>
   <string name="add_device_scan">Scan</string>
   <string name="add_device_scanning">Scanning…</string>
   <string name="add_device_scan_finish">Scan finished</string>
   <string name="add_device_scan_address_finish_none">Scan finished(No device)</string>
+  <string name="add_device_scan_specify_app_finish_error">Scan error, please check if the device can be connected</string>
   <string name="add_device_option">Advanced options</string>
   <string name="add_device_button">OK</string>
 
@@ -114,9 +117,10 @@
   <string name="error_refused_back">Fullscreen mode intercepts return key event</string>
   <string name="error_connect_server">Failed to connect</string>
   <string name="error_stream_closed">Disconnected</string>
-  <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above, and non HyperOS device)</string>
-  <string name="error_transfer_app_failed">application transfer failed, transfer will restart after two seconds</string>
-  <string name="error_transferred_app_not_found">The transferred application has been closed, and an attempt has been made to transfer the foreground application again</string>
+  <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above)</string>
+  <string name="error_transfer_app_failed">application transfer failed, screen mirroring has been started</string>
+  <string name="error_app_not_found">The specified package name application does not exist</string>
+  <string name="error_need_auth">Please make sure all devices are authorized with ALWAYS ALLOW</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>

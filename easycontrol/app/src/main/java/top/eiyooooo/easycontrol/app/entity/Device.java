@@ -8,6 +8,7 @@ public class Device {
   public final int type;
   public String name;
   public String address;
+  public String specified_app;
   public boolean isAudio;
   public int maxSize;
   public int maxFps;
@@ -48,6 +49,7 @@ public class Device {
                 int type,
                 String name,
                 String address,
+                String specified_app,
                 boolean isAudio,
                 int maxSize,
                 int maxFps,
@@ -66,6 +68,7 @@ public class Device {
     this.type = type;
     this.name = name;
     this.address = address;
+    this.specified_app = specified_app;
     this.isAudio = isAudio;
     this.maxSize = maxSize;
     this.maxFps = maxFps;
@@ -98,7 +101,7 @@ public class Device {
   }
 
   public static Device getDefaultDevice(String uuid, int type) {
-    return new Device(uuid, type, uuid, "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
+    return new Device(uuid, type, uuid, "", "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
   }
 
   public boolean isNormalDevice() {

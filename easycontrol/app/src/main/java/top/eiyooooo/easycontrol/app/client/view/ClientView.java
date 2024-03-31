@@ -15,6 +15,8 @@ import android.view.animation.OvershootInterpolator;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
+import top.eiyooooo.easycontrol.app.adb.Adb;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.client.ControlPacket;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -23,8 +25,10 @@ import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 public class ClientView implements TextureView.SurfaceTextureListener {
   public final Device device;
-  public int mode;
+  public int mode = 0;
+  public int displayId = 0;
   public final ControlPacket controlPacket;
+  final PublicTools.MyFunctionInt changeMode;
   private final PublicTools.MyFunction onReady;
   public final PublicTools.MyFunction onClose;
   public final TextureView textureView;
@@ -34,23 +38,92 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   private final MiniView miniView;
   private FullActivity fullView;
 
+  private Pair<Integer, Integer> realDeviceSize;
   private Pair<Integer, Integer> videoSize;
   private Pair<Integer, Integer> maxSize;
   private Pair<Integer, Integer> surfaceSize;
   public boolean lastTouchIsInside = true;
+  boolean lightState;
 
-  public ClientView(Device device, int mode, ControlPacket controlPacket, PublicTools.MyFunction onReady, PublicTools.MyFunction onClose) {
+  public ClientView(Device device, ControlPacket controlPacket, PublicTools.MyFunctionInt changeMode, PublicTools.MyFunction onReady, PublicTools.MyFunction onClose) {
+    lightState = !AppData.setting.getTurnOffScreenIfStart();
     this.device = device;
-    this.mode = mode;
     textureView = new TextureView(AppData.main);
     smallView = new SmallView(this);
     miniView = new MiniView(this);
     this.controlPacket = controlPacket;
+    this.changeMode = changeMode;
     this.onReady = onReady;
     this.onClose = onClose;
     setTouchListener();
     textureView.setSurfaceTextureListener(this);
     smallView.changeMode(mode);
+  }
+
+  public void changeSize(float ratio) {
+    new Thread(() -> {
+      try {
+        float targetRatio = ratio;
+        if (targetRatio > 4 || targetRatio < 0.25) return;
+
+        if (realDeviceSize == null) {
+          String displayInfo = Adb.getStringResponseFromServer(device, "getDisplayInfo");
+          JSONArray jsonArray = new JSONArray(displayInfo);
+          for (int i = 0; i < jsonArray.length(); i++) {
+            if (jsonArray.getJSONObject(i).getInt("id") == displayId) {
+              int width = jsonArray.getJSONObject(i).getInt("width");
+              int height = jsonArray.getJSONObject(i).getInt("height");
+              int rotation = jsonArray.getJSONObject(i).getInt("rotation");
+              if (rotation == 1 || rotation == 3) realDeviceSize = new Pair<>(height, width);
+              else realDeviceSize = new Pair<>(width, height);
+              break;
+            }
+          }
+        }
+        if (realDeviceSize == null) return;
+
+        Pair<Integer, Integer> deviceSize = null;
+        String displayInfo = Adb.getStringResponseFromServer(device, "getDisplayInfo");
+        JSONArray jsonArray = new JSONArray(displayInfo);
+        for (int i = 0; i < jsonArray.length(); i++) {
+          if (jsonArray.getJSONObject(i).getInt("id") == displayId) {
+            int width = jsonArray.getJSONObject(i).getInt("width");
+            int height = jsonArray.getJSONObject(i).getInt("height");
+            deviceSize = new Pair<>(width, height);
+            break;
+          }
+        }
+        if (deviceSize == null) return;
+
+        boolean differentOrientation = (targetRatio > 1 && deviceSize.first < deviceSize.second) || (targetRatio < 1 && deviceSize.first > deviceSize.second);
+
+        if (targetRatio > 1) targetRatio = 1 / targetRatio;
+
+        float ratioChange = targetRatio / ((float) realDeviceSize.first / realDeviceSize.second);
+
+        int newWidth, newHeight;
+        if (realDeviceSize.first < realDeviceSize.second) {
+          newWidth = (int) (realDeviceSize.first * ratioChange);
+          newHeight = realDeviceSize.second;
+        } else {
+          newWidth = realDeviceSize.first;
+          newHeight = (int) (realDeviceSize.second * ratioChange);
+        }
+        newWidth = newWidth + 8 & ~15;
+        newHeight = newHeight + 8 & ~15;
+        if (newWidth == newHeight) newWidth -= 16;
+
+        String output = Adb.getStringResponseFromServer(device, "resizeDisplay", "width=" + newWidth, "height=" + newHeight, "id=" + displayId);
+
+        if (output.contains("success")) {
+          Thread.sleep(500);
+          controlPacket.sendConfigChangedEvent(1);
+          Thread.sleep(300);
+          if (differentOrientation) controlPacket.sendRotateEvent();
+        }
+      } catch (Exception ignored) {
+      }
+    }).start();
   }
 
   public void changeMode(int mode) {
@@ -61,7 +134,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public synchronized void changeToFull() {
     hide(false);
-    if (device.setResolution) controlPacket.sendChangeSizeEvent(FullActivity.getResolution());
+    if (device.setResolution) changeSize(FullActivity.getResolution());
     Intent intent = new Intent(AppData.main, FullActivity.class);
     int i = 0;
     for (Client client : Client.allClient) {
