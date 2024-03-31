@@ -134,8 +134,11 @@ public class Client {
   // 连接ADB
   private static Adb connectADB(Device device, UsbDevice usbDevice) throws Exception {
     if (Adb.adbMap.containsKey(device.uuid)) return Adb.adbMap.get(device.uuid);
-    if (usbDevice == null) return new Adb(device.uuid, device.address, AppData.keyPair);
-    else return new Adb(device.uuid, usbDevice, AppData.keyPair);
+    Adb adb;
+    if (usbDevice == null) adb = new Adb(device.uuid, device.address, AppData.keyPair);
+    else adb = new Adb(device.uuid, usbDevice, AppData.keyPair);
+    Adb.adbMap.put(device.uuid, adb);
+    return adb;
   }
 
   // 启动Server
@@ -378,7 +381,6 @@ public class Client {
       try {
         Adb adb = connectADB(device, usbDevice);
         adb.runAdbCmd(cmd);
-        adb.close();
         handle.run(true);
       } catch (Exception ignored) {
         handle.run(false);
@@ -411,7 +413,6 @@ public class Client {
       try {
         Adb adb = connectADB(device, usbDevice);
         String output = adb.restartOnTcpip(5555);
-        adb.close();
         handle.run(output.contains("restarting"));
       } catch (Exception ignored) {
         handle.run(false);

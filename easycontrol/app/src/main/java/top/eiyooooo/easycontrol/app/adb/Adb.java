@@ -327,6 +327,7 @@ public class Adb {
   }
 
   public void close() {
+    adbMap.remove(uuid);
     for (Object bufferStream : connectionStreams.values().toArray()) ((BufferStream) bufferStream).close();
     handleInThread.interrupt();
     handleOutThread.interrupt();
