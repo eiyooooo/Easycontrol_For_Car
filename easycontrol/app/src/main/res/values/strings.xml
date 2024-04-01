@@ -129,6 +129,7 @@
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_is_audio">使能音频</string>
+  <string name="option_is_audio">传输音频</string>
   <string name="option_is_audio_detail">开启后将尝试传输音频，被控端需要安卓12或以上</string>
   <string name="option_max_size">最大大小</string>
   <string name="option_max_size_detail">设置画面长和宽的最大大小</string>
