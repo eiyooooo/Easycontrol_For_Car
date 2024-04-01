@@ -1,7 +1,9 @@
 package top.eiyooooo.easycontrol.server.wrappers;
 
+import android.hardware.display.VirtualDisplay;
 import android.util.Pair;
 import android.view.Display;
+import android.view.Surface;
 import top.eiyooooo.easycontrol.server.Channel;
 import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
 import top.eiyooooo.easycontrol.server.utils.L;
@@ -15,6 +17,7 @@ import java.util.regex.Pattern;
 public final class DisplayManager {
     private static Object manager;
     private static Method getDisplayIdsMethod = null;
+    private static Method createVirtualDisplayMethod = null;
 
     public static void init(Object m) {
         manager = m;
@@ -98,5 +101,18 @@ public final class DisplayManager {
             L.e("getDisplayIds error", e);
             throw new AssertionError(e);
         }
+    }
+
+    private static Method getCreateVirtualDisplayMethod() throws NoSuchMethodException {
+        if (createVirtualDisplayMethod == null) {
+            createVirtualDisplayMethod = android.hardware.display.DisplayManager.class
+                    .getMethod("createVirtualDisplay", String.class, int.class, int.class, int.class, Surface.class);
+        }
+        return createVirtualDisplayMethod;
+    }
+
+    public static VirtualDisplay createVirtualDisplay(String name, int width, int height, int displayIdToMirror, Surface surface) throws Exception {
+        Method method = getCreateVirtualDisplayMethod();
+        return (VirtualDisplay) method.invoke(null, name, width, height, displayIdToMirror, surface);
     }
 }

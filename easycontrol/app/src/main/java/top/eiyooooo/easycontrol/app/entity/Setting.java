@@ -205,6 +205,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getMirrorMode() {
+    return sharedPreferences.getBoolean("MirrorMode", false);
+  }
+
+  public void setMirrorMode(boolean value) {
+    editor.putBoolean("MirrorMode", value);
+    editor.apply();
+  }
+
   public boolean getForceDesktopMode() {
     return sharedPreferences.getBoolean("ForceDesktopMode", false);
   }

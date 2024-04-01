@@ -1,5 +1,7 @@
 package top.eiyooooo.easycontrol.server.entity;
 
+import android.os.Build;
+
 public final class Options {
     public static boolean isAudio = true;
     public static int maxSize = 1600;
@@ -13,6 +15,7 @@ public final class Options {
     public static boolean TurnOnScreenIfStop = true;
     public static boolean useH265 = true;
     public static boolean useOpus = true;
+    public static int mirrorMode = 0;
 
     public static void parse(String... args) {
         for (String arg : args) {
@@ -51,6 +54,13 @@ public final class Options {
                     break;
                 case "useOpus":
                     useOpus = Integer.parseInt(value) == 1;
+                    break;
+                case "mirrorMode":
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        mirrorMode = 0;
+                        break;
+                    }
+                    mirrorMode = Integer.parseInt(value);
                     break;
             }
         }

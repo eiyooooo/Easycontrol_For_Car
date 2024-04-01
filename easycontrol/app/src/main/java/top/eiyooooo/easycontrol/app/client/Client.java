@@ -155,6 +155,7 @@ public class Client {
       + " maxFps=" + device.maxFps
       + " maxVideoBit=" + device.maxVideoBit
       + " displayId=" + displayId
+      + " mirrorMode=" + (AppData.setting.getMirrorMode() ? 1 : 0)
       + " keepAwake=" + (AppData.setting.getKeepAwake() ? 1 : 0)
       + " ScreenMode=" + ScreenMode
       + " useH265=" + ((device.useH265 && supportH265) ? 1 : 0)

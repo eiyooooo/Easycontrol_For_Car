@@ -34,6 +34,8 @@
   <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
   <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
   <string name="set_other">Other</string>
+  <string name="set_mirror_mode">Android 14 compatibility mode</string>
+  <string name="set_mirror_mode_detail">If display issues occur on Android 14 and above, try enabling this option</string>
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
   <string name="set_force_desktop_mode_detail">Input method can be synchronized during application transfer, and the foreground application will not be transferred after the first transferred application is closed (Not recommended to enable, this desktop mode is not Samsung dex mode or similar function)</string>
   <string name="set_if_start_default_usb">Open default USB at startup</string>

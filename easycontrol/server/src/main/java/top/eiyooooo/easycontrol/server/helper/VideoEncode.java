@@ -1,6 +1,7 @@
 package top.eiyooooo.easycontrol.server.helper;
 
 import android.graphics.Rect;
+import android.hardware.display.VirtualDisplay;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
@@ -12,6 +13,7 @@ import top.eiyooooo.easycontrol.server.Scrcpy;
 import top.eiyooooo.easycontrol.server.entity.Device;
 import top.eiyooooo.easycontrol.server.entity.Options;
 import top.eiyooooo.easycontrol.server.utils.L;
+import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
 import top.eiyooooo.easycontrol.server.wrappers.SurfaceControl;
 
 import java.io.IOException;
@@ -25,12 +27,18 @@ public final class VideoEncode {
     private static boolean useH265;
 
     private static IBinder display;
+    private static VirtualDisplay virtualDisplay;
 
-    public static void init() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException, ErrnoException {
+    public static void init() throws Exception {
         useH265 = Options.useH265 && Device.isEncoderSupport("hevc");
         Scrcpy.write(ByteBuffer.wrap(new byte[]{(byte) (useH265 ? 1 : 0)}));
         // 创建显示器
-        display = SurfaceControl.createDisplay("easycontrol", Build.VERSION.SDK_INT < Build.VERSION_CODES.R || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME)));
+        try {
+            display = SurfaceControl.createDisplay("easycontrol_for_car", Build.VERSION.SDK_INT < Build.VERSION_CODES.R || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME)));
+        } catch (Exception e) {
+            L.w("createDisplay by SurfaceControl error", e);
+            Options.mirrorMode = 1;
+        }
         // 创建Codec
         createEncoderFormat();
         startEncode();
@@ -57,13 +65,28 @@ public final class VideoEncode {
     // 初始化编码器
     private static Surface surface;
 
-    public static void startEncode() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException, ErrnoException {
+    public static void startEncode() throws Exception {
         encoderFormat.setInteger(MediaFormat.KEY_WIDTH, Device.videoSize.first);
         encoderFormat.setInteger(MediaFormat.KEY_HEIGHT, Device.videoSize.second);
         encoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         // 绑定Display和Surface
         surface = encoder.createInputSurface();
-        setDisplaySurface(display, surface);
+        if (Device.displayId != 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && ((Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("xiaomi")
+                || (Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("redmi"))) {
+            Options.mirrorMode = 1;
+        }
+        if (Options.mirrorMode == 1) {
+            try {
+                if (virtualDisplay != null) virtualDisplay.release();
+                virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car", Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
+            } catch (Exception e) {
+                L.e("createVirtualDisplay by DisplayManager error", e);
+                throw e;
+            }
+        } else {
+            setDisplaySurface(display, surface);
+        }
         // 启动编码
         encoder.start();
         ControlPacket.sendVideoSizeEvent();
