@@ -1,5 +1,8 @@
 package top.eiyooooo.easycontrol.app;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AppOpsManager;
@@ -12,6 +15,7 @@ import android.view.LayoutInflater;
 
 import java.util.UUID;
 
+import android.view.animation.LinearInterpolator;
 import top.eiyooooo.easycontrol.app.databinding.ActivityMainBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemRequestPermissionBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -103,7 +107,23 @@ public class MainActivity extends Activity {
 
   // 设置按钮监听
   private void setButtonListener() {
-    mainActivity.buttonRefresh.setOnClickListener(v -> deviceListAdapter.update());
+    mainActivity.buttonRefresh.setOnClickListener(v -> {
+      mainActivity.buttonRefresh.setClickable(false);
+      deviceListAdapter.update();
+
+      ObjectAnimator rotation = ObjectAnimator.ofFloat(mainActivity.buttonRefresh, "rotation", 0f, 360f);
+      rotation.setDuration(800);
+      rotation.setInterpolator(new LinearInterpolator());
+      rotation.addListener(new AnimatorListenerAdapter() {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+          super.onAnimationEnd(animation);
+          if (deviceListAdapter.checkConnectionExecutor != null) rotation.start();
+          else mainActivity.buttonRefresh.setClickable(true);
+        }
+      });
+      rotation.start();
+    });
     mainActivity.buttonAdd.setOnClickListener(v -> PublicTools.createAddDeviceView(this, Device.getDefaultDevice(UUID.randomUUID().toString(), Device.TYPE_NORMAL), deviceListAdapter).show());
     mainActivity.buttonSet.setOnClickListener(v -> startActivity(new Intent(this, SetActivity.class)));
   }

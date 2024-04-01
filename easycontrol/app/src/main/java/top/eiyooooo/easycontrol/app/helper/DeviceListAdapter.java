@@ -173,7 +173,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   // 检查连接
   private final Object checkingConnection = new Object();
   private Thread checkingConnectionThread;
-  private ExecutorService checkConnectionExecutor;
+  public ExecutorService checkConnectionExecutor;
   private void checkConnection(Device device) {
     device.connection = 0;
 
