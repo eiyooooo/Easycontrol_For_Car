@@ -72,7 +72,7 @@ public class MiniView {
     try {
       miniView.getRoot().setVisibility(View.GONE);
       AppData.windowManager.removeView(miniView.getRoot());
-      AppData.dbHelper.update(clientView.device);
+      clientView.updateDevice();
       if (timeoutListenerThread != null) timeoutListenerThread.interrupt();
     } catch (Exception ignored) {
     }

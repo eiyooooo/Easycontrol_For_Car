@@ -100,6 +100,46 @@ public class Device {
     this.mini_y = mini_y;
   }
 
+  public Device(String uuid, int type) {
+    this.uuid = uuid;
+    this.type = type;
+  }
+
+  public static void copyDevice(Device source, Device target) {
+    target.name = source.name;
+    target.address = source.address;
+    target.specified_app = source.specified_app;
+    target.isAudio = source.isAudio;
+    target.maxSize = source.maxSize;
+    target.maxFps = source.maxFps;
+    target.maxVideoBit = source.maxVideoBit;
+    target.setResolution = source.setResolution;
+    target.defaultFull = source.defaultFull;
+    target.useH265 = source.useH265;
+    target.useOpus = source.useOpus;
+    target.small_p_p_x = source.small_p_p_x;
+    target.small_p_p_y = source.small_p_p_y;
+    target.small_p_p_width = source.small_p_p_width;
+    target.small_p_p_height = source.small_p_p_height;
+    target.small_p_l_x = source.small_p_l_x;
+    target.small_p_l_y = source.small_p_l_y;
+    target.small_p_l_width = source.small_p_l_width;
+    target.small_p_l_height = source.small_p_l_height;
+    target.small_l_p_x = source.small_l_p_x;
+    target.small_l_p_y = source.small_l_p_y;
+    target.small_l_p_width = source.small_l_p_width;
+    target.small_l_p_height = source.small_l_p_height;
+    target.small_l_l_x = source.small_l_l_x;
+    target.small_l_l_y = source.small_l_l_y;
+    target.small_l_l_width = source.small_l_l_width;
+    target.small_l_l_height = source.small_l_l_height;
+    target.small_free_x = source.small_free_x;
+    target.small_free_y = source.small_free_y;
+    target.small_free_width = source.small_free_width;
+    target.small_free_height = source.small_free_height;
+    target.mini_y = source.mini_y;
+  }
+
   public static Device getDefaultDevice(String uuid, int type) {
     return new Device(uuid, type, uuid, "", "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
   }

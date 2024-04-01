@@ -206,7 +206,7 @@ public class SmallView extends ViewOutlineProvider {
       if (barViewTimerThread != null) barViewTimerThread.interrupt();
       smallView.textureViewLayout.removeView(clientView.textureView);
       AppData.windowManager.removeView(smallView.getRoot());
-      AppData.dbHelper.update(clientView.device);
+      clientView.updateDevice();
     } catch (Exception ignored) {
     }
   }
@@ -353,7 +353,7 @@ public class SmallView extends ViewOutlineProvider {
       barViewTimer();
     });
     smallView.buttonClose.setOnClickListener(v -> {
-      AppData.dbHelper.update(clientView.device);
+      clientView.updateDevice();
       clientView.onClose.run();
     });
     if (clientView.mode == 1) smallView.buttonTransfer.setImageResource(R.drawable.share_in);

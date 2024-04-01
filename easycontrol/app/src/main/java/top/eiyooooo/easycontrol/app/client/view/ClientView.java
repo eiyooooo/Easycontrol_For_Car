@@ -25,6 +25,7 @@ import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 public class ClientView implements TextureView.SurfaceTextureListener {
   public final Device device;
+  public final Device deviceOriginal;
   public int mode = 0;
   public int displayId = 0;
   public final ControlPacket controlPacket;
@@ -44,10 +45,13 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   private Pair<Integer, Integer> surfaceSize;
   public boolean lastTouchIsInside = true;
   boolean lightState;
+  public int multiLink = 0;
 
   public ClientView(Device device, ControlPacket controlPacket, PublicTools.MyFunctionInt changeMode, PublicTools.MyFunction onReady, PublicTools.MyFunction onClose) {
     lightState = !AppData.setting.getTurnOffScreenIfStart();
-    this.device = device;
+    this.deviceOriginal = device;
+    this.device = new Device(device.uuid, device.type);
+    Device.copyDevice(device, this.device);
     textureView = new TextureView(AppData.main);
     smallView = new SmallView(this);
     miniView = new MiniView(this);
@@ -58,6 +62,12 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     setTouchListener();
     textureView.setSurfaceTextureListener(this);
     smallView.changeMode(mode);
+  }
+
+  public void updateDevice() {
+    if (multiLink != 0) return;
+    Device.copyDevice(device, deviceOriginal);
+    AppData.dbHelper.update(device);
   }
 
   public void changeSize(float ratio) {

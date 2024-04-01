@@ -67,7 +67,7 @@ public class Client {
   public Client(Device device, UsbDevice usbDevice, int mode) {
     for (Client client : allClient) {
       if (client.uuid.equals(device.uuid)) {
-        if (client.multiLink == 0) client.multiLink = 1;
+        if (client.multiLink == 0) client.changeMultiLinkMode(1);
         this.multiLink = 2;
         break;
       }
@@ -111,6 +111,7 @@ public class Client {
       try {
         adb = connectADB(device, usbDevice);
         changeMode(mode);
+        changeMultiLinkMode(multiLink);
         startServer(device);
         connectServer();
         AppData.uiHandler.post(() -> {
@@ -345,12 +346,20 @@ public class Client {
         switch (i) {
           case 0:
             if (multiLink == 1) {
+              Client target = null;
+              boolean multi = false;
               for (Client client : allClient) {
                 if (client.uuid.equals(uuid) && client.multiLink == 2) {
-                  client.multiLink = 1;
-                  client.playAudio(true);
-                  break;
+                  if (target != null) {
+                    multi = true;
+                    break;
+                  }
+                  target = client;
                 }
+              }
+              if (target != null) {
+                if (multi) target.changeMultiLinkMode(1);
+                else target.changeMultiLinkMode(0);
               }
             }
             break;
@@ -453,6 +462,12 @@ public class Client {
       }
     }).start();
     clientView.changeMode(mode);
+  }
+
+  public void changeMultiLinkMode(int multiLink) {
+    this.multiLink = multiLink;
+    clientView.multiLink = multiLink;
+    playAudio(multiLink == 0 || multiLink == 1);
   }
 
   public void playAudio(boolean play) {
