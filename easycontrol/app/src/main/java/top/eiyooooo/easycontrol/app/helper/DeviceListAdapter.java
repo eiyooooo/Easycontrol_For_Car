@@ -306,25 +306,12 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     ArrayList<Device> tmp1 = new ArrayList<>();
     ArrayList<Device> tmp2 = new ArrayList<>();
     for (Device device : rawDevices) {
-      if (device.isLinkDevice() && linkDevices.containsKey(device.uuid))
-        inheritDevicesList(tmp1, device);
-      else if (device.isNormalDevice())
-        inheritDevicesList(tmp2, device);
+      if (device.isLinkDevice() && linkDevices.containsKey(device.uuid)) tmp1.add(device);
+      else if (device.isNormalDevice()) tmp2.add(device);
     }
     devicesList.clear();
     devicesList.addAll(tmp1);
     devicesList.addAll(tmp2);
-  }
-
-  private void inheritDevicesList(ArrayList<Device> newList, Device device) {
-    for (Device d : devicesList) {
-      if (d.uuid.equals(device.uuid)) {
-        d.connection = -1;
-        newList.add(d);
-        return;
-      }
-    }
-    newList.add(device);
   }
 
   public void startByUUID(String uuid, int mode) {
