@@ -149,17 +149,20 @@ public class Client {
             + (AppData.setting.getTurnOffScreenIfStart() ? 1 : 0) * 100
             + (AppData.setting.getTurnOffScreenIfStop() ? 1 : 0) * 10
             + (AppData.setting.getTurnOnScreenIfStop() ? 1 : 0);
-    shell.write(ByteBuffer.wrap(("app_process -Djava.class.path=" + serverName + " / top.eiyooooo.easycontrol.server.Scrcpy"
-      + " isAudio=" + (device.isAudio ? 1 : 0)
-      + " maxSize=" + device.maxSize
-      + " maxFps=" + device.maxFps
-      + " maxVideoBit=" + device.maxVideoBit
-      + " displayId=" + displayId
-      + " mirrorMode=" + (AppData.setting.getMirrorMode() ? 1 : 0)
-      + " keepAwake=" + (AppData.setting.getKeepAwake() ? 1 : 0)
-      + " ScreenMode=" + ScreenMode
-      + " useH265=" + ((device.useH265 && supportH265) ? 1 : 0)
-      + " useOpus=" + ((device.useOpus && supportOpus) ? 1 : 0) + " \n").getBytes()));
+    StringBuilder cmd = new StringBuilder();
+    cmd.append("app_process -Djava.class.path=").append(serverName).append(" / top.eiyooooo.easycontrol.server.Scrcpy");
+    if (!device.isAudio) cmd.append(" isAudio=0");
+    if (device.maxSize != 1600) cmd.append(" maxSize=").append(device.maxSize);
+    if (device.maxFps != 60) cmd.append(" maxFps=").append(device.maxFps);
+    if (device.maxVideoBit != 4) cmd.append(" maxVideoBit=").append(device.maxVideoBit);
+    if (displayId != 0) cmd.append(" displayId=").append(displayId);
+    if (AppData.setting.getMirrorMode()) cmd.append(" mirrorMode=1");
+    if (!AppData.setting.getKeepAwake()) cmd.append(" keepAwake=0");
+    if (ScreenMode != 1001) cmd.append(" ScreenMode=").append(ScreenMode);
+    if (!(device.useH265 && supportH265)) cmd.append(" useH265=0");
+    if (!(device.useOpus && supportOpus)) cmd.append(" useOpus=0");
+    cmd.append(" \n");
+    shell.write(ByteBuffer.wrap(cmd.toString().getBytes()));
     logger();
   }
 
