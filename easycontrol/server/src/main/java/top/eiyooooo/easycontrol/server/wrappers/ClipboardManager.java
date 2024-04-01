@@ -52,7 +52,7 @@ public class ClipboardManager {
                             return;
                     }
                 } catch (Exception e) {
-                    L.e("getGetPrimaryClipMethod error", e);
+                    if (i == 3) L.e("getGetPrimaryClipMethod error", e);
                 }
             }
         }
@@ -77,7 +77,7 @@ public class ClipboardManager {
                             return;
                     }
                 } catch (Exception e) {
-                    L.e("getSetPrimaryClipMethod error", e);
+                    if (i == 2) L.e("getSetPrimaryClipMethod error", e);
                 }
             }
         }
@@ -102,7 +102,7 @@ public class ClipboardManager {
                             return;
                     }
                 } catch (Exception e) {
-                    L.e("getAddPrimaryClipChangedListenerMethod error", e);
+                    if (i == 2) L.e("getAddPrimaryClipChangedListenerMethod error", e);
                 }
             }
         }
