@@ -20,17 +20,17 @@ public final class InputManager {
         try {
             setDisplayIdMethod = InputEvent.class.getMethod("setDisplayId", int.class);
         } catch (Exception e) {
-            L.e("InputManager init ", e);
+            L.e("setDisplayId method not found", e);
         }
     }
 
-    public static void setDisplayId(InputEvent inputEvent, int displayId) throws InvocationTargetException, IllegalAccessException {
+    public static void setDisplayId(InputEvent inputEvent, int displayId) throws Exception {
         if (setDisplayIdMethod != null) {
             setDisplayIdMethod.invoke(inputEvent, displayId);
-        }
+        } else throw new NoSuchMethodException("setDisplayId method not found");
     }
 
-    public static void injectInputEvent(InputEvent inputEvent, int mode) throws InvocationTargetException, IllegalAccessException {
+    public static void injectInputEvent(InputEvent inputEvent, int mode) throws Exception {
         injectInputEventMethod.invoke(manager, inputEvent, mode);
     }
 }
