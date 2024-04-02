@@ -1,10 +1,10 @@
 package top.eiyooooo.easycontrol.app.adb;
 
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -110,11 +110,6 @@ public class Adb {
     return adb.getStringResponse(request, args);
   }
 
-  public static Drawable getDrawableResponseFromServer(Device device, String request, String... args) throws Exception {
-    Adb adb = getAdb(device);
-    return adb.getDrawableResponse(request, args);
-  }
-
   private static Adb getAdb(Device device) throws Exception {
     String uuid = device.uuid;
     Adb adb = adbMap.get(uuid);
@@ -130,11 +125,6 @@ public class Adb {
 
   private String getStringResponse(String request, String... args) throws Exception {
     return new String(getResponse(request, args), StandardCharsets.UTF_8);
-  }
-
-  private Drawable getDrawableResponse(String request, String... args) throws Exception {
-    byte[] bitmap = getResponse(request, args);
-    return PublicTools.byteArrayBitmapToDrawable(bitmap);
   }
 
   private byte[] getResponse(String request, String[] args) throws Exception {
@@ -220,6 +210,56 @@ public class Adb {
         wait();
       }
     } while (!bufferStream.isClosed());
+  }
+
+  public static Bitmap getRemoteIconByDevice(Device device, String packageName) throws Exception {
+    Adb adb = getAdb(device);
+    return adb.getRemoteIcon(packageName);
+  }
+
+  public final Bitmap getRemoteIcon(String packageName) throws Exception {
+    String path = getStringResponse("getIcon", "package=" + packageName);
+    BufferStream bufferStream = open("sync:", false);
+    byte[] bytes = path.getBytes();
+    bufferStream.write(AdbProtocol.generateSyncHeader("RECV", bytes.length));
+    bufferStream.write(ByteBuffer.wrap(bytes));
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    String check1 = new String(bufferStream.readByteArray(4).array());
+    if ("FAIL".equals(check1)) throw new Exception("get icon fail");
+    int len1 = bufferStream.readByteArray(4).getInt() * 256;
+    int size = bufferStream.getSize();
+    if (size > len1) size = len1;
+    int position = 0;
+    do {
+      byteArrayOutputStream.write(bufferStream.readByteArray(size).array(), 0, size);
+      position += size;
+      if (position == len1) {
+        String check2 = new String(bufferStream.readByteArray(4).array());
+        if (!"FAIL".equals(check2)) {
+          len1 = bufferStream.readByteArray(4).getInt() * 256;
+          if (len1 != 65536) {
+            int len2 = bufferStream.getSize() - 8;
+            byteArrayOutputStream.write(bufferStream.readByteArray(len2).array(), 0, len2);
+            bufferStream.readByteArray(4);
+          }
+          position = 0;
+        }
+      } else {
+        if (bufferStream.getSize() == 0) Thread.sleep(120);
+        int len3 = bufferStream.getSize();
+        if (position + len3 > len1) len3 = len1 - position;
+        size = len3;
+      }
+    } while (bufferStream.getSize() > 0);
+    bufferStream.write(AdbProtocol.generateSyncHeader("QUIT", 0));
+    byteArrayOutputStream.flush();
+    do {
+      synchronized (this) {
+        wait();
+      }
+    } while (!bufferStream.isClosed());
+    runAdbCmd("rm " + path);
+    return BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size());
   }
 
   public String runAdbCmd(String cmd) throws InterruptedException {

@@ -124,9 +124,18 @@ public class Channel {
         }
     }
 
-    public byte[] getBitmapBytes(String packageName) throws
-            InvocationTargetException, IllegalAccessException {
-        return Bitmap2Bytes(Drawable2Bitmap(packageName));
+    public synchronized String Bitmap2file(String packageName) throws Exception {
+        Bitmap bitmap = Drawable2Bitmap(packageName);
+        String path = "/data/local/tmp/" + packageName + ".png";
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] bytes = stream.toByteArray();
+        stream.close();
+        try (java.io.FileOutputStream file = new java.io.FileOutputStream(path)) {
+            file.write(bytes);
+            file.flush();
+        }
+        return path;
     }
 
     public synchronized Bitmap Drawable2Bitmap(String packageName) throws
@@ -164,15 +173,6 @@ public class Channel {
         }
 
         return Drawable2Bitmap(icon);
-    }
-
-    static public byte[] Bitmap2Bytes(Bitmap bm) {
-        if (bm == null) {
-            return new byte[0];
-        }
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, output);
-        return output.toByteArray();
     }
 
     private Bitmap Drawable2Bitmap(Drawable icon) {

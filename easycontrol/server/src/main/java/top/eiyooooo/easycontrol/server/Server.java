@@ -71,16 +71,6 @@ public class Server {
         }
     }
 
-    private void postBitmapResponse(byte[] response) {
-        try {
-            if (response == null) response = "null".getBytes(StandardCharsets.UTF_8);
-            outputStream.writeInt(response.length);
-            outputStream.write(response);
-        } catch (Exception e) {
-            L.e("postBitmapResponse error", e);
-        }
-    }
-
     private static HashMap<String, String> parseRequest(String input) {
         HashMap<String, String> request = new HashMap<>();
 
@@ -127,7 +117,7 @@ public class Server {
                 case "/getIcon": {
                     String packageName = request.get("package");
                     if (packageName == null) throw new Exception("parameter 'package' not found");
-                    postBitmapResponse(channel.getBitmapBytes(packageName));
+                    postResponse(channel.Bitmap2file(packageName));
                     break;
                 }
                 case "/getAllAppInfo": {
