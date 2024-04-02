@@ -192,6 +192,7 @@ public class Client {
         displayId = Integer.parseInt(output.substring(output.lastIndexOf(" -> ") + 4));
         clientView.displayId = displayId;
         changeMode(1);
+        PublicTools.logToast(AppData.main.getString(R.string.tip_application_transfer));
       } else throw new Exception("");
     } catch (Exception ignored) {
       changeMode(0);

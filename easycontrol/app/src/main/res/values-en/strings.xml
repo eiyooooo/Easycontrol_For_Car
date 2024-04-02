@@ -113,7 +113,6 @@
   <string name="error_create_display">The controlled end does not support application transfer (requires Android 11 and above)</string>
   <string name="error_transfer_app_failed">application transfer failed, screen mirroring has been started</string>
   <string name="error_app_not_found">The specified package name application does not exist</string>
-  <string name="error_need_auth">Please make sure all devices are authorized with ALWAYS ALLOW</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>

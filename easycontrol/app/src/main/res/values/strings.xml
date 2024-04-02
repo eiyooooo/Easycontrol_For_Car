@@ -113,7 +113,6 @@
   <string name="error_create_display">被控端不支持应用流转(需安卓11及以上)</string>
   <string name="error_transfer_app_failed">应用流转失败，屏幕镜像已启动</string>
   <string name="error_app_not_found">指定包名的应用不存在</string>
-  <string name="error_need_auth">请确保所有设备已勾选“始终允许”并授权</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>

@@ -196,7 +196,6 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
           checkingConnection.notifyAll();
         }
         while (!checkConnectionExecutor.awaitTermination(600, TimeUnit.MILLISECONDS)) {
-          PublicTools.logToast(AppData.main.getString(R.string.error_need_auth));
           checkConnectionExecutor.shutdownNow();
         }
         AppData.uiHandler.post(this::notifyDataSetChanged);
