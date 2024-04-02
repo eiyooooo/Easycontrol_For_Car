@@ -78,6 +78,20 @@
   </GridLayout>
 
   <Button
+    android:id="@+id/button_create_shortcut"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@drawable/background_cron"
+    android:backgroundTint="@color/button"
+    android:gravity="center"
+    android:text="@string/set_device_button_create_shortcut"
+    android:textColor="@color/onButton"
+    android:textSize="@dimen/smallFont"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="12dp" />
+
+  <Button
     android:id="@+id/button_start_wireless"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"

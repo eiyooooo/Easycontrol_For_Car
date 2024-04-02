@@ -60,10 +60,6 @@ public class Client {
   private static final boolean supportH265 = PublicTools.isDecoderSupport("hevc");
   private static final boolean supportOpus = PublicTools.isDecoderSupport("opus");
 
-  public Client(Device device, UsbDevice usbDevice) {
-    this(device, usbDevice, 0);
-  }
-
   public Client(Device device, UsbDevice usbDevice, int mode) {
     for (Client client : allClient) {
       if (client.uuid.equals(device.uuid)) {

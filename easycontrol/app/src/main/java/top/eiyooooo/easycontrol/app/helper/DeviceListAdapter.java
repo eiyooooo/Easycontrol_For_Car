@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import top.eiyooooo.easycontrol.app.StartDeviceActivity;
 import top.eiyooooo.easycontrol.app.adb.Adb;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -36,7 +37,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   public static final HashMap<String, UsbDevice> linkDevices = new HashMap<>();
   private final Context context;
   private final ExpandableListView expandableListView;
-  private static boolean startedDefault = false;
+  public static boolean startedDefault = false;
 
 
   public DeviceListAdapter(Context c, ExpandableListView expandableListView) {
@@ -274,6 +275,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
       AppData.clipBoard.setPrimaryClip(ClipData.newPlainText(MIMETYPE_TEXT_PLAIN, device.uuid));
       Toast.makeText(AppData.main, AppData.main.getString(R.string.set_device_button_get_uuid_success), Toast.LENGTH_SHORT).show();
     });
+    itemSetDeviceBinding.buttonCreateShortcut.setOnClickListener(v -> ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, device.name, R.drawable.phone, device.uuid));
     itemSetDeviceBinding.buttonChange.setOnClickListener(v -> {
       dialog.cancel();
       PublicTools.createAddDeviceView(context, device, this).show();

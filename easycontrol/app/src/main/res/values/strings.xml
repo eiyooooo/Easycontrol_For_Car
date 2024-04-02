@@ -45,6 +45,7 @@
   <string name="set_other_clear_key_code">已刷新</string>
   <string name="set_other_locale">语言切换(中文/English)</string>
   <string name="set_other_locale_code">OK, you may need to restart the APP</string>
+  <string name="set_create_startup_shortcut">创建默认设备快捷方式</string>
   <string name="set_other_log">查看日志</string>
   <string name="set_about">关于</string>
   <string name="set_about_ip">查看本机IP及扫描设备</string>
@@ -96,6 +97,7 @@
   <string name="set_device_button_recover_error">连接失败，请检查ADB和网络</string>
   <string name="set_device_button_get_uuid">获取ID</string>
   <string name="set_device_button_get_uuid_success">已复制</string>
+  <string name="set_device_button_create_shortcut">创建快捷方式</string>
   <string name="set_device_button_start_wireless">打开无线</string>
   <string name="set_device_button_start_wireless_success">成功</string>
   <string name="set_device_button_change">修改</string>
@@ -113,9 +115,12 @@
   <string name="error_create_display">被控端不支持应用流转(需安卓11及以上)</string>
   <string name="error_transfer_app_failed">应用流转失败，屏幕镜像已启动</string>
   <string name="error_app_not_found">指定包名的应用不存在</string>
+  <string name="error_device_not_found">未找到该设备</string>
+  <string name="error_default_device_not_found">未找到默认设备</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>
+  <string name="tip_default_device">默认设备</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_startup_device">软件启动时打开</string>

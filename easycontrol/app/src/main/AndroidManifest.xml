@@ -8,6 +8,7 @@
   <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
   <uses-permission android:name="android.permission.USB_PERMISSION" /> <!-- USB -->
+  <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- 桌面快捷方式 -->
 
   <uses-feature android:name="android.hardware.usb.host" />
 
@@ -49,13 +50,7 @@
       android:name=".AdbKeyActivity"
       android:exported="false" />
     <activity
-      android:name=".StartDefaultActivity"
-      android:exported="true"
-      android:hardwareAccelerated="true"
-      android:theme="@style/Transparent"
-      android:launchMode="singleTask" />
-    <activity
-      android:name=".StartUsbActivity"
+      android:name=".StartDeviceActivity"
       android:exported="true"
       android:hardwareAccelerated="true"
       android:theme="@style/Transparent"
