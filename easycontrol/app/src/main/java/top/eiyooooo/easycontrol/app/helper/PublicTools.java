@@ -215,6 +215,7 @@ public class PublicTools {
     ArrayAdapter<String> maxFpsAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxFpsList);
     ArrayAdapter<String> maxVideoBitAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxVideoBitList);
     // 添加参数视图
+    if (device != null) fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_startup_device), context.getString(R.string.option_startup_device_detail), device.connectOnStart, isChecked -> device.connectOnStart = isChecked).getRoot());
     fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_is_audio), context.getString(R.string.option_is_audio_detail), setDefault ? AppData.setting.getDefaultIsAudio() : device.isAudio, isChecked -> {
       if (setDefault) AppData.setting.setDefaultIsAudio(isChecked);
       else device.isAudio = isChecked;

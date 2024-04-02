@@ -38,15 +38,8 @@
   <string name="set_mirror_mode_detail">安卓14及以上系统若出现画面异常可尝试开启此选项</string>
   <string name="set_force_desktop_mode">应用流转时强制桌面模式</string>
   <string name="set_force_desktop_mode_detail">开启后输入法可同步流转，首个流转应用关闭后不会重新流转前台应用(不建议开启此功能，此桌面模式非三星dex模式或类似功能)</string>
-  <string name="set_if_start_default_usb">启动时打开默认USB设备</string>
-  <string name="set_if_start_default_usb_detail">启动APP时若USB设备已连接并已授权则自动打开</string>
   <string name="set_try_start_default_in_app_transfer">打开默认设备时尝试应用流转</string>
   <string name="set_try_start_default_in_app_transfer_detail">启动APP后打开默认设备时尝试应用流转</string>
-  <string name="set_other_clear_default">清除默认无线设备</string>
-  <string name="set_other_clear_default_usb">清除默认USB设备</string>
-  <string name="set_other_clear_default_code">已清除默认无线设备</string>
-  <string name="set_other_clear_default_usb_code">已清除默认USB设备</string>
-  <string name="set_other_no_default">没有找到默认设备哦oVo</string>
   <string name="set_other_custom_key">自定义密钥(需重新授权)</string>
   <string name="set_other_clear_key">重新生成密钥(需重新授权)</string>
   <string name="set_other_clear_key_code">已刷新</string>
@@ -101,8 +94,6 @@
   <string name="set_device_button_recover">恢复分辨率</string>
   <string name="set_device_button_recover_success">恢复成功</string>
   <string name="set_device_button_recover_error">连接失败，请检查ADB和网络</string>
-  <string name="set_device_button_set_default">默认无线设备</string>
-  <string name="set_device_button_set_default_link">默认USB设备</string>
   <string name="set_device_button_get_uuid">获取ID</string>
   <string name="set_device_button_get_uuid_success">已复制</string>
   <string name="set_device_button_start_wireless">打开无线</string>
@@ -128,7 +119,8 @@
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>
 
   <!-- 设备参数设置及注释说明 -->
-  <string name="option_is_audio">使能音频</string>
+  <string name="option_startup_device">软件启动时打开</string>
+  <string name="option_startup_device_detail">软件启动时自动连接此设备</string>
   <string name="option_is_audio">传输音频</string>
   <string name="option_is_audio_detail">开启后将尝试传输音频，被控端需要安卓12或以上</string>
   <string name="option_max_size">最大大小</string>

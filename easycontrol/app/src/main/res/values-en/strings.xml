@@ -38,15 +38,8 @@
   <string name="set_mirror_mode_detail">If display issues occur on Android 14 and above, try enabling this option</string>
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
   <string name="set_force_desktop_mode_detail">Input method can be synchronized during application transfer, and the foreground application will not be transferred after the first transferred application is closed (Not recommended to enable, this desktop mode is not Samsung dex mode or similar function)</string>
-  <string name="set_if_start_default_usb">Open default USB at startup</string>
-  <string name="set_if_start_default_usb_detail">If the USB device is connected and authorized when starting the app, it will automatically open</string>
   <string name="set_try_start_default_in_app_transfer">Try application transfer when opening default device</string>
   <string name="set_try_start_default_in_app_transfer_detail">Try application transfer when opening default device after starting the app</string>
-  <string name="set_other_clear_default">Clear default open device</string>
-  <string name="set_other_clear_default_usb">Clear default USB device</string>
-  <string name="set_other_clear_default_code">Cleared default wireless device</string>
-  <string name="set_other_clear_default_usb_code">Cleared default USB device</string>
-  <string name="set_other_no_default">Default device not found</string>
   <string name="set_other_custom_key">Custom key (ADB reauthorization required)</string>
   <string name="set_other_clear_key">Regenerate the key (ADB reauthorization required)</string>
   <string name="set_other_clear_key_code">Regenerated</string>
@@ -101,8 +94,6 @@
   <string name="set_device_button_recover">Reset resolution</string>
   <string name="set_device_button_recover_success">Success</string>
   <string name="set_device_button_recover_error">Connection failed, please check ADB and network</string>
-  <string name="set_device_button_set_default">Default wireless</string>
-  <string name="set_device_button_set_default_link">Default USB</string>
   <string name="set_device_button_get_uuid">Copy ID</string>
   <string name="set_device_button_get_uuid_success">Copied</string>
   <string name="set_device_button_start_wireless">Enable wireless</string>
@@ -128,6 +119,8 @@
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>
 
   <!-- 设备参数设置及注释说明 -->
+  <string name="option_startup_device">Open when software starts</string>
+  <string name="option_startup_device_detail">Automatically connect to this device when the software starts</string>
   <string name="option_is_audio">Enable audio</string>
   <string name="option_is_audio_detail">Works with Android 12 and above</string>
   <string name="option_max_size">Resolution</string>

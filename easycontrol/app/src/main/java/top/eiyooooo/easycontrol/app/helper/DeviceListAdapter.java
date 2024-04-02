@@ -202,8 +202,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
         AppData.uiHandler.post(this::notifyDataSetChanged);
         checkConnectionExecutor = null;
         if (!startedDefault) {
-          AppData.uiHandler.postDelayed(() -> startDefaultUSB(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0), 1000);
-          AppData.uiHandler.postDelayed(() -> startDefault(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0), 2000);
+          AppData.uiHandler.post(() -> startDefault(AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0));
           startedDefault = true;
         }
       } catch (InterruptedException ignored) {
@@ -254,27 +253,14 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     // 有线设备
     if (device.isLinkDevice()) {
       itemSetDeviceBinding.buttonStartWireless.setVisibility(View.VISIBLE);
-      itemSetDeviceBinding.buttonSetDefault.setText(R.string.set_device_button_set_default_link);
       itemSetDeviceBinding.buttonStartWireless.setOnClickListener(v -> {
         dialog.cancel();
         UsbDevice usbDevice = linkDevices.get(device.uuid);
         if (usbDevice == null) return;
         Client.restartOnTcpip(device, usbDevice, result -> AppData.uiHandler.post(() -> Toast.makeText(AppData.main, AppData.main.getString(result ? R.string.set_device_button_start_wireless_success : R.string.set_device_button_recover_error), Toast.LENGTH_SHORT).show()));
       });
-      itemSetDeviceBinding.buttonSetDefault.setOnClickListener(v -> {
-        dialog.cancel();
-        if (!device.isLinkDevice()) return;
-        AppData.setting.setDefaultUsbDevice(device.uuid);
-      });
     } else {
       itemSetDeviceBinding.buttonStartWireless.setVisibility(View.GONE);
-      itemSetDeviceBinding.buttonSetDefault.setText(R.string.set_device_button_set_default);
-
-      itemSetDeviceBinding.buttonSetDefault.setOnClickListener(v -> {
-        dialog.cancel();
-        if (!device.isNormalDevice()) return;
-        AppData.setting.setDefaultDevice(device.uuid);
-      });
     }
     itemSetDeviceBinding.buttonRecover.setOnClickListener(v -> {
       dialog.cancel();
@@ -328,43 +314,20 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     } else new Client(device, null, mode);
   }
 
-  // 启动默认USB设备
-  public void startDefaultUSB(int mode) {
-    if (AppData.setting.getNeedStartDefaultUsbDevice()) {
-      String defaultUsbDevice = AppData.setting.getDefaultUsbDevice();
-      if (!defaultUsbDevice.isEmpty()) {
-        for (Device device : devicesList) {
-          if (Objects.equals(device.uuid, defaultUsbDevice)) {
-            startDevice(device, mode);
-            // 返回桌面
-            if (AppData.setting.getDefaultDevice().isEmpty() && AppData.setting.getAutoBackOnStartDefault()) {
-              Intent home = new Intent(Intent.ACTION_MAIN);
-              home.addCategory(Intent.CATEGORY_HOME);
-              AppData.main.startActivity(home);
-            }
-            break;
-          }
-        }
-      }
-    }
-  }
-
   // 启动默认设备
   public void startDefault(int mode) {
-    String defaultDevice = AppData.setting.getDefaultDevice();
-    if (!defaultDevice.isEmpty()) {
-      for (Device device : devicesList) {
-        if (Objects.equals(device.uuid, defaultDevice)) {
-          startDevice(device, mode);
-          // 返回桌面
-          if (AppData.setting.getAutoBackOnStartDefault()) {
-            Intent home = new Intent(Intent.ACTION_MAIN);
-            home.addCategory(Intent.CATEGORY_HOME);
-            AppData.main.startActivity(home);
-          }
-          break;
-        }
+    boolean started = false;
+    for (Device device : devicesList) {
+      if (device.connectOnStart) {
+        startDevice(device, mode);
+        started = true;
       }
+    }
+    // 返回桌面
+    if (started && AppData.setting.getAutoBackOnStartDefault()) {
+      Intent home = new Intent(Intent.ACTION_MAIN);
+      home.addCategory(Intent.CATEGORY_HOME);
+      AppData.main.startActivity(home);
     }
   }
 

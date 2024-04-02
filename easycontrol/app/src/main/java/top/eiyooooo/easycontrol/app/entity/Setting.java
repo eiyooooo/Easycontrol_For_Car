@@ -178,33 +178,6 @@ public final class Setting {
     editor.apply();
   }
 
-  public String getDefaultDevice() {
-    return sharedPreferences.getString("defaultDevice", "");
-  }
-
-  public String getDefaultUsbDevice() {
-    return sharedPreferences.getString("defaultUsbDevice", "");
-  }
-
-  public boolean getNeedStartDefaultUsbDevice() {
-    return sharedPreferences.getBoolean("NeedStartDefaultUsbDevice", false);
-  }
-
-  public void setDefaultDevice(String value) {
-    editor.putString("defaultDevice", value);
-    editor.apply();
-  }
-
-  public void setDefaultUsbDevice(String value) {
-    editor.putString("defaultUsbDevice", value);
-    editor.apply();
-  }
-
-  public void setNeedStartDefaultUsbDevice(boolean value) {
-    editor.putBoolean("NeedStartDefaultUsbDevice", value);
-    editor.apply();
-  }
-
   public boolean getMirrorMode() {
     return sharedPreferences.getBoolean("MirrorMode", false);
   }
