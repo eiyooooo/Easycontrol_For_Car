@@ -33,7 +33,8 @@ public class StartDeviceActivity extends Activity {
                     return;
                 }
             }
-            new Client(device, usbDevice, AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
+            int mode = AppData.setting.getTryStartDefaultInAppTransfer() || (device.specified_app != null && !device.specified_app.isEmpty()) ? 1 : 0;
+            new Client(device, usbDevice, mode);
         } else {
             queryUSB();
             boolean found = false;

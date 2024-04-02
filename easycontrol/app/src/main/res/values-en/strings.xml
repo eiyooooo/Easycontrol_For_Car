@@ -39,7 +39,7 @@
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
   <string name="set_force_desktop_mode_detail">Input method can be synchronized during application transfer, and the foreground application will not be transferred after the first transferred application is closed (Not recommended to enable, this desktop mode is not Samsung dex mode or similar function)</string>
   <string name="set_try_start_default_in_app_transfer">Try application transfer when opening default device</string>
-  <string name="set_try_start_default_in_app_transfer_detail">Try application transfer when opening default device after starting the app</string>
+  <string name="set_try_start_default_in_app_transfer_detail">Try application transfer when opening default device (Note: When the device specifies the package name, the application transfer is automatically attempted without turning on this)</string>
   <string name="set_other_custom_key">Custom key (ADB reauthorization required)</string>
   <string name="set_other_clear_key">Regenerate the key (ADB reauthorization required)</string>
   <string name="set_other_clear_key_code">Regenerated</string>

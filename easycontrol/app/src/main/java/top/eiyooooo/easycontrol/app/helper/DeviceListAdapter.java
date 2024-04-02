@@ -275,7 +275,14 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
       AppData.clipBoard.setPrimaryClip(ClipData.newPlainText(MIMETYPE_TEXT_PLAIN, device.uuid));
       Toast.makeText(AppData.main, AppData.main.getString(R.string.set_device_button_get_uuid_success), Toast.LENGTH_SHORT).show();
     });
-    itemSetDeviceBinding.buttonCreateShortcut.setOnClickListener(v -> ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, device.name, R.drawable.phone, device.uuid));
+    itemSetDeviceBinding.buttonCreateShortcut.setOnClickListener(v -> {
+        try {
+          if (device.specified_app == null || device.specified_app.isEmpty()) throw new Exception();
+          ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, device.name, Adb.getRemoteIconByDevice(device, device.specified_app), device.uuid);
+        } catch (Exception ignored) {
+          ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, device.name, R.drawable.phone, device.uuid);
+        }
+    });
     itemSetDeviceBinding.buttonChange.setOnClickListener(v -> {
       dialog.cancel();
       PublicTools.createAddDeviceView(context, device, this).show();
