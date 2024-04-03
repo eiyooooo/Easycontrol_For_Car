@@ -5,6 +5,9 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.view.Surface;
+
+import top.eiyooooo.easycontrol.server.entity.Device;
+import top.eiyooooo.easycontrol.server.entity.Options;
 import top.eiyooooo.easycontrol.server.utils.L;
 
 import java.lang.reflect.InvocationTargetException;
@@ -48,8 +51,9 @@ public final class SurfaceControl {
             displayControlClass = classLoader.loadClass("com.android.server.display.DisplayControl");
             Method loadMethod = Runtime.class.getDeclaredMethod("loadLibrary0", Class.class, String.class);
             loadMethod.setAccessible(true);
+            if ((Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("honor")) throw new Exception("Honor device");
             loadMethod.invoke(Runtime.getRuntime(), displayControlClass, "android_servers");
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
             L.d("Failed to load DisplayControl class");
         }
         if (displayControlClass == null) throw new Exception("Failed to load DisplayControl class");
