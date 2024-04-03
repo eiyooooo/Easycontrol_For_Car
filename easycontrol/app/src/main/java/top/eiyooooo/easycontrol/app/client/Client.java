@@ -71,6 +71,7 @@ public class Client {
     allClient.add(this);
     // 初始化
     uuid = device.uuid;
+    if (mode == 0) specifiedTransferred = true;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       handlerThread = new HandlerThread("easycontrol_mediacodec");
       handlerThread.start();
@@ -196,6 +197,7 @@ public class Client {
     }
   }
 
+  boolean specifiedTransferred = false;
   private void appTransfer(Device device) {
     try {
       JSONArray tasksArray = null;
@@ -203,17 +205,20 @@ public class Client {
         JSONObject tasks = new JSONObject(Adb.getStringResponseFromServer(device, "getRecentTasks"));
         tasksArray = tasks.getJSONArray("data");
         for (int i = 0; i < tasksArray.length(); i++) {
-          if (Integer.parseInt(tasksArray.getJSONObject(i).getString("taskId")) <= 0) {
+          int taskId = tasksArray.getJSONObject(i).getInt("taskId");
+          String topPackage = tasksArray.getJSONObject(i).getString("topPackage");
+          if (taskId <= 0 || topPackage.isEmpty()) {
             tasksArray.remove(i);
             i--;
           }
         }
       } catch (Exception ignored) {
       }
-      if (!device.specified_app.isEmpty()) {
+      if (!specifiedTransferred && !device.specified_app.isEmpty()) {
         String checkApp = Adb.getStringResponseFromServer(device, "getAppMainActivity", "package=" + device.specified_app);
         if (checkApp.isEmpty()) {
           PublicTools.logToast(AppData.main.getString(R.string.error_app_not_found));
+          throw new Exception("");
         } else {
           int appTaskId = 0;
           if (tasksArray != null) {
@@ -234,6 +239,7 @@ public class Client {
             String output = adb.runAdbCmd("am display move-stack " + appTaskId + " " + displayId);
             if (output.contains("Exception")) throw new Exception("");
           }
+          specifiedTransferred = true;
         }
       } else {
         if (tasksArray != null && tasksArray.length() > 0) {
@@ -242,6 +248,7 @@ public class Client {
         } else throw new Exception("");
       }
     } catch (Exception ignored) {
+      specifiedTransferred = true;
       changeMode(0);
       PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_failed));
     }
@@ -338,10 +345,16 @@ public class Client {
     status = -1;
     allClient.remove(this);
     if (error != null) PublicTools.logToast(error);
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
       try {
         switch (i) {
           case 0:
+            try {
+              Adb.getStringResponseFromServer(clientView.device, "releaseVirtualDisplay", "id=" + displayId);
+            } catch (Exception ignored) {
+            }
+            break;
+          case 1:
             if (multiLink == 1) {
               Client target = null;
               boolean multi = false;
@@ -360,23 +373,23 @@ public class Client {
               }
             }
             break;
-          case 1:
+          case 2:
             if (loggerThread != null) loggerThread.interrupt();
             String log = new String(shell.readAllBytes().array(), StandardCharsets.UTF_8);
             if (!log.isEmpty()) L.logWithoutTime(uuid, log);
             break;
-          case 2:
+          case 3:
             keepAliveThread.interrupt();
             executeStreamInThread.interrupt();
             if (handlerThread != null) handlerThread.quit();
             break;
-          case 3:
+          case 4:
             AppData.uiHandler.post(() -> clientView.hide(true));
             break;
-          case 4:
+          case 5:
             bufferStream.close();
             break;
-          case 5:
+          case 6:
             videoDecode.release();
             if (audioDecode != null) audioDecode.release();
             break;
