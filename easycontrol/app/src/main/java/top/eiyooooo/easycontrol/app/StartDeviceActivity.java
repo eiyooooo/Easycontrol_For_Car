@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbInterface;
 import android.os.Bundle;
 import android.widget.Toast;
 import top.eiyooooo.easycontrol.app.client.Client;
@@ -58,16 +60,28 @@ public class StartDeviceActivity extends Activity {
     @SuppressLint("MutableImplicitPendingIntent")
     private void queryUSB() {
         for (String k : AppData.usbManager.getDeviceList().keySet()) {
-            UsbDevice device = AppData.usbManager.getDeviceList().get(k);
-            if (!AppData.usbManager.hasPermission(device)) {
+            UsbDevice usbDevice = AppData.usbManager.getDeviceList().get(k);
+            if (!AppData.usbManager.hasPermission(usbDevice)) {
                 AppData.usbManager.requestPermission(
-                        device,
+                        usbDevice,
                         PendingIntent.getBroadcast(getApplicationContext(),
                                 0,
                                 new Intent("top.eiyooooo.easycontrol.app.USB_PERMISSION"),
                                 PendingIntent.FLAG_MUTABLE));
-            } else if (device != null) {
-                DeviceListAdapter.linkDevices.put(device.getSerialNumber(), device);
+            } else if (usbDevice != null) {
+                for (int i = 0; i < usbDevice.getInterfaceCount(); i++) {
+                    UsbInterface tmpUsbInterface = usbDevice.getInterface(i);
+                    if ((tmpUsbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC) && (tmpUsbInterface.getInterfaceSubclass() == 66) && (tmpUsbInterface.getInterfaceProtocol() == 1)) {
+                        String uuid = usbDevice.getSerialNumber();
+                        Device device = AppData.dbHelper.getByUUID(uuid);
+                        if (device == null) {
+                            device = Device.getDefaultDevice(uuid, Device.TYPE_LINK);
+                            AppData.dbHelper.insert(device);
+                        }
+                        DeviceListAdapter.linkDevices.put(uuid, usbDevice);
+                        break;
+                    }
+                }
             }
         }
     }
