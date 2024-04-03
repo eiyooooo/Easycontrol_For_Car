@@ -83,6 +83,7 @@ public class Server {
         String[] keyValuePairs = params.split("&");
         for (String pair : keyValuePairs) {
             String[] keyValue = pair.split("=");
+            if (keyValue.length != 2) continue;
             String key = keyValue[0];
             String value = keyValue[1];
             request.put(key, value);
