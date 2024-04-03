@@ -34,7 +34,7 @@
 	6. 选择屏幕镜像或应用流转模式进行连接
 
 3. 界面使用
-<img src="pic/screenshot/small_usage.webp">
+    <img src="pic/screenshot/small_usage.webp">
 	1. 工具栏
 		- 在小窗模式下点击上横条，可查看工具栏
 		- 在全屏模式下点击导航栏更多按钮，可查看工具栏
