@@ -34,7 +34,7 @@ public class ClipboardManager {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class);
         } else {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 6; i++) {
                 try {
                     getMethodVersion = i;
                     switch (i) {
@@ -50,9 +50,15 @@ public class ClipboardManager {
                         case 3:
                             getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class, int.class, String.class);
                             return;
+                        case 4:
+                            getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class, String.class, int.class, int.class, boolean.class);
+                            return;
+                        case 5:
+                            getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class, String.class, String.class, String.class, int.class, int.class, boolean.class);
+                            return;
                     }
                 } catch (Exception e) {
-                    if (i == 3) L.e("getGetPrimaryClipMethod error", e);
+                    if (i == 5) L.e("getGetPrimaryClipMethod error", e);
                 }
             }
         }
@@ -62,7 +68,7 @@ public class ClipboardManager {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             setPrimaryClipMethod = manager.getClass().getMethod("setPrimaryClip", ClipData.class, String.class);
         } else {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 try {
                     setMethodVersion = i;
                     switch (i) {
@@ -75,9 +81,12 @@ public class ClipboardManager {
                         case 2:
                             setPrimaryClipMethod = manager.getClass().getMethod("setPrimaryClip", ClipData.class, String.class, String.class, int.class, int.class);
                             return;
+                        case 3:
+                            setPrimaryClipMethod = manager.getClass().getMethod("setPrimaryClip", ClipData.class, String.class, String.class, int.class, int.class, boolean.class);
+                            return;
                     }
                 } catch (Exception e) {
-                    if (i == 2) L.e("getSetPrimaryClipMethod error", e);
+                    if (i == 3) L.e("getSetPrimaryClipMethod error", e);
                 }
             }
         }
@@ -148,8 +157,14 @@ public class ClipboardManager {
                     case 2:
                         clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID, 0);
                         break;
-                    default:
+                    case 3:
                         clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, FakeContext.ROOT_UID, null);
+                        break;
+                    case 4:
+                        clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID, 0, true);
+                        break;
+                    default:
+                        clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, null, null, null, FakeContext.ROOT_UID, 0, true);
                         break;
                 }
             }
@@ -176,8 +191,11 @@ public class ClipboardManager {
                     case 1:
                         setPrimaryClipMethod.invoke(manager, clipData, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID);
                         break;
-                    default:
+                    case 2:
                         setPrimaryClipMethod.invoke(manager, clipData, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID, 0);
+                        break;
+                    default:
+                        setPrimaryClipMethod.invoke(manager, clipData, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID, 0, true);
                         break;
                 }
             }
