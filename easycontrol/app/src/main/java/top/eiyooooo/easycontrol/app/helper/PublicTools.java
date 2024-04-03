@@ -9,11 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -98,12 +94,6 @@ public class PublicTools {
   // DP转PX
   public static int dp2px(Float dp) {
     return (int) (dp * AppData.realScreenSize.density);
-  }
-
-  // Bitmap转Drawable
-  public static Drawable byteArrayBitmapToDrawable(byte[] bytes) {
-    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-    return new BitmapDrawable(Resources.getSystem(), bitmap);
   }
 
   // 创建弹窗

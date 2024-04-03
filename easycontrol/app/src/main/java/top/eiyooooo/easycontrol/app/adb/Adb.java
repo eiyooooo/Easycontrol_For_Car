@@ -88,7 +88,7 @@ public class Adb {
     handleOutThread.start();
   }
 
-  public void startServer() {
+  public final void startServer() {
     try {
       if (BuildConfig.ENABLE_DEBUG_FEATURE || !runAdbCmd("ls /data/local/tmp/easycontrol_*").contains(serverName)) {
         runAdbCmd("rm /data/local/tmp/easycontrol_* ");
@@ -175,7 +175,7 @@ public class Adb {
     return bufferStream;
   }
 
-  public String restartOnTcpip(int port) throws InterruptedException {
+  public final String restartOnTcpip(int port) throws InterruptedException {
     BufferStream bufferStream = open("tcpip:" + port, false);
     do {
       synchronized (this) {
@@ -185,7 +185,7 @@ public class Adb {
     return new String(bufferStream.readByteArrayBeforeClose().array());
   }
 
-  public void pushFile(InputStream file, String remotePath) throws Exception {
+  public final void pushFile(InputStream file, String remotePath) throws Exception {
     // 打开链接
     BufferStream bufferStream = open("sync:", false);
     // 发送信令，建立push通道
@@ -262,7 +262,7 @@ public class Adb {
     return BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size());
   }
 
-  public String runAdbCmd(String cmd) throws InterruptedException {
+  public final String runAdbCmd(String cmd) throws InterruptedException {
     BufferStream bufferStream = open("shell:" + cmd, true);
     do {
       synchronized (this) {

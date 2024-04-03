@@ -308,13 +308,13 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     devicesList.addAll(tmp2);
   }
 
-  public void startByUUID(String uuid, int mode) {
+  public static void startByUUID(String uuid, int mode) {
     for (Device device : devicesList) {
       if (Objects.equals(device.uuid, uuid)) startDevice(device, mode);
     }
   }
 
-  public void startDevice(Device device, int mode) {
+  public static void startDevice(Device device, int mode) {
     if (device.isLinkDevice()) {
       UsbDevice usbDevice = linkDevices.get(device.uuid);
       if (usbDevice == null) return;
@@ -323,7 +323,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
   }
 
   // 启动默认设备
-  public void startDefault(int mode) {
+  public static void startDefault(int mode) {
     boolean started = false;
     for (Device device : devicesList) {
       if (device.connectOnStart) {
@@ -339,11 +339,10 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     }
   }
 
-  public void update() {
+  public final void update() {
     for (int i = 0; i < devicesList.size(); i++)
       expandableListView.collapseGroup(i);
     queryDevices();
     notifyDataSetChanged();
   }
-
 }
