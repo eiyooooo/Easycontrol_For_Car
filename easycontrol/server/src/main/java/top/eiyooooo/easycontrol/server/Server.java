@@ -143,7 +143,7 @@ public class Server {
                 case "/createVirtualDisplay": {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
                         throw new Exception("Virtual display is not supported before Android 11");
-                    SurfaceView surfaceView = new SurfaceView(channel.context);
+                    SurfaceView surfaceView = new SurfaceView(new Channel.ContextWrapperWrapper(channel.context));
                     String line1 = request.get("width");
                     String line2 = request.get("height");
                     String line3 = request.get("density");
