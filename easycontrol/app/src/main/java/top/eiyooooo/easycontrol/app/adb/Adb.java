@@ -219,6 +219,7 @@ public class Adb {
 
   public final Bitmap getRemoteIcon(String packageName) throws Exception {
     String path = getStringResponse("getIcon", "package=" + packageName);
+    if (!path.endsWith(".png")) throw new Exception("get icon fail");
     BufferStream bufferStream = open("sync:", false);
     byte[] bytes = path.getBytes();
     bufferStream.write(AdbProtocol.generateSyncHeader("RECV", bytes.length));

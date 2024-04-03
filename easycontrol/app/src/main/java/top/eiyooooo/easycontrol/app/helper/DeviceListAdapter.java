@@ -279,7 +279,8 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
         try {
           if (device.specified_app == null || device.specified_app.isEmpty()) throw new Exception();
           ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, device.name, Adb.getRemoteIconByDevice(device, device.specified_app), device.uuid);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+          L.log(device.uuid, e);
           ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, device.name, R.drawable.phone, device.uuid);
         }
     });
