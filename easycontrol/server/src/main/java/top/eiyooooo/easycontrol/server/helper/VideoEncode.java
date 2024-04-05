@@ -11,6 +11,7 @@ import android.system.ErrnoException;
 import android.view.Surface;
 import top.eiyooooo.easycontrol.server.Scrcpy;
 import top.eiyooooo.easycontrol.server.entity.Device;
+import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
 import top.eiyooooo.easycontrol.server.entity.Options;
 import top.eiyooooo.easycontrol.server.utils.L;
 import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
@@ -71,15 +72,18 @@ public final class VideoEncode {
         encoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         // 绑定Display和Surface
         surface = encoder.createInputSurface();
-        if (Device.displayId != 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && ((Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("xiaomi")
-                || (Build.BRAND.toLowerCase() + Build.MANUFACTURER.toLowerCase()).contains("redmi"))) {
+        if (Device.displayId != 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
             Options.mirrorMode = 1;
-        }
         if (Options.mirrorMode == 1) {
             try {
                 if (virtualDisplay != null) virtualDisplay.release();
+                virtualDisplay = null;
                 virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car", Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
+                Device.displayId = virtualDisplay.getDisplay().getDisplayId();
+                DisplayInfo displayInfo = DisplayManager.getDisplayInfo(Device.displayId);
+                Device.deviceSize = displayInfo.size;
+                Device.deviceRotation = displayInfo.rotation;
+                L.d("Android14 method DisplayId: " + Device.displayId);
             } catch (Exception e) {
                 L.e("createVirtualDisplay by DisplayManager error", e);
                 throw e;
