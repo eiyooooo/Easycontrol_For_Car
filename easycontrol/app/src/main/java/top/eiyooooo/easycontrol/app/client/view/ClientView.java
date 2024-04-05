@@ -127,7 +127,8 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
         if (output.contains("success")) {
           Thread.sleep(500);
-          controlPacket.sendConfigChangedEvent(1);
+          if (displayId == 0) controlPacket.sendConfigChangedEvent(1);
+          else controlPacket.sendConfigChangedEvent(2);
           Thread.sleep(300);
           if (differentOrientation) controlPacket.sendRotateEvent();
         }

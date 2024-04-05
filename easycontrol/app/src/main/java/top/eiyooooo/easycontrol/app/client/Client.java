@@ -457,6 +457,7 @@ public class Client {
       } catch (Exception ignored) {
       }
       displayId = 0;
+      clientView.displayId = 0;
     } else if (mode == 1) {
       tryCreateDisplay(clientView.device);
       if (displayId == 0) return;

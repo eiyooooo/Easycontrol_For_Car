@@ -24,7 +24,6 @@ public final class Device {
     public static Pair<Integer, Integer> realDeviceSize;
     public static int realDeviceDensity;
     public static Pair<Integer, Integer> deviceSize;
-    public static int deviceDensity;
     public static int deviceRotation;
     public static Pair<Integer, Integer> videoSize;
     public static boolean needReset = false;
@@ -47,7 +46,7 @@ public final class Device {
 
     // 获取真实的设备大小
     private static void getRealDeviceSize() {
-        DisplayInfo displayInfo = DisplayManager.getDisplayInfo(displayId);
+        DisplayInfo displayInfo = DisplayManager.getDisplayInfo(Display.DEFAULT_DISPLAY);
         realDeviceSize = displayInfo.size;
         realDeviceDensity = displayInfo.density;
         deviceRotation = displayInfo.rotation;
@@ -58,7 +57,6 @@ public final class Device {
     private static void getDeviceSize() {
         DisplayInfo displayInfo = DisplayManager.getDisplayInfo(displayId);
         deviceSize = displayInfo.size;
-        deviceDensity = displayInfo.density;
         deviceRotation = displayInfo.rotation;
         layerStack = displayInfo.layerStack;
         getVideoSize();
@@ -70,7 +68,6 @@ public final class Device {
                 DisplayInfo test = DisplayManager.getDisplayInfo(-mode);
                 if (test == null) throw new Exception();
                 displayId = -mode;
-                getRealDeviceSize();
                 WindowManager.removeRotationWatcher();
                 setRotationListener();
             } catch (Throwable e) {
