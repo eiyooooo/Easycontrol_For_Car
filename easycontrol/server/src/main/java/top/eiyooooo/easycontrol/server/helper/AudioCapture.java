@@ -30,7 +30,7 @@ public final class AudioCapture {
         try {
             recorder = createAudioRecord();
         } catch (NullPointerException e) {
-            L.w("Cannot create AudioRecord, try Vivo");
+            L.w("Cannot create AudioRecord, try Vivo", e);
             recorder = createAudioRecordVivo();
         }
         recorder.startRecording();
@@ -185,6 +185,7 @@ public final class AudioCapture {
 
             return audioRecord;
         } catch (Exception e) {
+            L.e("Cannot create AudioRecord", e);
             throw new RuntimeException("Cannot create AudioRecord");
         }
     }
