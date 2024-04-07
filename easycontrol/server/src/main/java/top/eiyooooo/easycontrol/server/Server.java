@@ -3,7 +3,6 @@ package top.eiyooooo.easycontrol.server;
 import android.hardware.display.VirtualDisplay;
 import android.os.Build;
 import android.view.Display;
-import android.view.SurfaceView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
@@ -143,7 +142,6 @@ public class Server {
                 case "/createVirtualDisplay": {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
                         throw new Exception("Virtual display is not supported before Android 11");
-                    SurfaceView surfaceView = new SurfaceView(new Channel.ContextWrapperWrapper(channel.context));
                     String line1 = request.get("width");
                     String line2 = request.get("height");
                     String line3 = request.get("density");
@@ -170,7 +168,7 @@ public class Server {
                     if (line3 != null) density = Integer.parseInt(line3);
                     else density = defaultDisplay.density;
 
-                    VirtualDisplay display = channel.createVirtualDisplay(surfaceView.getHolder().getSurface(), width, height, density);
+                    VirtualDisplay display = channel.createVirtualDisplay(width, height, density);
                     if (display == null) throw new Exception("Failed to create virtual display");
                     int createdDisplayId = display.getDisplay().getDisplayId();
                     cache.put(createdDisplayId, display);
