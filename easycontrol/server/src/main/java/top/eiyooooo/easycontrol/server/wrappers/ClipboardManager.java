@@ -34,7 +34,7 @@ public class ClipboardManager {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class);
         } else {
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 7; i++) {
                 try {
                     getMethodVersion = i;
                     switch (i) {
@@ -56,9 +56,12 @@ public class ClipboardManager {
                         case 5:
                             getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class, String.class, String.class, String.class, int.class, int.class, boolean.class);
                             return;
+                        case 6:
+                            getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class, String.class, int.class, int.class, String.class);
+                            return;
                     }
                 } catch (Exception e) {
-                    if (i == 5) L.e("getGetPrimaryClipMethod error", e);
+                    if (i == 6) L.e("getGetPrimaryClipMethod error", e);
                 }
             }
         }
@@ -163,8 +166,11 @@ public class ClipboardManager {
                     case 4:
                         clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID, 0, true);
                         break;
-                    default:
+                    case 5:
                         clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, null, null, null, FakeContext.ROOT_UID, 0, true);
+                        break;
+                    default:
+                        clipData = (ClipData) getPrimaryClipMethod.invoke(manager, FakeContext.PACKAGE_NAME, null, FakeContext.ROOT_UID, 0, null);
                         break;
                 }
             }
