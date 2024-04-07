@@ -6,8 +6,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.view.Surface;
 
-import top.eiyooooo.easycontrol.server.entity.Device;
-import top.eiyooooo.easycontrol.server.entity.Options;
 import top.eiyooooo.easycontrol.server.utils.L;
 
 import java.lang.reflect.InvocationTargetException;
@@ -89,44 +87,31 @@ public final class SurfaceControl {
         CLASS.getMethod("destroyDisplay", IBinder.class).invoke(null, displayToken);
     }
 
-    public static IBinder getBuiltInDisplay() {
-        try {
+    public static IBinder getBuiltInDisplay() throws Exception {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             if (getBuiltInDisplayMethod == null)
                 getBuiltInDisplayMethod = CLASS.getMethod("getBuiltInDisplay", int.class);
             return (IBinder) getBuiltInDisplayMethod.invoke(null, 0);
-        } catch (Exception e) {
-            L.e("getBuiltInDisplay error", e);
-            return null;
+        } else {
+            if (getBuiltInDisplayMethod == null)
+                getBuiltInDisplayMethod = CLASS.getMethod("getInternalDisplayToken");
+            return (IBinder) getBuiltInDisplayMethod.invoke(null);
         }
     }
 
-    public static IBinder getPhysicalDisplayToken(long physicalDisplayId) {
-        if (getPhysicalDisplayTokenMethod == null) return null;
-        try {
-            return (IBinder) getPhysicalDisplayTokenMethod.invoke(null, physicalDisplayId);
-        } catch (Exception e) {
-            L.e("getPhysicalDisplayToken error", e);
-            return null;
-        }
+    public static IBinder getPhysicalDisplayToken(long physicalDisplayId) throws Exception {
+        if (getPhysicalDisplayTokenMethod == null) throw new Exception("getPhysicalDisplayTokenMethod is null");
+        return (IBinder) getPhysicalDisplayTokenMethod.invoke(null, physicalDisplayId);
     }
 
-    public static long[] getPhysicalDisplayIds() {
-        if (getPhysicalDisplayIdsMethod == null) return null;
-        try {
-            return (long[]) getPhysicalDisplayIdsMethod.invoke(null);
-        } catch (Exception e) {
-            L.e("getPhysicalDisplayIds error", e);
-            return null;
-        }
+    public static long[] getPhysicalDisplayIds() throws Exception {
+        if (getPhysicalDisplayIdsMethod == null) throw new Exception("getPhysicalDisplayIdsMethod is null");
+        return (long[]) getPhysicalDisplayIdsMethod.invoke(null);
     }
 
-    public static void setDisplayPowerMode(IBinder displayToken, int mode) {
-        if (setDisplayPowerModeMethod == null) return;
-        try {
-            setDisplayPowerModeMethod.invoke(null, displayToken, mode);
-        } catch (Exception e) {
-            L.e("setDisplayPowerMode error", e);
-        }
+    public static void setDisplayPowerMode(IBinder displayToken, int mode) throws Exception {
+        if (setDisplayPowerModeMethod == null) throw new Exception("setDisplayPowerModeMethod is null");
+        setDisplayPowerModeMethod.invoke(null, displayToken, mode);
     }
 
 }

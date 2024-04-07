@@ -178,15 +178,22 @@ public final class Device {
 
     public static void changeScreenPowerMode(int mode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            long[] physicalDisplayIds = SurfaceControl.getPhysicalDisplayIds();
-            if (physicalDisplayIds == null) return;
-            for (long physicalDisplayId : physicalDisplayIds) {
-                IBinder token = SurfaceControl.getPhysicalDisplayToken(physicalDisplayId);
-                if (token != null) SurfaceControl.setDisplayPowerMode(token, mode);
+            try {
+                long[] physicalDisplayIds = SurfaceControl.getPhysicalDisplayIds();
+                if (physicalDisplayIds == null) throw new Exception();
+                for (long physicalDisplayId : physicalDisplayIds) {
+                    IBinder token = SurfaceControl.getPhysicalDisplayToken(physicalDisplayId);
+                    if (token != null) SurfaceControl.setDisplayPowerMode(token, mode);
+                }
+            } catch (Exception ignored) {
+                L.w("change power mode for all screens error, try built-in display");
             }
-        } else {
+        }
+        try {
             IBinder d = SurfaceControl.getBuiltInDisplay();
             if (d != null) SurfaceControl.setDisplayPowerMode(d, mode);
+        } catch (Exception e) {
+            L.e("change screen power mode error", e);
         }
     }
 
