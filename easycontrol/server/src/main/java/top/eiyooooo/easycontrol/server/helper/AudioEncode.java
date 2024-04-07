@@ -24,12 +24,13 @@ public final class AudioEncode {
         byte[] bytes = new byte[]{0};
         try {
             // 从安卓12开始支持音频
-            if (!Options.isAudio || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) throw new Exception("版本低");
+            if (!Options.isAudio) throw new Exception("audio not enabled");
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) throw new Exception("audio not supported");
             setAudioEncoder();
             encoder.start();
             audioCapture = AudioCapture.init();
         } catch (Exception e) {
-            L.w("Audio not supported: ", e);
+            L.w(e);
             Scrcpy.write(ByteBuffer.wrap(bytes));
             return false;
         }
