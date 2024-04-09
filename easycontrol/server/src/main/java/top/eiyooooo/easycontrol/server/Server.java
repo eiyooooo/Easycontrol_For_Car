@@ -227,7 +227,7 @@ public class Server {
                         throw new Exception("specified virtual display not found, it might not be created by this server");
                     JSONObject tasks = channel.getRecentTasksJson(25, 0, 0);
                     JSONArray tasks_data = tasks.getJSONArray("data");
-                    for (int i = 0; i < tasks.length(); i++) {
+                    for (int i = 0; i < tasks_data.length(); i++) {
                         JSONObject task = tasks_data.getJSONObject(i);
                         if (id.equals(String.valueOf(task.getInt("displayId")))) {
                             try {
