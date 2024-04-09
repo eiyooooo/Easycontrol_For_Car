@@ -6,7 +6,6 @@ import android.app.ActivityOptions;
 import android.app.TaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -29,8 +28,8 @@ import android.view.Surface;
 import android.view.SurfaceView;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import top.eiyooooo.easycontrol.server.helper.FakeContext;
 import top.eiyooooo.easycontrol.server.utils.L;
-import top.eiyooooo.easycontrol.server.utils.Workarounds;
 import top.eiyooooo.easycontrol.server.wrappers.IPackageManager;
 
 import java.io.BufferedReader;
@@ -64,10 +63,9 @@ public class Channel {
 
                     Looper.prepare();
 
-                    context = Workarounds.fillAppInfo();
-                    ContextWrapperWrapper wrapper = new ContextWrapperWrapper(context);
+                    context = FakeContext.get();
 
-                    DisplayManager dm = (DisplayManager) wrapper.getSystemService(Context.DISPLAY_SERVICE);
+                    DisplayManager dm = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
                     dm.registerDisplayListener(new DisplayManager.DisplayListener() {
                         @Override
                         public void onDisplayAdded(int displayId) {
@@ -112,18 +110,6 @@ public class Channel {
         info.put("Build.HARDWARE", Build.HARDWARE);
         info.put("Build.SUPPORTED_ABIS", Arrays.toString(Build.SUPPORTED_ABIS));
         return info;
-    }
-
-
-    static class ContextWrapperWrapper extends ContextWrapper {
-        public ContextWrapperWrapper(Context base) {
-            super(base);
-        }
-
-        @Override
-        public String getPackageName() {
-            return "com.android.shell";
-        }
     }
 
     public synchronized String Bitmap2file(String packageName) throws Exception {
@@ -460,14 +446,14 @@ public class Channel {
             throw new Exception("Virtual display is not supported before Android 11");
         Surface surface;
         try {
-            SurfaceView surfaceView = new SurfaceView(new ContextWrapperWrapper(context));
+            SurfaceView surfaceView = new SurfaceView(FakeContext.get());
             surface = surfaceView.getHolder().getSurface();
         } catch (Exception ignored) {
             L.w("Failed to create SurfaceView, trying MediaCodec");
             surface = MediaCodec.createPersistentInputSurface();
         }
         if (surface == null) throw new Exception("Failed to create surface");
-        android.hardware.display.DisplayManager displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(new ContextWrapperWrapper(context));
+        android.hardware.display.DisplayManager displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(FakeContext.get());
         int flags = getVirtualDisplayFlags();
         return displayManager.createVirtualDisplay("easycontrol_for_car", width, height, density, surface, flags);
     }

@@ -24,9 +24,9 @@ public class Server {
 
     public static void main(String... args) throws Exception {
         L.logMode = 2;
-        ServiceManager.setManagers();
-        Workarounds.prepareMainLooper();
         outputStream = new DataOutputStream(System.out);
+        Workarounds.apply(0);
+        ServiceManager.setManagers();
         new Server();
         while (true) {
             Thread.sleep(1000);

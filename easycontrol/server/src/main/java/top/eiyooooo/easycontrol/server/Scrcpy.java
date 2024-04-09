@@ -11,6 +11,7 @@ import top.eiyooooo.easycontrol.server.helper.AudioEncode;
 import top.eiyooooo.easycontrol.server.helper.ControlPacket;
 import top.eiyooooo.easycontrol.server.helper.VideoEncode;
 import top.eiyooooo.easycontrol.server.utils.L;
+import top.eiyooooo.easycontrol.server.utils.Workarounds;
 import top.eiyooooo.easycontrol.server.wrappers.ServiceManager;
 
 import java.io.DataInputStream;
@@ -43,6 +44,7 @@ public final class Scrcpy {
             // 解析参数
             Options.parse(args);
             // 初始化
+            Workarounds.apply(1);
             ServiceManager.setManagers();
             Device.init();
             // 连接
