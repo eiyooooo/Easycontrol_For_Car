@@ -11,15 +11,16 @@ import android.system.ErrnoException;
 import android.view.Surface;
 import top.eiyooooo.easycontrol.server.Scrcpy;
 import top.eiyooooo.easycontrol.server.entity.Device;
-import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
 import top.eiyooooo.easycontrol.server.entity.Options;
 import top.eiyooooo.easycontrol.server.utils.L;
 import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
 import top.eiyooooo.easycontrol.server.wrappers.SurfaceControl;
+import top.eiyooooo.easycontrol.server.wrappers.WindowManager;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 public final class VideoEncode {
     private static MediaCodec encoder;
@@ -28,7 +29,7 @@ public final class VideoEncode {
     private static boolean useH265;
 
     private static IBinder display;
-    private static VirtualDisplay virtualDisplay;
+    private static final HashMap<Integer, VirtualDisplay> virtualDisplays = new HashMap<>();
 
     public static void init() throws Exception {
         useH265 = Options.useH265 && Device.isEncoderSupport("hevc");
@@ -76,14 +77,23 @@ public final class VideoEncode {
             Options.mirrorMode = 1;
         if (Options.mirrorMode == 1) {
             try {
-                if (virtualDisplay != null) virtualDisplay.release();
-                virtualDisplay = null;
-                virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car", Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
-                Device.displayId = virtualDisplay.getDisplay().getDisplayId();
-                DisplayInfo displayInfo = DisplayManager.getDisplayInfo(Device.displayId);
-                Device.deviceSize = displayInfo.size;
-                Device.deviceRotation = displayInfo.rotation;
-                L.d("Android14 method DisplayId: " + Device.displayId);
+                VirtualDisplay virtualDisplay = virtualDisplays.get(Device.displayId);
+                if (virtualDisplay == null) {
+                    virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car",
+                            Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
+                    virtualDisplays.put(Device.displayId, virtualDisplay);
+                    int displayId = virtualDisplay.getDisplay().getDisplayId();
+                    WindowManager.freezeRotation(displayId, 0);
+                    Device.display2virtualDisplay.put(Device.displayId, displayId);
+                    L.d("mirroring display " + Device.displayId + " to " + displayId + " with size " + Device.videoSize.first + "x" + Device.videoSize.second);
+                }
+                else {
+                    virtualDisplay.setSurface(surface);
+                    virtualDisplay.resize(Device.videoSize.first, Device.videoSize.second, 1);
+                    int displayId = virtualDisplay.getDisplay().getDisplayId();
+                    WindowManager.freezeRotation(displayId, 0);
+                    L.d("resize virtual display " + displayId + " to " + Device.videoSize.first + "x" + Device.videoSize.second);
+                }
             } catch (Exception e) {
                 L.e("createVirtualDisplay by DisplayManager error", e);
                 throw e;
@@ -132,6 +142,9 @@ public final class VideoEncode {
             stopEncode();
             encoder.release();
             SurfaceControl.destroyDisplay(display);
+            for (VirtualDisplay virtualDisplay : virtualDisplays.values()) {
+                virtualDisplay.release();
+            }
         } catch (Exception e) {
             L.e("release error", e);
         }

@@ -17,6 +17,7 @@ import top.eiyooooo.easycontrol.server.wrappers.WindowManager;
 import top.eiyooooo.easycontrol.server.wrappers.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,7 @@ public final class Device {
 
     public static int displayId;
     public static int layerStack;
+    public static HashMap<Integer, Integer> display2virtualDisplay = new HashMap<>();
 
     public static void init() throws IOException, InterruptedException {
         displayId = Options.displayId;
@@ -142,8 +144,13 @@ public final class Device {
         }
 
         if (pointer == null) return;
-        pointer.x = x * deviceSize.first;
-        pointer.y = y * deviceSize.second;
+        if (Options.mirrorMode == 1) {
+            pointer.x = x * videoSize.first;
+            pointer.y = y * videoSize.second;
+        } else {
+            pointer.x = x * deviceSize.first;
+            pointer.y = y * deviceSize.second;
+        }
         int pointerCount = pointersState.update();
 
         if (action == MotionEvent.ACTION_UP) {
@@ -168,7 +175,10 @@ public final class Device {
 
     private static void injectEvent(InputEvent inputEvent) {
         try {
-            if (displayId != Display.DEFAULT_DISPLAY) InputManager.setDisplayId(inputEvent, displayId);
+            if (Options.mirrorMode == 1 && display2virtualDisplay.containsKey(displayId))
+                InputManager.setDisplayId(inputEvent, display2virtualDisplay.get(displayId));
+            else if (displayId != Display.DEFAULT_DISPLAY)
+                InputManager.setDisplayId(inputEvent, displayId);
             InputManager.injectInputEvent(inputEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
         } catch (Exception e) {
             L.e("injectEvent error", e);
