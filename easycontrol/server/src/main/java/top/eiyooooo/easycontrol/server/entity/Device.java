@@ -203,8 +203,17 @@ public final class Device {
 
     public static void rotateDevice() {
         boolean accelerometerRotation = !WindowManager.isRotationFrozen(displayId);
-        WindowManager.freezeRotation(displayId, deviceRotation == 0 || deviceRotation == 3 ? 1 : 0);
+        int currentRotation = getCurrentRotation(displayId);
+        if (currentRotation == -1) return;
+        int newRotation = (currentRotation & 1) ^ 1; // 0->1, 1->0, 2->1, 3->0
+        WindowManager.freezeRotation(displayId, newRotation);
         if (accelerometerRotation) WindowManager.thawRotation(displayId);
+    }
+
+    private static int getCurrentRotation(int displayId) {
+        if (displayId == 0) return WindowManager.getRotation();
+        DisplayInfo displayInfo = DisplayManager.getDisplayInfo(displayId);
+        return displayInfo.rotation;
     }
 
     private static void setKeepScreenLight() {
