@@ -85,11 +85,11 @@ public final class DisplayManager {
             return new DisplayInfo(displayId, new Pair<>(width, height), density, rotation, layerStack, flags);
         } catch (Exception e) {
             L.e("getDisplayInfo error", e);
-            throw new AssertionError(e);
+            return getDisplayInfoFromDumpsysDisplay(displayId);
         }
     }
 
-    private static Method getGetDisplayIdsMethod() throws NoSuchMethodException {
+    private static Method getGetDisplayIdsMethod() throws ReflectiveOperationException {
         if (getDisplayIdsMethod == null) getDisplayIdsMethod = manager.getClass().getMethod("getDisplayIds");
         return getDisplayIdsMethod;
     }
@@ -99,11 +99,11 @@ public final class DisplayManager {
             return (int[]) getGetDisplayIdsMethod().invoke(manager);
         } catch (Exception e) {
             L.e("getDisplayIds error", e);
-            throw new AssertionError(e);
+            return new int[0];
         }
     }
 
-    private static Method getCreateVirtualDisplayMethod() throws NoSuchMethodException {
+    private static Method getCreateVirtualDisplayMethod() throws ReflectiveOperationException {
         if (createVirtualDisplayMethod == null) {
             createVirtualDisplayMethod = android.hardware.display.DisplayManager.class
                     .getMethod("createVirtualDisplay", String.class, int.class, int.class, int.class, Surface.class);

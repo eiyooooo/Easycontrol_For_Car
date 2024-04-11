@@ -8,6 +8,7 @@ import top.eiyooooo.easycontrol.server.utils.L;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 
 public class IPackageManager {
     private static IInterface manager;
@@ -25,7 +26,7 @@ public class IPackageManager {
         CLASS = manager.getClass();
     }
 
-    private static Method getGetPackageInfoMethod() throws NoSuchMethodException {
+    private static Method getGetPackageInfoMethod() throws ReflectiveOperationException {
         if (getPackageInfoMethod == null) {
             if (CLASS == null) {
                 L.e("Error in getGetPackageInfoMethod: CLASS is null");
@@ -37,7 +38,7 @@ public class IPackageManager {
         return getPackageInfoMethod;
     }
 
-    private static Method getQueryIntentActivitiesMethod() throws NoSuchMethodException {
+    private static Method getQueryIntentActivitiesMethod() throws ReflectiveOperationException {
         if (getQueryIntentActivitiesMethod == null) {
             if (CLASS == null) {
                 L.e("Error in getGetPackageInfoMethod: CLASS is null");
@@ -48,7 +49,7 @@ public class IPackageManager {
         return getQueryIntentActivitiesMethod;
     }
 
-    private static Method getGetInstalledPackagesMethod() throws NoSuchMethodException {
+    private static Method getGetInstalledPackagesMethod() throws ReflectiveOperationException {
         if (getInstalledPackagesMethod == null) {
             if (CLASS == null) {
                 L.e("Error in getGetPackageInfoMethod: CLASS is null");
@@ -61,7 +62,7 @@ public class IPackageManager {
 
     public static PackageInfo getPackageInfo(String packageName, int flag) {
         try {
-            return (PackageInfo) getGetPackageInfoMethod().invoke(manager, new Object[]{packageName, flag});
+            return (PackageInfo) Objects.requireNonNull(getGetPackageInfoMethod()).invoke(manager, new Object[]{packageName, flag});
         } catch (Exception e) {
             L.e("Error in getPackageInfo", e);
         }
@@ -72,7 +73,7 @@ public class IPackageManager {
     public static List<ResolveInfo> queryIntentActivities(Intent intent,
                                                           String resolvedType, int flags, int userId) {
         try {
-            return (List<ResolveInfo>) getQueryIntentActivitiesMethod().invoke(manager, new Object[]{intent, resolvedType, flags, userId});
+            return (List<ResolveInfo>) Objects.requireNonNull(getQueryIntentActivitiesMethod()).invoke(manager, new Object[]{intent, resolvedType, flags, userId});
         } catch (Exception e) {
             L.e("Error in queryIntentActivities", e);
         }
@@ -82,7 +83,7 @@ public class IPackageManager {
     @SuppressWarnings("unchecked")
     public static List<String> getInstalledPackages(int flag) {
         try {
-            return (List<String>) getGetInstalledPackagesMethod().invoke(manager, new Object[]{flag});
+            return (List<String>) Objects.requireNonNull(getGetInstalledPackagesMethod()).invoke(manager, new Object[]{flag});
         } catch (Exception e) {
             L.e("Error in getInstalledPackages", e);
         }
