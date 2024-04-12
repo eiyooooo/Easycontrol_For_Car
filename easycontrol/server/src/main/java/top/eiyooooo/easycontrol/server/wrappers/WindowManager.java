@@ -11,11 +11,11 @@ public final class WindowManager {
     private static IInterface manager;
     private static Class<?> CLASS;
     private static Method freezeDisplayRotationMethod = null;
-    private static Method freezeRotationMethod = null;
     private static Method isDisplayRotationFrozenMethod = null;
-    private static Method isRotationFrozenMethod = null;
     private static Method thawDisplayRotationMethod = null;
-    private static Method thawRotationMethod = null;
+    private static int freezeDisplayRotationMethodVersion;
+    private static int isDisplayRotationFrozenMethodVersion;
+    private static int thawDisplayRotationMethodVersion;
     private static Method getRotationMethod = null;
     private static Method watchRotationExMethod = null;
     private static Method watchRotationMethod = null;
@@ -31,57 +31,51 @@ public final class WindowManager {
         CLASS = manager.getClass();
     }
 
-    private static Method getFreezeRotationMethod() throws ReflectiveOperationException {
-        if (freezeRotationMethod == null) {
-            if (CLASS == null) {
-                L.e("Error in getFreezeRotationMethod: CLASS is null");
-                return null;
-            }
-            freezeRotationMethod = CLASS.getMethod("freezeRotation", int.class);
-        }
-        return freezeRotationMethod;
-    }
-
     private static Method getFreezeDisplayRotationMethod() throws ReflectiveOperationException {
         if (freezeDisplayRotationMethod == null) {
-            if (CLASS == null) {
-                L.e("Error in getFreezeDisplayRotationMethod: CLASS is null");
-                return null;
+            try {
+                freezeDisplayRotationMethod = manager.getClass().getMethod("freezeDisplayRotation", int.class, int.class, String.class);
+                freezeDisplayRotationMethodVersion = 0;
+            } catch (ReflectiveOperationException e) {
+                try {
+                    freezeDisplayRotationMethod = manager.getClass().getMethod("freezeDisplayRotation", int.class, int.class);
+                    freezeDisplayRotationMethodVersion = 1;
+                } catch (ReflectiveOperationException e1) {
+                    freezeDisplayRotationMethod = manager.getClass().getMethod("freezeRotation", int.class);
+                    freezeDisplayRotationMethodVersion = 2;
+                }
             }
-            freezeDisplayRotationMethod = CLASS.getMethod("freezeDisplayRotation", int.class, int.class);
         }
         return freezeDisplayRotationMethod;
     }
 
     private static Method getIsDisplayRotationFrozenMethod() throws ReflectiveOperationException {
         if (isDisplayRotationFrozenMethod == null) {
-            if (CLASS == null) {
-                L.e("Error in getIsDisplayRotationFrozenMethod: CLASS is null");
-                return null;
+            try {
+                isDisplayRotationFrozenMethod = manager.getClass().getMethod("isDisplayRotationFrozen", int.class);
+                isDisplayRotationFrozenMethodVersion = 0;
+            } catch (ReflectiveOperationException e) {
+                isDisplayRotationFrozenMethod = manager.getClass().getMethod("isRotationFrozen");
+                isDisplayRotationFrozenMethodVersion = 1;
             }
-            isDisplayRotationFrozenMethod = CLASS.getMethod("isDisplayRotationFrozen", int.class);
         }
         return isDisplayRotationFrozenMethod;
     }
 
-    private static Method getIsRotationFrozenMethod() throws ReflectiveOperationException {
-        if (isRotationFrozenMethod == null) {
-            if (CLASS == null) {
-                L.e("Error in getIsRotationFrozenMethod: CLASS is null");
-                return null;
-            }
-            isRotationFrozenMethod = CLASS.getMethod("isRotationFrozen");
-        }
-        return isRotationFrozenMethod;
-    }
-
     private static Method getThawDisplayRotationMethod() throws ReflectiveOperationException {
         if (thawDisplayRotationMethod == null) {
-            if (CLASS == null) {
-                L.e("Error in getThawDisplayRotationMethod: CLASS is null");
-                return null;
+            try {
+                thawDisplayRotationMethod = manager.getClass().getMethod("thawDisplayRotation", int.class, String.class);
+                thawDisplayRotationMethodVersion = 0;
+            } catch (ReflectiveOperationException e) {
+                try {
+                    thawDisplayRotationMethod = manager.getClass().getMethod("thawDisplayRotation", int.class);
+                    thawDisplayRotationMethodVersion = 1;
+                } catch (ReflectiveOperationException e1) {
+                    thawDisplayRotationMethod = manager.getClass().getMethod("thawRotation");
+                    thawDisplayRotationMethodVersion = 2;
+                }
             }
-            thawDisplayRotationMethod = CLASS.getMethod("thawDisplayRotation", int.class);
         }
         return thawDisplayRotationMethod;
     }
@@ -99,17 +93,6 @@ public final class WindowManager {
             }
         }
         return getRotationMethod;
-    }
-
-    private static Method getThawRotationMethod() throws ReflectiveOperationException {
-        if (thawRotationMethod == null) {
-            if (CLASS == null) {
-                L.e("Error in getThawRotationMethod: CLASS is null");
-                return null;
-            }
-            thawRotationMethod = CLASS.getMethod("thawRotation");
-        }
-        return thawRotationMethod;
     }
 
     private static Method getWatchRotationExMethod() throws ReflectiveOperationException {
@@ -148,46 +131,66 @@ public final class WindowManager {
 
     public static void freezeRotation(int displayId, int rotation) {
         try {
-            Objects.requireNonNull(getFreezeDisplayRotationMethod()).invoke(manager, displayId, rotation);
-            return;
+            Method method = getFreezeDisplayRotationMethod();
+            switch (freezeDisplayRotationMethodVersion) {
+                case 0:
+                    method.invoke(manager, displayId, rotation, "scrcpy#freezeRotation");
+                    break;
+                case 1:
+                    method.invoke(manager, displayId, rotation);
+                    break;
+                default:
+                    if (displayId != 0) {
+                        L.e("Secondary display rotation not supported on this device");
+                        return;
+                    }
+                    method.invoke(manager, rotation);
+                    break;
+            }
         } catch (Exception e) {
-            L.w("freezeDisplayRotation error, try freezeRotation", e);
-        }
-        try {
-            if (displayId != 0) throw new Exception("displayId != 0, but freezeRotation is not supported");
-            Objects.requireNonNull(getFreezeRotationMethod()).invoke(manager, rotation);
-        } catch (Exception e) {
-            L.e("freezeRotation error", e);
+            L.e("Could not invoke method", e);
         }
     }
 
     public static boolean isRotationFrozen(int displayId) {
         try {
-            return (boolean) Objects.requireNonNull(getIsDisplayRotationFrozenMethod()).invoke(manager, displayId);
+            Method method = getIsDisplayRotationFrozenMethod();
+            switch (isDisplayRotationFrozenMethodVersion) {
+                case 0:
+                    return (boolean) method.invoke(manager, displayId);
+                default:
+                    if (displayId != 0) {
+                        L.e("Secondary display rotation not supported on this device");
+                        return false;
+                    }
+                    return (boolean) method.invoke(manager);
+            }
         } catch (Exception e) {
-            L.w("isDisplayRotationFrozen error, try isRotationFrozen", e);
-        }
-        try {
-            if (displayId != 0) throw new Exception("displayId != 0, but isRotationFrozen is not supported");
-            return (boolean) Objects.requireNonNull(getIsRotationFrozenMethod()).invoke(manager);
-        } catch (Exception e) {
-            L.e("isRotationFrozen error", e);
+            L.e("Could not invoke method", e);
             return false;
         }
     }
 
     public static void thawRotation(int displayId) {
         try {
-            Objects.requireNonNull(getThawDisplayRotationMethod()).invoke(manager, displayId);
-            return;
+            Method method = getThawDisplayRotationMethod();
+            switch (thawDisplayRotationMethodVersion) {
+                case 0:
+                    method.invoke(manager, displayId, "scrcpy#thawRotation");
+                    break;
+                case 1:
+                    method.invoke(manager, displayId);
+                    break;
+                default:
+                    if (displayId != 0) {
+                        L.e("Secondary display rotation not supported on this device");
+                        return;
+                    }
+                    method.invoke(manager);
+                    break;
+            }
         } catch (Exception e) {
-            L.w("thawDisplayRotation error, try thawRotation", e);
-        }
-        try {
-            if (displayId != 0) throw new Exception("displayId != 0, but thawRotation is not supported");
-            Objects.requireNonNull(getThawRotationMethod()).invoke(manager);
-        } catch (Exception e) {
-            L.e("thawRotation error", e);
+            L.e("Could not invoke method", e);
         }
     }
 
