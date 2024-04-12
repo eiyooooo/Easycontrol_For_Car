@@ -99,6 +99,10 @@ public final class VideoEncode {
                 throw e;
             }
         } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                SurfaceControl.destroyDisplay(display);
+                display = SurfaceControl.createDisplay("easycontrol_for_car", false);
+            }
             setDisplaySurface(display, surface);
         }
         // 启动编码
