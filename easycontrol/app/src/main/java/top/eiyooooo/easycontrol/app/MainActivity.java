@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
     mainActivity = ActivityMainBinding.inflate(this.getLayoutInflater());
     setContentView(mainActivity.getRoot());
     // 检测权限
-    if (haveOverlayPermission()) startApp();
+    if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) startApp();
     else createAlert();
     super.onCreate(savedInstanceState);
   }
@@ -63,13 +63,13 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    if (haveOverlayPermission()) myBroadcastReceiver.unRegister(this);
+    if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) myBroadcastReceiver.unRegister(this);
     super.onDestroy();
   }
 
   @Override
   protected void onResume() {
-    if (!haveOverlayPermission()) createAlert();
+    if (!AppData.setting.getAlwaysFullMode() && !haveOverlayPermission()) createAlert();
     super.onResume();
   }
 
@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
   private void createAlert() {
     ItemRequestPermissionBinding requestPermissionView = ItemRequestPermissionBinding.inflate(LayoutInflater.from(this));
     requestPermissionView.buttonGoToSet.setOnClickListener(v -> startActivity(PublicTools.getOverlayPermissionIntent(this)));
+    requestPermissionView.buttonAlwaysFullMode.setOnClickListener(v -> AppData.setting.setAlwaysFullMode(true));
     Dialog dialog = PublicTools.createDialog(this, false, requestPermissionView.getRoot());
     dialog.show();
     checkPermissionDelay(dialog);
@@ -98,7 +99,7 @@ public class MainActivity extends Activity {
   private void checkPermissionDelay(Dialog dialog) {
     // 因为某些设备可能会无法进入设置或其他问题，导致不会有返回结果，为了减少不确定性，使用定时检测的方法
     AppData.uiHandler.postDelayed(() -> {
-      if (haveOverlayPermission()) {
+      if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) {
         dialog.cancel();
         startApp();
       } else checkPermissionDelay(dialog);

@@ -53,15 +53,20 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     this.device = new Device(device.uuid, device.type);
     Device.copyDevice(device, this.device);
     textureView = new TextureView(AppData.main);
-    smallView = new SmallView(this);
-    miniView = new MiniView(this);
+    if (!AppData.setting.getAlwaysFullMode()) {
+      smallView = new SmallView(this);
+      miniView = new MiniView(this);
+    } else {
+      smallView = null;
+      miniView = null;
+    }
     this.controlPacket = controlPacket;
     this.changeMode = changeMode;
     this.onReady = onReady;
     this.onClose = onClose;
     setTouchListener();
     textureView.setSurfaceTextureListener(this);
-    smallView.changeMode(mode);
+    if (smallView != null) smallView.changeMode(mode);
   }
 
   public void updateDevice() {
@@ -139,7 +144,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public void changeMode(int mode) {
     this.mode = mode;
-    smallView.changeMode(mode);
+    if (smallView != null) smallView.changeMode(mode);
     if (fullView != null) fullView.changeMode(mode);
   }
 
@@ -157,19 +162,21 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   }
 
   public synchronized void changeToSmall() {
+    if (smallView == null) return;
     hide(false);
     smallView.show();
   }
 
   public synchronized void changeToMini(int mode) {
+    if (miniView == null) return;
     hide(false);
     miniView.show(mode);
   }
 
   public synchronized void hide(boolean isRelease) {
     if (fullView != null) fullView.hide();
-    smallView.hide();
-    miniView.hide();
+    if (smallView != null) smallView.hide();
+    if (miniView != null) miniView.hide();
     if (isRelease && surfaceTexture != null) surfaceTexture.release();
   }
 

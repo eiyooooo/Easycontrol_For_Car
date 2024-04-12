@@ -29,17 +29,43 @@
       android:textSize="@dimen/middleFont"
       android:textStyle="bold" />
 
-    <Button
-      android:id="@+id/button_go_to_set"
-      android:layout_width="150dp"
+    <GridLayout
+      android:id="@+id/button_layout"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="20dp"
-      android:background="@drawable/background_cron"
-      android:backgroundTint="@color/button"
-      android:gravity="center"
-      android:text="@string/main_float_permission_button"
-      android:textColor="@color/onButton"
-      android:textSize="@dimen/smallFont" />
+      android:layout_marginBottom="12dp"
+      android:columnCount="3"
+      android:paddingStart="12dp"
+      android:paddingEnd="12dp"
+      android:paddingTop="12dp">
+
+      <Button
+        android:id="@+id/button_go_to_set"
+        android:layout_columnWeight="9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_cron"
+        android:backgroundTint="@color/button"
+        android:gravity="center"
+        android:text="@string/main_float_permission_button"
+        android:textColor="@color/onButton"
+        android:textSize="@dimen/smallFont" />
+
+      <Space android:layout_columnWeight="1" />
+
+      <Button
+        android:id="@+id/button_always_full_mode"
+        android:layout_columnWeight="9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_cron"
+        android:backgroundTint="@color/button"
+        android:gravity="center"
+        android:text="@string/main_no_float_mode_button"
+        android:textColor="@color/onButton"
+        android:textSize="@dimen/smallFont" />
+
+    </GridLayout>
 
   </LinearLayout>
 

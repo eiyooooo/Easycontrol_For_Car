@@ -112,19 +112,20 @@ public class Client {
         startServer(device);
         connectServer();
         AppData.uiHandler.post(() -> {
-          if (device.defaultFull) clientView.changeToFull();
+          if (AppData.setting.getAlwaysFullMode() || device.defaultFull) clientView.changeToFull();
           else clientView.changeToSmall();
         });
       } catch (Exception e) {
         L.log(device.uuid, e);
         release(AppData.main.getString(R.string.log_notify));
       } finally {
-        if (loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
+        if (!AppData.setting.getAlwaysFullMode() && loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
         loadingTimeOutThread.interrupt();
         keepAliveThread.start();
       }
     });
-    AppData.windowManager.addView(loading.first, loading.second);
+    if (AppData.setting.getAlwaysFullMode()) PublicTools.logToast(AppData.main.getString(R.string.loading_text));
+    else AppData.windowManager.addView(loading.first, loading.second);
     loadingTimeOutThread.start();
     startThread.start();
   }
@@ -289,6 +290,7 @@ public class Client {
             byte[] videoFrame = controlPacket.readFrame(bufferStream);
             if (videoDecode != null) videoDecode.decodeIn(videoFrame, bufferStream.readLong());
             else {
+              if (clientView.getVideoSize() == null) break;
               if (useH265) videoDecode = new VideoDecode(clientView.getVideoSize(), clientView.getSurface(), new Pair<>(videoFrame, bufferStream.readLong()), null, handler);
               else {
                 if (videoCsd == null) videoCsd = new Pair<>(videoFrame, bufferStream.readLong());

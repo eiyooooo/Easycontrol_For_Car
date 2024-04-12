@@ -5,8 +5,9 @@
   <!-- 主页 -->
   <string name="main_poem">Unregulated driving, loved ones end up in tears.</string>
   <string name="car_version_message">If you like the car version\nYou can left a star on the car version GitHub repository🙇</string>
-  <string name="main_float_permission">Please grant floating window permission.\nOtherwise the software cannot be used.</string>
-  <string name="main_float_permission_button">Go to setting</string>
+  <string name="main_float_permission">Please grant floating window permission.\nOtherwise, the software functions are incomplete.</string>
+  <string name="main_float_permission_button">Go authorize</string>
+  <string name="main_no_float_mode_button">Always full</string>
 
   <!-- 设置页面 -->
   <string name="set_default">Default settings</string>
@@ -34,6 +35,8 @@
   <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
   <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
   <string name="set_other">Other</string>
+  <string name="set_always_full_mode">Always full screen mode</string>
+  <string name="set_always_full_mode_detail">Always connect to the device in full screen mode, ignoring \u0022Default full screen\u0022 settings in the device (Only one default device can be opened when the software starts)</string>
   <string name="set_mirror_mode">Android 14 compatibility mode</string>
   <string name="set_mirror_mode_detail">If display issues occur on Android 14 and above, try enabling this option</string>
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
@@ -117,6 +120,7 @@
   <string name="error_app_not_found">The specified package name application does not exist</string>
   <string name="error_device_not_found">Device not found</string>
   <string name="error_default_device_not_found">Default device not found</string>
+  <string name="error_mode_not_support">Not supported in always full screen mode</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>

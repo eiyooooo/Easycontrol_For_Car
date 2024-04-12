@@ -114,8 +114,13 @@ public class FullActivity extends Activity implements SensorEventListener {
       setNavBarHide(fullActivity.navBar.getVisibility() == View.GONE);
       barViewTimer();
     });
-    fullActivity.buttonMini.setOnClickListener(v -> clientView.changeToMini(0));
-    fullActivity.buttonFullExit.setOnClickListener(v -> clientView.changeToSmall());
+    if (!AppData.setting.getAlwaysFullMode()) {
+      fullActivity.buttonMini.setOnClickListener(v -> clientView.changeToMini(0));
+      fullActivity.buttonFullExit.setOnClickListener(v -> clientView.changeToSmall());
+    } else {
+      fullActivity.buttonMini.setOnClickListener(v -> PublicTools.logToast(getString(R.string.error_mode_not_support)));
+      fullActivity.buttonFullExit.setOnClickListener(v -> PublicTools.logToast(getString(R.string.error_mode_not_support)));
+    }
     fullActivity.buttonClose.setOnClickListener(v -> clientView.onClose.run());
     if (clientView.mode == 1) fullActivity.buttonTransfer.setImageResource(R.drawable.share_in);
     fullActivity.buttonTransfer.setOnClickListener(v -> {

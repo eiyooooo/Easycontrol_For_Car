@@ -24,8 +24,7 @@
     <activity
       android:name=".MainActivity"
       android:configChanges="keyboardHidden|screenSize|orientation"
-      android:exported="true"
-      android:launchMode="singleTask">
+      android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -53,8 +52,7 @@
       android:name=".StartDeviceActivity"
       android:exported="true"
       android:hardwareAccelerated="true"
-      android:theme="@style/Transparent"
-      android:launchMode="singleTask" />
+      android:theme="@style/Transparent" />
 
   </application>
 

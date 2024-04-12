@@ -5,8 +5,9 @@
   <!-- 主页 -->
   <string name="main_poem">行车不规范，亲人两行泪</string>
   <string name="car_version_message">如果你喜欢车机版的话\n可以在车机版Github仓库上Star哦🙇</string>
-  <string name="main_float_permission">请授予悬浮窗权限\n否则软件无法使用</string>
-  <string name="main_float_permission_button">前往设置</string>
+  <string name="main_float_permission">请授予悬浮窗权限\n否则软件功能不完整</string>
+  <string name="main_float_permission_button">前往授权悬浮</string>
+  <string name="main_no_float_mode_button">始终全屏模式</string>
 
   <!-- 设置页面 -->
   <string name="set_default">默认参数</string>
@@ -34,6 +35,8 @@
   <string name="set_display_full_to_mini_on_exit">全屏意外退出时挂起</string>
   <string name="set_display_full_to_mini_on_exit_detail">在全屏模式下意外退出时自动最小化(关闭时为自动小窗)</string>
   <string name="set_other">其他</string>
+  <string name="set_always_full_mode">始终全屏模式</string>
+  <string name="set_always_full_mode_detail">始终以全屏模式连接设备，忽略在设备内设置的全屏启动(\u0022软件启动时打开\u0022仅支持打开一个默认设备)</string>
   <string name="set_mirror_mode">安卓14兼容模式</string>
   <string name="set_mirror_mode_detail">安卓14及以上系统若出现画面异常可尝试开启此选项</string>
   <string name="set_force_desktop_mode">应用流转时强制桌面模式</string>
@@ -117,6 +120,7 @@
   <string name="error_app_not_found">指定包名的应用不存在</string>
   <string name="error_device_not_found">未找到该设备</string>
   <string name="error_default_device_not_found">未找到默认设备</string>
+  <string name="error_mode_not_support">始终全屏模式不支持</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>

@@ -330,6 +330,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
       if (device.connectOnStart) {
         startDevice(device, mode);
         started = true;
+        if (AppData.setting.getAlwaysFullMode()) break;
       }
     }
     // 返回桌面

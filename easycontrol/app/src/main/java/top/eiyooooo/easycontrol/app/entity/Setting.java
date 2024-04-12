@@ -205,6 +205,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getAlwaysFullMode() {
+    return sharedPreferences.getBoolean("alwaysFullMode", false);
+  }
+
+  public void setAlwaysFullMode(boolean value) {
+    editor.putBoolean("alwaysFullMode", value);
+    editor.apply();
+  }
+
   public Setting(SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
     this.editor = sharedPreferences.edit();
