@@ -11,6 +11,8 @@
 
 #### 本项目唯一地址为(<https://github.com/eiyooooo/Easycontrol_For_Car>)
 
+#### 反馈问题请到[Issues](https://github.com/eiyooooo/Easycontrol_For_Car/issues)，功能建议请到[Discussions](https://github.com/eiyooooo/Easycontrol_For_Car/discussions)。
+
 ## 简介
 本软件基于[易控原版](https://gitee.com/mingzhixianweb/easycontrol)，对其进行了修改，优化了安卓车机控制安卓手机的体验。
 
@@ -19,7 +21,7 @@
 - 横竖屏悬浮窗位置单独保存
 - 音频输出为导航声道
 - 十秒无操作隐藏控制条
-- 应用流转(实验性)
+- 应用流转
 - 屏幕宽高比例自由缩放(实验性)
 - 优化工具栏
   - 自动收回
@@ -39,7 +41,7 @@
 ## 截图
 <img src="pic/screenshot/main.webp" width="300px">
 <img src="pic/screenshot/small.webp" width="300px">
-<img src="pic/screenshot/small_lanscape.webp" width="300px">
+<img src="pic/screenshot/small_landscape.webp" width="300px">
 <img src="pic/screenshot/full.webp" width="300px">
 
 ## 捐赠鼓励
