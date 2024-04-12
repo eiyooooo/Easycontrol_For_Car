@@ -195,6 +195,7 @@ public final class Device {
                     IBinder token = SurfaceControl.getPhysicalDisplayToken(physicalDisplayId);
                     if (token != null) SurfaceControl.setDisplayPowerMode(token, mode);
                 }
+                return;
             } catch (Exception ignored) {
                 L.w("change power mode for all screens error, try built-in display");
             }
