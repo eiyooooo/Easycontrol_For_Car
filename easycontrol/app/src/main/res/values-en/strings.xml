@@ -14,12 +14,12 @@
   <string name="set_wake_up_screen_on_connect">Wake up after connection</string>
   <string name="set_wake_up_screen_on_connect_detail">Automatically wake up the controlled end after the connection is successful</string>
   <string name="set_light_off_on_connect">Turn off backlight after connection</string>
-  <string name="set_light_off_on_connect_detail">Turn off the screen backlight two seconds after the connection is successful (need to turn on "Wake up after connection")</string>
+  <string name="set_light_off_on_connect_detail">Turn off the screen backlight two seconds after the connection is successful (need to turn on \u0022Wake up after connection\u0022)</string>
   <string name="set_light_off_on_connect_error">Please turn on \u0022Wake up after connection\u0022</string>
   <string name="set_lock_screen_on_close">Lock the screen after disconnection</string>
   <string name="set_lock_screen_on_close_detail">Automatically lock the controlled end screen after the connection is disconnected</string>
   <string name="set_light_on_on_close">Restore backlight after disconnection</string>
-  <string name="set_light_on_on_close_detail">Restore the screen backlight after the connection is disconnected (need to turn off "Lock screen after disconnection")</string>
+  <string name="set_light_on_on_close_detail">Restore the screen backlight after the connection is disconnected (need to turn off \u0022Lock screen after disconnection\u0022)</string>
   <string name="set_light_on_on_close_error">Please turn off \u0022Lock the screen after disconnection\u0022</string>
   <string name="set_display_keep_screen_awake">Keep the controlled end awake</string>
   <string name="set_display_keep_screen_awake_detail">The controlled end does not lock during the connection process</string>
