@@ -25,6 +25,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
   private static final String ACTION_USB_PERMISSION = "top.eiyooooo.easycontrol.app.USB_PERMISSION";
   private static final String ACTION_CONTROL = "top.eiyooooo.easycontrol.app.CONTROL";
   private static final String ACTION_SCREEN_OFF = "android.intent.action.SCREEN_OFF";
+  public static final String ACTION_CONFIGURATION_CHANGED = "android.intent.action.CONFIGURATION_CHANGED";
 
   private DeviceListAdapter deviceListAdapter;
 
@@ -37,6 +38,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     filter.addAction(ACTION_USB_PERMISSION);
     filter.addAction(ACTION_CONTROL);
     filter.addAction(ACTION_SCREEN_OFF);
+    filter.addAction(ACTION_CONFIGURATION_CHANGED);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(this, filter, Context.RECEIVER_EXPORTED);
     else context.registerReceiver(this, filter);
   }
@@ -50,7 +52,19 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     String action = intent.getAction();
     if (ACTION_SCREEN_OFF.equals(action)) handleScreenOff();
     else if (ACTION_CONTROL.equals(action)) handleControl(intent);
+    else if (ACTION_CONFIGURATION_CHANGED.equals(action)) handleConfigurationChanged();
     else handleUSB(context, intent);
+  }
+
+  public void handleConfigurationChanged() {
+    int nightMode = AppData.uiModeManager.getNightMode();
+    if (nightMode == AppData.nightMode) return;
+    for (Client client : Client.allClient) {
+      if (client.clientView.device.nightModeSync) {
+        client.controlPacket.sendNightModeEvent(nightMode);
+      }
+    }
+    AppData.nightMode = nightMode;
   }
 
   public void setDeviceListAdapter(DeviceListAdapter deviceListAdapter) {

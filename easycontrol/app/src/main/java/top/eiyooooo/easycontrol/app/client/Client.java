@@ -112,6 +112,7 @@ public class Client {
         startServer(device);
         connectServer();
         AppData.uiHandler.post(() -> {
+          controlPacket.sendNightModeEvent(AppData.nightMode);
           if (AppData.setting.getAlwaysFullMode() || device.defaultFull) clientView.changeToFull();
           else clientView.changeToSmall();
         });
@@ -308,7 +309,7 @@ public class Client {
             break;
           case CLIPBOARD_EVENT:
             controlPacket.nowClipboardText = new String(bufferStream.readByteArray(bufferStream.readInt()).array());
-            AppData.clipBoard.setPrimaryClip(ClipData.newPlainText(MIMETYPE_TEXT_PLAIN, controlPacket.nowClipboardText));
+            if (clientView.device.clipboardSync) AppData.clipBoard.setPrimaryClip(ClipData.newPlainText(MIMETYPE_TEXT_PLAIN, controlPacket.nowClipboardText));
             break;
           case CHANGE_SIZE_EVENT:
             Pair<Integer, Integer> newVideoSize = new Pair<>(bufferStream.readInt(), bufferStream.readInt());
@@ -327,7 +328,7 @@ public class Client {
 
   private void executeOtherService() {
     if (status == 1) {
-      controlPacket.checkClipBoard();
+      if (clientView.device.clipboardSync) controlPacket.checkClipBoard();
       controlPacket.sendKeepAlive();
       AppData.uiHandler.postDelayed(this::executeOtherService, 1500);
     }

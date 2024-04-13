@@ -29,6 +29,7 @@ public final class Device {
     public static Pair<Integer, Integer> videoSize;
     public static boolean needReset = false;
     public static int oldScreenOffTimeout = 60000;
+    public static int oldNightMode = -1;
 
     public static int displayId;
     public static int layerStack;

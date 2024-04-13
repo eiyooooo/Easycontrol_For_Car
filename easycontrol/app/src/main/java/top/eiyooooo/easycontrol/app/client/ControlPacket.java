@@ -115,6 +115,15 @@ public class ControlPacket {
     write.run(ByteBuffer.wrap(new byte[]{8}));
   }
 
+  // 发送黑暗模式事件
+  public void sendNightModeEvent(int mode) {
+      ByteBuffer byteBuffer = ByteBuffer.allocate(2);
+      byteBuffer.put((byte) 9);
+      byteBuffer.put((byte) mode);
+      byteBuffer.flip();
+      write.run(byteBuffer);
+  }
+
   public interface MyFunctionByteBuffer {
     void run(ByteBuffer byteBuffer);
   }

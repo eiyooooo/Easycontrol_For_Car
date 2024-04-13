@@ -131,6 +131,10 @@
   <string name="option_startup_device_detail">Automatically connect to this device when the software starts</string>
   <string name="option_is_audio">Enable audio</string>
   <string name="option_is_audio_detail">Works with Android 12 and above</string>
+  <string name="option_clipboard_sync">Clipboard sync</string>
+  <string name="option_clipboard_sync_detail">Synchronize clipboard between devices</string>
+  <string name="option_night_mode_sync">Dark mode sync</string>
+  <string name="option_night_mode_sync_detail">Synchronize dark mode between devices</string>
   <string name="option_max_size">Resolution</string>
   <string name="option_max_size_detail">Set max resolution</string>
   <string name="option_max_size_original">Original resolution</string>

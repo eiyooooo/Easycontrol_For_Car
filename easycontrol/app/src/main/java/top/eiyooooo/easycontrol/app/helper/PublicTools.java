@@ -205,11 +205,6 @@ public class PublicTools {
     ArrayAdapter<String> maxFpsAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxFpsList);
     ArrayAdapter<String> maxVideoBitAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxVideoBitList);
     // 添加参数视图
-    if (device != null) fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_startup_device), context.getString(R.string.option_startup_device_detail), device.connectOnStart, isChecked -> device.connectOnStart = isChecked).getRoot());
-    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_is_audio), context.getString(R.string.option_is_audio_detail), setDefault ? AppData.setting.getDefaultIsAudio() : device.isAudio, isChecked -> {
-      if (setDefault) AppData.setting.setDefaultIsAudio(isChecked);
-      else device.isAudio = isChecked;
-    }).getRoot());
     fatherLayout.addView(createSpinnerCard(context, context.getString(R.string.option_max_size), context.getString(R.string.option_max_size_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxSize() : device.maxSize), maxSizeAdapter, str -> {
       if (str.equals(context.getString(R.string.option_max_size_original))) str = "0";
       if (setDefault) AppData.setting.setDefaultMaxSize(Integer.parseInt(str));
@@ -222,6 +217,19 @@ public class PublicTools {
     fatherLayout.addView(createSpinnerCard(context, context.getString(R.string.option_max_video_bit), context.getString(R.string.option_max_video_bit_detail), String.valueOf(setDefault ? AppData.setting.getDefaultMaxVideoBit() : device.maxVideoBit), maxVideoBitAdapter, str -> {
       if (setDefault) AppData.setting.setDefaultMaxVideoBit(Integer.parseInt(str));
       else device.maxVideoBit = Integer.parseInt(str);
+    }).getRoot());
+    if (device != null) fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_startup_device), context.getString(R.string.option_startup_device_detail), device.connectOnStart, isChecked -> device.connectOnStart = isChecked).getRoot());
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_is_audio), context.getString(R.string.option_is_audio_detail), setDefault ? AppData.setting.getDefaultIsAudio() : device.isAudio, isChecked -> {
+      if (setDefault) AppData.setting.setDefaultIsAudio(isChecked);
+      else device.isAudio = isChecked;
+    }).getRoot());
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_clipboard_sync), context.getString(R.string.option_clipboard_sync_detail), setDefault ? AppData.setting.getDefaultClipboardSync() : device.clipboardSync, isChecked -> {
+      if (setDefault) AppData.setting.setDefaultClipboardSync(isChecked);
+      else device.clipboardSync = isChecked;
+    }).getRoot());
+    fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_night_mode_sync), context.getString(R.string.option_night_mode_sync_detail), setDefault ? AppData.setting.getDefaultNightModeSync() : device.nightModeSync, isChecked -> {
+      if (setDefault) AppData.setting.setDefaultNightModeSync(isChecked);
+      else device.nightModeSync = isChecked;
     }).getRoot());
     fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_use_h265), context.getString(R.string.option_use_h265_detail), setDefault ? AppData.setting.getDefaultUseH265() : device.useH265, isChecked -> {
       if (setDefault) AppData.setting.setDefaultUseH265(isChecked);

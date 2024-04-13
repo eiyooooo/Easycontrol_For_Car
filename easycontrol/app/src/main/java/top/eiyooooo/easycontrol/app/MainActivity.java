@@ -63,7 +63,10 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) myBroadcastReceiver.unRegister(this);
+    if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) {
+      myBroadcastReceiver.handleConfigurationChanged();
+      myBroadcastReceiver.unRegister(this);
+    }
     super.onDestroy();
   }
 

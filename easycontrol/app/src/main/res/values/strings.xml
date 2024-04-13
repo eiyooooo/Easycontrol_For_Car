@@ -131,6 +131,10 @@
   <string name="option_startup_device_detail">软件启动时自动连接此设备</string>
   <string name="option_is_audio">传输音频</string>
   <string name="option_is_audio_detail">开启后将尝试传输音频，被控端需要安卓12或以上</string>
+  <string name="option_clipboard_sync">剪贴板同步</string>
+  <string name="option_clipboard_sync_detail">同步主控端和被控端的剪贴板</string>
+  <string name="option_night_mode_sync">黑暗模式同步</string>
+  <string name="option_night_mode_sync_detail">同步主控端和被控端的黑暗模式</string>
   <string name="option_max_size">最大大小</string>
   <string name="option_max_size_detail">设置画面长和宽的最大大小</string>
   <string name="option_max_size_original">原始分辨率</string>

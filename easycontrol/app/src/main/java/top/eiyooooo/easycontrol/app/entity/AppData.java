@@ -2,6 +2,7 @@ package top.eiyooooo.easycontrol.app.entity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.hardware.SensorManager;
@@ -15,7 +16,6 @@ import android.view.WindowManager;
 
 import java.io.File;
 
-import top.eiyooooo.easycontrol.app.R;
 import top.eiyooooo.easycontrol.app.adb.AdbBase64;
 import top.eiyooooo.easycontrol.app.adb.AdbKeyPair;
 import top.eiyooooo.easycontrol.app.helper.DbHelper;
@@ -37,12 +37,16 @@ public class AppData {
   public static UsbManager usbManager;
   public static WindowManager windowManager;
   public static SensorManager sensorManager;
+  public static UiModeManager uiModeManager;
 
   // 设置值
   public static Setting setting;
 
   // 系统分辨率
   public static final DisplayMetrics realScreenSize = new DisplayMetrics();
+
+  // 当前黑暗模式
+  public static int nightMode;
 
   public static void init(Activity m) {
     main = m;
@@ -53,6 +57,8 @@ public class AppData {
     usbManager = (UsbManager) main.getSystemService(Context.USB_SERVICE);
     windowManager = (WindowManager) main.getSystemService(Context.WINDOW_SERVICE);
     sensorManager = (SensorManager) main.getSystemService(Context.SENSOR_SERVICE);
+    uiModeManager = (UiModeManager) main.getSystemService(Context.UI_MODE_SERVICE);
+    nightMode = uiModeManager.getNightMode();
     getRealScreenSize(m);
     setting = new Setting(main.getSharedPreferences("setting", Context.MODE_PRIVATE));
     // 读取密钥文件
