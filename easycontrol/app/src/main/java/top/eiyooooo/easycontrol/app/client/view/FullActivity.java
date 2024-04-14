@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -144,11 +145,22 @@ public class FullActivity extends Activity implements SensorEventListener {
       clientView.controlPacket.sendPowerEvent();
       barViewTimer();
     });
-    fullActivity.buttonLock.setOnClickListener(v -> {
-      lockOrientation = !lockOrientation;
-      fullActivity.buttonLock.setImageResource(lockOrientation ? R.drawable.unlock : R.drawable.lock);
-      barViewTimer();
-    });
+    if (AppData.setting.getAlwaysFullMode()) {
+      lockOrientation = true;
+      fullActivity.buttonLock.setImageResource(R.drawable.unlock);
+      fullActivity.buttonLock.setOnClickListener(v -> PublicTools.logToast(getString(R.string.error_mode_not_support)));
+      DisplayMetrics metrics = getResources().getDisplayMetrics();
+      int orientation;
+      if (metrics.widthPixels > metrics.heightPixels) orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+      else orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+      setRequestedOrientation(orientation);
+    } else {
+      fullActivity.buttonLock.setOnClickListener(v -> {
+        lockOrientation = !lockOrientation;
+        fullActivity.buttonLock.setImageResource(lockOrientation ? R.drawable.unlock : R.drawable.lock);
+        barViewTimer();
+      });
+    }
   }
 
   // 导航栏隐藏
