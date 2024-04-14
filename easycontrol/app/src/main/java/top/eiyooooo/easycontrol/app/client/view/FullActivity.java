@@ -36,13 +36,15 @@ public class FullActivity extends Activity implements SensorEventListener {
     // 初始化
     clientView.changeMode(clientView.mode);
     fullActivity.barView.setVisibility(View.GONE);
-    setNavBarHide(AppData.setting.getDefaultShowNavBar());
     // 按键监听
     setButtonListener();
     setKeyEvent();
     // 更新textureView
     fullActivity.textureViewLayout.addView(clientView.textureView, 0);
-    fullActivity.textureViewLayout.post(() -> clientView.updateMaxSize(new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight())));
+    fullActivity.textureViewLayout.post(() -> {
+      clientView.updateMaxSize(new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight()));
+      setNavBarHide(AppData.setting.getDefaultShowNavBar());
+    });
     // 页面自动旋转
     AppData.sensorManager.registerListener(this, AppData.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     super.onCreate(savedInstanceState);
@@ -93,9 +95,21 @@ public class FullActivity extends Activity implements SensorEventListener {
     else fullActivity.buttonTransfer.setImageResource(R.drawable.share_in);
   }
 
-  // 获取去除底部操作栏后的屏幕大小，用于修改分辨率使用
-  public static float getResolution() {
-    return (float) AppData.realScreenSize.widthPixels / (float) (AppData.realScreenSize.heightPixels - PublicTools.dp2px(35f));
+  private final DisplayMetrics screenSize = new DisplayMetrics();
+
+  // 获取去除操作栏后的屏幕大小，用于修改宽高比例使用
+  public float getRatio(boolean barIsShow) {
+    int orientation = getRequestedOrientation();
+    Display display = getWindowManager().getDefaultDisplay();
+    display.getRealMetrics(screenSize);
+    if (barIsShow) {
+      if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+        return (float) (screenSize.widthPixels - PublicTools.dp2px(35f)) / (float) screenSize.heightPixels;
+      else
+        return (float) screenSize.widthPixels / (float) (screenSize.heightPixels - PublicTools.dp2px(35f));
+    } else {
+      return (float) screenSize.widthPixels / (float) screenSize.heightPixels;
+    }
   }
 
   // 设置按钮监听
@@ -167,6 +181,7 @@ public class FullActivity extends Activity implements SensorEventListener {
   private void setNavBarHide(boolean isShow) {
     fullActivity.navBar.setVisibility(isShow ? View.VISIBLE : View.GONE);
     fullActivity.buttonNavBar.setImageResource(isShow ? R.drawable.not_equal : R.drawable.equals);
+    if (clientView.device.setResolution) clientView.changeSize(getRatio(isShow));
   }
 
   private void changeBarView() {
