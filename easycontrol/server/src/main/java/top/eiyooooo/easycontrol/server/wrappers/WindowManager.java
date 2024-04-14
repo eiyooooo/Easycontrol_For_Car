@@ -213,7 +213,14 @@ public final class WindowManager {
             }
             rotationWatcher_saved = rotationWatcher;
         } catch (Exception e) {
-            L.e("registerRotationWatcher error", e);
+            L.e("registerRotationWatcher error, retrying", e);
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                    registerRotationWatcher(rotationWatcher, displayId);
+                } catch (InterruptedException ignored) {
+                }
+            }).start();
         }
     }
 
