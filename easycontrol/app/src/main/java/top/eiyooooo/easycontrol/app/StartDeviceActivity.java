@@ -18,9 +18,14 @@ public class StartDeviceActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String uuid = getIntent().getStringExtra("uuid");
-
         if (AppData.main == null) AppData.init(this);
+        finish();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        String uuid = getIntent().getStringExtra("uuid");
 
         if (uuid != null) {
             Device device = AppData.dbHelper.getByUUID(uuid);
@@ -30,8 +35,7 @@ public class StartDeviceActivity extends Activity {
                 if (DeviceListAdapter.linkDevices.containsKey(device.uuid)) {
                     usbDevice = DeviceListAdapter.linkDevices.get(device.uuid);
                 } else {
-                    Toast.makeText(this, AppData.main.getString(R.string.error_device_not_found), Toast.LENGTH_SHORT).show();
-                    finish();
+                    Toast.makeText(this, getString(R.string.error_device_not_found), Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -51,10 +55,12 @@ public class StartDeviceActivity extends Activity {
                 found = true;
                 new Client(device, usbDevice, AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
             }
-            if (!found) Toast.makeText(this, AppData.main.getString(R.string.error_default_device_not_found), Toast.LENGTH_SHORT).show();
+            if (!found) {
+                Toast.makeText(this, getString(R.string.error_default_device_not_found), Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         DeviceListAdapter.startedDefault = true;
-        finish();
     }
 
     @SuppressLint("MutableImplicitPendingIntent")
