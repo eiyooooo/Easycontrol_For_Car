@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import top.eiyooooo.easycontrol.app.R;
+import top.eiyooooo.easycontrol.app.WebViewActivity;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.databinding.ItemAddDeviceBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemLoadingBinding;
@@ -347,6 +348,13 @@ public class PublicTools {
       }
     });
     return spinnerView;
+  }
+
+  // 显示网页
+  public static void openWebViewActivity(Context context, String url) {
+    Intent license = new Intent(context, WebViewActivity.class);
+    license.putExtra("url", url);
+    context.startActivity(license);
   }
 
   // 分离地址和端口号
