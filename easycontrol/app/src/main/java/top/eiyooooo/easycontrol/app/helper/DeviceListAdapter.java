@@ -337,7 +337,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     if (started && AppData.setting.getAutoBackOnStartDefault()) {
       Intent home = new Intent(Intent.ACTION_MAIN);
       home.addCategory(Intent.CATEGORY_HOME);
-      AppData.main.startActivity(home);
+      AppData.activity.startActivity(home);
     }
   }
 
