@@ -334,7 +334,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
       }
     }
     // 返回桌面
-    if (started && AppData.setting.getAutoBackOnStartDefault()) {
+    if (started && !AppData.setting.getAlwaysFullMode() && AppData.setting.getAutoBackOnStartDefault()) {
       Intent home = new Intent(Intent.ACTION_MAIN);
       home.addCategory(Intent.CATEGORY_HOME);
       AppData.activity.startActivity(home);
