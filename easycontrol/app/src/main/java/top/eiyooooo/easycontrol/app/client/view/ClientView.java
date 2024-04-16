@@ -150,14 +150,14 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public synchronized void changeToFull() {
     hide(false);
-    Intent intent = new Intent(AppData.main, FullActivity.class);
+    Intent intent = new Intent(AppData.activity, FullActivity.class);
     int i = 0;
     for (Client client : Client.allClient) {
       if (client.clientView == this) break;
       i++;
     }
     intent.putExtra("index", i);
-    AppData.main.startActivity(intent);
+    AppData.activity.startActivity(intent);
   }
 
   public synchronized void changeToSmall() {

@@ -79,35 +79,64 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     String action = intent.getStringExtra("action");
     if (action == null) return;
     if (action.equals("startDefault")) {
-      deviceListAdapter.startDefault(intent.getIntExtra("mode", 0));
+      DeviceListAdapter.startDefault(intent.getIntExtra("mode", 0));
       return;
     }
     String uuid = intent.getStringExtra("uuid");
     if (uuid == null) return;
-    if (action.equals("start")) deviceListAdapter.startByUUID(uuid, intent.getIntExtra("mode", 0));
+    if (action.equals("start")) DeviceListAdapter.startByUUID(uuid, intent.getIntExtra("mode", 0));
     else {
       for (Client client : Client.allClient) {
         if (Objects.equals(client.uuid, uuid)) {
-          if (action.equals("changeToSmall")) client.clientView.changeToSmall();
-          else if (action.equals("changeToFull")) client.clientView.changeToFull();
-          else if (action.equals("changeToMini")) client.clientView.changeToMini(0);
-          else if (action.equals("buttonPower")) client.controlPacket.sendPowerEvent();
-          else if (action.equals("buttonWake")) client.controlPacket.sendKeyEvent(224, 0);
-          else if (action.equals("buttonLock")) client.controlPacket.sendKeyEvent(223, 0);
-          else if (action.equals("buttonLight")) client.controlPacket.sendLightEvent(1);
-          else if (action.equals("buttonLightOff")) client.controlPacket.sendLightEvent(0);
-          else if (action.equals("buttonBack")) client.controlPacket.sendKeyEvent(4, 0);
-          else if (action.equals("buttonHome")) client.controlPacket.sendKeyEvent(3, 0);
-          else if (action.equals("buttonSwitch")) client.controlPacket.sendKeyEvent(187, 0);
-          else if (action.equals("buttonRotate")) client.controlPacket.sendRotateEvent();
-          else if (action.equals("close")) client.release(null);
-          else if (action.equals("runShell")) {
-            String cmd = intent.getStringExtra("cmd");
-            if (cmd == null) return;
-            try {
-              client.adb.runAdbCmd(cmd);
-            } catch (Exception ignored) {}
-          }
+            switch (action) {
+                case "changeToSmall":
+                    client.clientView.changeToSmall();
+                    break;
+                case "changeToFull":
+                    client.clientView.changeToFull();
+                    break;
+                case "changeToMini":
+                    client.clientView.changeToMini(0);
+                    break;
+                case "buttonPower":
+                    client.controlPacket.sendPowerEvent();
+                    break;
+                case "buttonWake":
+                    client.controlPacket.sendKeyEvent(224, 0);
+                    break;
+                case "buttonLock":
+                    client.controlPacket.sendKeyEvent(223, 0);
+                    break;
+                case "buttonLight":
+                    client.controlPacket.sendLightEvent(1);
+                    break;
+                case "buttonLightOff":
+                    client.controlPacket.sendLightEvent(0);
+                    break;
+                case "buttonBack":
+                    client.controlPacket.sendKeyEvent(4, 0);
+                    break;
+                case "buttonHome":
+                    client.controlPacket.sendKeyEvent(3, 0);
+                    break;
+                case "buttonSwitch":
+                    client.controlPacket.sendKeyEvent(187, 0);
+                    break;
+                case "buttonRotate":
+                    client.controlPacket.sendRotateEvent();
+                    break;
+                case "close":
+                    client.release(null);
+                    break;
+                case "runShell":
+                    String cmd = intent.getStringExtra("cmd");
+                    if (cmd == null) return;
+                    try {
+                        client.adb.runAdbCmd(cmd);
+                    } catch (Exception ignored) {
+                    }
+                    break;
+            }
           return;
         }
       }
@@ -147,7 +176,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         break;
       }
     }
-    deviceListAdapter.update();
+    if (deviceListAdapter != null) deviceListAdapter.update();
   }
 
   // 处理USB授权结果
@@ -165,7 +194,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
           AppData.dbHelper.insert(device);
         }
         DeviceListAdapter.linkDevices.put(uuid, usbDevice);
-        deviceListAdapter.update();
+        if (deviceListAdapter != null) deviceListAdapter.update();
         break;
       }
     }

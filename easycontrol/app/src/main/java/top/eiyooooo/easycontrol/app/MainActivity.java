@@ -21,7 +21,6 @@ import top.eiyooooo.easycontrol.app.databinding.ItemRequestPermissionBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.helper.DeviceListAdapter;
-import top.eiyooooo.easycontrol.app.helper.MyBroadcastReceiver;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 public class MainActivity extends Activity {
@@ -31,12 +30,10 @@ public class MainActivity extends Activity {
   // 创建界面
   private ActivityMainBinding mainActivity;
 
-  // 广播
-  private final MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
-
   @SuppressLint("SourceLockedOrientationActivity")
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     AppData.init(this);
     PublicTools.setStatusAndNavBar(this);
     PublicTools.setLocale(this);
@@ -45,28 +42,20 @@ public class MainActivity extends Activity {
     // 检测权限
     if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) startApp();
     else createAlert();
-    super.onCreate(savedInstanceState);
   }
 
   private void startApp() {
     // 设置设备列表适配器、广播接收器
     deviceListAdapter = new DeviceListAdapter(this, mainActivity.devicesList);
     mainActivity.devicesList.setAdapter(deviceListAdapter);
-    myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
+    AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
     // 设置按钮监听
     setButtonListener();
-    // 注册广播监听
-    myBroadcastReceiver.register(this);
-    // 检查已连接设备
-    myBroadcastReceiver.checkConnectedUsb(this);
   }
 
   @Override
   protected void onDestroy() {
-    if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) {
-      myBroadcastReceiver.handleConfigurationChanged();
-      myBroadcastReceiver.unRegister(this);
-    }
+    AppData.myBroadcastReceiver.setDeviceListAdapter(null);
     super.onDestroy();
   }
 

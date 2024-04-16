@@ -19,10 +19,13 @@ import java.io.File;
 import top.eiyooooo.easycontrol.app.adb.AdbBase64;
 import top.eiyooooo.easycontrol.app.adb.AdbKeyPair;
 import top.eiyooooo.easycontrol.app.helper.DbHelper;
+import top.eiyooooo.easycontrol.app.helper.MyBroadcastReceiver;
 
 public class AppData {
   @SuppressLint("StaticFieldLeak")
   public static Context main;
+  @SuppressLint("StaticFieldLeak")
+  public static Context activity;
   public static Handler uiHandler;
 
   // 数据库工具库
@@ -48,9 +51,14 @@ public class AppData {
   // 当前黑暗模式
   public static int nightMode;
 
+  // 广播
+  public static final MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
+
   public static void init(Activity m) {
-    main = m;
+    activity = m;
     uiHandler = new android.os.Handler(m.getMainLooper());
+    if (main != null) return;
+    main = m.getApplicationContext();
     dbHelper = new DbHelper(main);
     clipBoard = (ClipboardManager) main.getSystemService(Context.CLIPBOARD_SERVICE);
     wifiManager = (WifiManager) main.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -59,6 +67,8 @@ public class AppData {
     sensorManager = (SensorManager) main.getSystemService(Context.SENSOR_SERVICE);
     uiModeManager = (UiModeManager) main.getSystemService(Context.UI_MODE_SERVICE);
     nightMode = uiModeManager.getNightMode();
+    myBroadcastReceiver.register(main);
+    myBroadcastReceiver.checkConnectedUsb(main);
     getRealScreenSize(m);
     setting = new Setting(main.getSharedPreferences("setting", Context.MODE_PRIVATE));
     // 读取密钥文件
@@ -81,6 +91,14 @@ public class AppData {
     } catch (Exception ignored) {
       reGenerateAdbKeyPair(main);
     }
+  }
+
+  public static void release() {
+    myBroadcastReceiver.unRegister(main);
+    dbHelper.close();
+    activity = null;
+    main = null;
+    System.exit(0);
   }
 
   // 生成密钥
