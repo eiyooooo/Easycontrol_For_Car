@@ -55,6 +55,7 @@
   <string name="set_about_website">项目主页</string>
   <string name="set_about_how_to_use">使用说明</string>
   <string name="set_about_privacy">隐私政策</string>
+  <string name="set_license">开源证书</string>
   <string name="set_about_version">版本: </string>
 
   <!-- 查看IP地址页面 -->

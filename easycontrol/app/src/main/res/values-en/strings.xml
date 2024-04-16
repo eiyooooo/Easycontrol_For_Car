@@ -55,6 +55,7 @@
   <string name="set_about_website">Website</string>
   <string name="set_about_how_to_use">Instructions for use</string>
   <string name="set_about_privacy">Privacy Policy</string>
+  <string name="set_license">License</string>
   <string name="set_about_version">Version: </string>
 
   <!-- 查看IP地址页面 -->
