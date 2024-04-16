@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用说明</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            background-color: #F3F4F6;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        p {
+            margin-top: 10px;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        li {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+<h1>使用说明</h1>
+<h2>建议横屏观看此使用说明</h2>
+<h2>此使用说明可在设置中再次打开</h2>
+<h2>注意</h2>
+<ol>
+    <li>若安卓14及以上版本画面出现异常，可尝试在设置中打开“安卓14兼容模式”</li>
+    <li>app未打开状态通过快捷方式直接启动USB设备需点击两次，第二次弹出的授权通知请授权</li>
+    <li>画中画内使用请务必在软件设置内打开“始终全屏模式”</li>
+</ol>
+<h2>准备操作</h2>
+<ol>
+    <li>被控端手机连续点击关于手机-版本号，直至提示打开开发者选项</li>
+    <li>被控端手机设置中找到开发者选项
+        <ul>
+            <li>打开“USB调试”</li>
+            <li>打开“停用ADB授权超时功能”</li>
+            <li>打开“USB调试(安全调试)”（MIUI设备）</li>
+            <li>打开“USB安装”（如果有则打开）</li>
+            <li>打开“关闭权限监控”（如果有则打开）</li>
+        </ul>
+    </li>
+</ol>
+<h4>注意: 重启被控端手机后，需要重新检查上述操作</h4>
+<h2>软件使用</h2>
+<ol>
+    <li>
+        <p>简单使用-有线连接</p>
+        <ol>
+            <li>主控端安装易控车机版，打开软件，给予悬浮窗授权或使用始终全屏模式</li>
+            <li>利用数据线将主控端与被控端连接，主控端易控车机版界面允许易控车机版访问设备</li>
+            <li>被控端授权允许主控端连接，勾选一律允许</li>
+            <li>点击主控端易控车机版列表中出现的新有线设备</li>
+            <li>选择屏幕镜像或应用流转模式进行连接</li>
+        </ol>
+    </li>
+    <li>
+        <p>简单使用-无线连接</p>
+        <ol>
+            <li>主控端安装易控车机版，打开软件，给予悬浮窗授权或使用始终全屏模式</li>
+            <li>确保主控端能够访问被控端（例如在一个wifi下面）</li>
+            <li>
+                <ul>
+                    <li>打开被控端无线调试（并非开发者选项中的无线调试）</li>
+                    <li>（可使用上面有线连接，随后长按设备点击“打开无线”按钮实现）</li>
+                    <li>（安卓11及以上可在被控端下载Shizuku，在Shizuku内配对）</li>
+                </ul>
+            </li>
+            <li>主控端易控车机版界面点击右上角添加设备
+                <ul>
+                    <li>在设备地址处输入被控端地址（地址:端口）</li>
+                    <li>地址格式（例）：
+                        <ul>
+                            <li>IPv4：192.168.43.1:5555</li>
+                            <li>IPv6：[2408:8462:2510:1e05:c39:3262:632d:1a3d]:5555</li>
+                            <li>域名：example.com:5555</li>
+                        </ul>
+                    </li>
+                    <li>也可点击扫描按钮，扫描C类地址（掩码为255.255.255.0）下的设备</li>
+                </ul>
+            </li>
+            <li>被控端授权允许主控端连接，勾选一律允许</li>
+            <li>选择屏幕镜像或应用流转模式进行连接</li>
+        </ol>
+    </li>
+    <li>
+        <p>界面使用</p>
+        <img src="small_usage.webp">
+        <li><strong>建议横屏观看此图片</strong></li>
+        <ol>
+            <li>工具栏
+                <ul>
+                    <li>在小窗模式下点击上横条，可查看工具栏</li>
+                    <li>在全屏模式下点击导航栏更多按钮，可查看工具栏</li>
+                </ul>
+            </li>
+            <li>小窗模式
+                <ul>
+                    <li>可通过拖动横条移动小窗</li>
+                    <li>拖动右下角可更改小窗大小</li>
+                </ul>
+            </li>
+            <li>最小化模式
+                <ul>
+                    <li>可上下拖动</li>
+                    <li>单击返回小窗模式</li>
+                </ul>
+            </li>
+            <li>全屏模式
+                <ul>
+                    <li>底部为导航栏，可向被控端发送多任务、桌面、返回按键</li>
+                    <li>导航栏左边旋转按钮，可以控制被控端页面旋转，仅请求旋转，实际是否旋转看被控端当前应用是否允许</li>
+                    <li>全屏页面方向跟随手机重力方向（可在工具栏中锁定）</li>
+                </ul>
+            </li>
+        </ol>
+    </li>
+    <li>
+        <p>高级使用</p>
+        <ul>
+            <li>在添加设备时或长按设备点击“修改”按钮，设置高级选项，可开关黑暗模式同步、剪切板同步，自定义编解码参数、投屏控制参数等</li>
+            <li>设置中可设置编码参数等默认选项，添加设备时默认使用这些参数，如对单个设备进行了修改，则以该设备参数为准</li>
+            <li>特殊地址标识符，在添加设备时可用于代表特殊地址：
+                <ul>
+                    <li>网关地址：*gateway*，如网关为192.168.43.1，则“*gateway*:5555”表示“192.168.43.1:5555”</li>
+                    <li>子网地址：*netAddress*，如子网为192.168.43.0/24, 则“*netAddress*.1:5555”表示“192.168.43.1:5555”</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p>扩展使用</p>
+        <ol>
+            <li>
+                <p>易控车机版支持在外部使用广播控制</p>
+                <p>广播地址为：“<strong>top.eiyooooo.easycontrol.app.CONTROL</strong>”，需要向意向也就是Intent填入想要做的动作</p>
+                <ul>
+                    <li>启动默认设备：
+                        <ul>
+                            <li>action：startDefault</li>
+                            <li>mode：0, 1 （可选，默认为0，0:屏幕镜像，1:应用流转）</li>
+                        </ul>
+                    </li>
+                    <li>启动目标设备：
+                        <ul>
+                            <li>action：start</li>
+                            <li>uuid：设备ID</li>
+                            <li>mode：0, 1 （可选，默认为0，0:屏幕镜像，1:应用流转）</li>
+                        </ul>
+                    </li>
+                    <li>目标设备变成小窗：
+                        <ul>
+                            <li>action：changeToSmall</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备最小化：
+                        <ul>
+                            <li>action：changeToMini</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备全屏：
+                        <ul>
+                            <li>action：changeToFull</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备按下电源键：
+                        <ul>
+                            <li>action：buttonPower</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备唤醒：
+                        <ul>
+                            <li>action：buttonWake</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备锁定：
+                        <ul>
+                            <li>action：buttonLock</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备打开背光：
+                        <ul>
+                            <li>action：buttonLight</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备关闭背光：
+                        <ul>
+                            <li>action：buttonLightOff</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备按下返回键：
+                        <ul>
+                            <li>action：buttonBack</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备按下桌面键：
+                        <ul>
+                            <li>action：buttonHome</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备按下最近任务键：
+                        <ul>
+                            <li>action：buttonSwitch</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备旋转屏幕：
+                        <ul>
+                            <li>action：buttonRotate</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备关闭投屏：
+                        <ul>
+                            <li>action：close</li>
+                            <li>uuid：设备ID</li>
+                        </ul>
+                    </li>
+                    <li>目标设备执行命令：
+                        <ul>
+                            <li>action：runShell</li>
+                            <li>uuid：设备ID</li>
+                            <li>cmd: 命令</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <p>可通过快捷方式直接启动默认USB或无线设备</p>
+                <ul>
+                    <li>软件内创建：
+                        <ul>
+                            <li>长按设备创建快捷方式（若包名存在则快捷方式为单应用流转）</li>
+                            <li>设置内创建启动默认设备快捷方式</li>
+                        </ul>
+                    </li>
+                    <li>自行创建：
+                        <ul>
+                            <li>StartDeviceActivity启动设备
+                                <ul>
+                                    <li>可添加uuid参数，指定设备ID</li>
+                                    <li>不指定uuid参数则启动默认设备</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ol>
+    </li>
+</ol>
+</body>
+</html>

@@ -51,6 +51,11 @@ public class MainActivity extends Activity {
     AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
     // 设置按钮监听
     setButtonListener();
+    // 首次使用显示使用说明
+    if (!AppData.setting.getShowUsage()) {
+      AppData.setting.setShowUsage(true);
+      AppData.uiHandler.postDelayed(() -> PublicTools.openWebViewActivity(this, "file:///android_asset/usage.html"), 1500);
+    }
   }
 
   @Override
