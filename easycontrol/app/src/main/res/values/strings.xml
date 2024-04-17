@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">易控车机版</string>
+  <string name="app_name">易控车机画中画版</string>
 
   <!-- 主页 -->
   <string name="main_poem">行车不规范，亲人两行泪</string>
@@ -24,19 +24,9 @@
   <string name="set_light_on_on_close_error">请先关闭“断开后自动锁定”哦</string>
   <string name="set_display_keep_screen_awake">被控端保持唤醒</string>
   <string name="set_display_keep_screen_awake_detail">连接过程中被控端不锁定(即修改自动锁定时间)</string>
-  <string name="set_display_auto_back_on_start_default">打开默认后返回</string>
-  <string name="set_display_auto_back_on_start_default_detail">启动时打开默认后是否自动返回桌面</string>
   <string name="set_display_default_show_nav_bar">默认显示导航栏</string>
-  <string name="set_display_default_show_nav_bar_detail">设置小窗和全屏模式默认是否显示导航栏</string>
-  <string name="set_display_default_mini_on_outside">触摸外界时挂起</string>
-  <string name="set_display_default_mini_on_outside_detail">(小窗模式)触摸小窗以外位置时自动最小化</string>
-  <string name="set_display_mini_recover_on_timeout">挂起后自动恢复</string>
-  <string name="set_display_mini_recover_on_timeout_detail">在触发自动最小化后五秒内无操作自动恢复为原模式</string>
-  <string name="set_display_full_to_mini_on_exit">全屏意外退出时挂起</string>
-  <string name="set_display_full_to_mini_on_exit_detail">在全屏模式下意外退出时自动最小化(关闭时为自动小窗)</string>
+  <string name="set_display_default_show_nav_bar_detail">设置默认是否显示导航栏</string>
   <string name="set_other">其他</string>
-  <string name="set_always_full_mode">始终全屏模式</string>
-  <string name="set_always_full_mode_detail">始终以全屏模式连接设备，忽略在设备内设置的全屏启动(\u0022软件启动时打开\u0022仅支持打开一个默认设备)</string>
   <string name="set_mirror_mode">安卓14兼容模式</string>
   <string name="set_mirror_mode_detail">安卓14及以上系统若出现画面异常可尝试开启此选项</string>
   <string name="set_force_desktop_mode">应用流转时强制桌面模式</string>
@@ -121,7 +111,6 @@
   <string name="error_app_not_found">指定包名的应用不存在</string>
   <string name="error_device_not_found">未找到该设备</string>
   <string name="error_default_device_not_found">未找到默认设备</string>
-  <string name="error_mode_not_support">始终全屏模式不支持</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>

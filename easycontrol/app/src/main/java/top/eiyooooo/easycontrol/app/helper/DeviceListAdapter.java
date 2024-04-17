@@ -153,7 +153,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     ItemDevicesItemDetailBinding devicesItemDetailBinding = (ItemDevicesItemDetailBinding) view.getTag();
     // 设置卡片值
     devicesItemDetailBinding.isAudio.setChecked(device.isAudio);
-    devicesItemDetailBinding.defaultFull.setChecked(device.defaultFull);
+    devicesItemDetailBinding.defaultFull.setChecked(true);
     // 单击事件
     devicesItemDetailBinding.isAudio.setOnCheckedChangeListener((buttonView, isChecked) -> {
       device.isAudio = isChecked;
@@ -161,12 +161,6 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     });
     View isAudioParent = (View) devicesItemDetailBinding.isAudio.getParent();
     isAudioParent.setOnClickListener(v -> devicesItemDetailBinding.isAudio.toggle());
-    devicesItemDetailBinding.defaultFull.setOnCheckedChangeListener((buttonView, isChecked) -> {
-      device.defaultFull = isChecked;
-      AppData.dbHelper.update(device);
-    });
-    View defaultFullParent = (View) devicesItemDetailBinding.defaultFull.getParent();
-    defaultFullParent.setOnClickListener(v -> devicesItemDetailBinding.defaultFull.toggle());
     devicesItemDetailBinding.displayMirroring.setOnClickListener(v -> startDevice(device, 0));
     devicesItemDetailBinding.createDisplay.setOnClickListener(v -> startDevice(device, 1));
   }
@@ -325,19 +319,11 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
 
   // 启动默认设备
   public static void startDefault(int mode) {
-    boolean started = false;
     for (Device device : devicesList) {
       if (device.connectOnStart) {
         startDevice(device, mode);
-        started = true;
-        if (AppData.setting.getAlwaysFullMode()) break;
+        break;
       }
-    }
-    // 返回桌面
-    if (started && !AppData.setting.getAlwaysFullMode() && AppData.setting.getAutoBackOnStartDefault()) {
-      Intent home = new Intent(Intent.ACTION_MAIN);
-      home.addCategory(Intent.CATEGORY_HOME);
-      AppData.activity.startActivity(home);
     }
   }
 

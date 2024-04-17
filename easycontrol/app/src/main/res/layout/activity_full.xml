@@ -97,7 +97,7 @@
     android:layout_marginEnd="10dp"
     android:layout_marginBottom="45dp"
     android:background="@drawable/background_cron"
-    android:columnCount="4"
+    android:columnCount="5"
     android:elevation="6dp"
     android:padding="8dp">
 
@@ -109,33 +109,6 @@
       android:focusable="false"
       android:src="@drawable/not_equal"
       android:tint="@color/onCardBackground" />
-
-    <ImageView
-      android:id="@+id/button_mini"
-      android:layout_width="38dp"
-      android:layout_height="38dp"
-      android:layout_margin="4dp"
-      android:focusable="false"
-      android:src="@drawable/minus"
-      android:tint="@color/onCardBackground" />
-
-    <ImageView
-      android:id="@+id/button_full_exit"
-      android:layout_width="38dp"
-      android:layout_height="38dp"
-      android:layout_margin="4dp"
-      android:focusable="false"
-      android:src="@drawable/compress"
-      android:tint="@color/onCardBackground" />
-
-    <ImageView
-      android:id="@+id/button_close"
-      android:layout_width="38dp"
-      android:layout_height="38dp"
-      android:layout_margin="4dp"
-      android:focusable="false"
-      android:src="@drawable/x"
-      android:tint="@color/alert" />
 
     <ImageView
       android:id="@+id/button_transfer"
@@ -165,13 +138,13 @@
       android:tint="@color/onCardBackground" />
 
     <ImageView
-      android:id="@+id/button_lock"
+      android:id="@+id/button_close"
       android:layout_width="38dp"
       android:layout_height="38dp"
       android:layout_margin="4dp"
       android:focusable="false"
-      android:src="@drawable/lock"
-      android:tint="@color/onCardBackground" />
+      android:src="@drawable/x"
+      android:tint="@color/alert" />
 
   </GridLayout>
 </FrameLayout>

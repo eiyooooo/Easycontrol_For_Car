@@ -97,24 +97,6 @@ public final class Setting {
     editor.apply();
   }
 
-  public boolean getDefaultFull() {
-    return sharedPreferences.getBoolean("defaultFull", false);
-  }
-
-  public void setDefaultFull(boolean value) {
-    editor.putBoolean("defaultFull", value);
-    editor.apply();
-  }
-
-  public boolean getAutoBackOnStartDefault() {
-    return sharedPreferences.getBoolean("autoBackOnStartDefault", false);
-  }
-
-  public void setAutoBackOnStartDefault(boolean value) {
-    editor.putBoolean("autoBackOnStartDefault", value);
-    editor.apply();
-  }
-
   public boolean getTurnOnScreenIfStart() {
     return sharedPreferences.getBoolean("TurnOnScreenIfStart", true);
   }
@@ -169,33 +151,6 @@ public final class Setting {
     editor.apply();
   }
 
-  public boolean getDefaultMiniOnOutside() {
-    return sharedPreferences.getBoolean("defaultMiniOnOutside", false);
-  }
-
-  public void setDefaultMiniOnOutside(boolean value) {
-    editor.putBoolean("defaultMiniOnOutside", value);
-    editor.apply();
-  }
-
-  public boolean getMiniRecoverOnTimeout() {
-    return sharedPreferences.getBoolean("miniRecoverOnTimeout", false);
-  }
-
-  public void setMiniRecoverOnTimeout(boolean value) {
-    editor.putBoolean("miniRecoverOnTimeout", value);
-    editor.apply();
-  }
-
-  public boolean getFullToMiniOnExit() {
-    return sharedPreferences.getBoolean("fullToMiniOnExit", true);
-  }
-
-  public void setFullToMiniOnExit(boolean value) {
-    editor.putBoolean("fullToMiniOnExit", value);
-    editor.apply();
-  }
-
   public boolean getMirrorMode() {
     return sharedPreferences.getBoolean("MirrorMode", false);
   }
@@ -220,15 +175,6 @@ public final class Setting {
 
   public void setTryStartDefaultInAppTransfer(boolean value) {
     editor.putBoolean("tryStartDefaultInAppTransfer", value);
-    editor.apply();
-  }
-
-  public boolean getAlwaysFullMode() {
-    return sharedPreferences.getBoolean("alwaysFullMode", false);
-  }
-
-  public void setAlwaysFullMode(boolean value) {
-    editor.putBoolean("alwaysFullMode", value);
     editor.apply();
   }
 

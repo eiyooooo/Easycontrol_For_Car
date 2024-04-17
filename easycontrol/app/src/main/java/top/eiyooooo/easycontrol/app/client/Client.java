@@ -13,8 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import android.view.View;
-import android.view.WindowManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,13 +80,11 @@ public class Client {
       executeStreamInThread.start();
       AppData.uiHandler.post(this::executeOtherService);
     }, () -> release(null));
-    Pair<View, WindowManager.LayoutParams> loading = PublicTools.createLoading(AppData.main);
     // 连接
     loadingTimeOutThread = new Thread(() -> {
       try {
         Thread.sleep(timeoutDelay);
         if (startThread != null) startThread.interrupt();
-        if (loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
         release(null);
       } catch (InterruptedException ignored) {
       }
@@ -113,20 +109,17 @@ public class Client {
         connectServer();
         AppData.uiHandler.post(() -> {
           controlPacket.sendNightModeEvent(AppData.nightMode);
-          if (AppData.setting.getAlwaysFullMode() || device.defaultFull) clientView.changeToFull();
-          else clientView.changeToSmall();
+          clientView.changeToFull();
         });
       } catch (Exception e) {
         L.log(device.uuid, e);
         release(AppData.main.getString(R.string.log_notify));
       } finally {
-        if (!AppData.setting.getAlwaysFullMode() && loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
         loadingTimeOutThread.interrupt();
         keepAliveThread.start();
       }
     });
-    if (AppData.setting.getAlwaysFullMode()) PublicTools.logToast(AppData.main.getString(R.string.loading_text));
-    else AppData.windowManager.addView(loading.first, loading.second);
+    PublicTools.logToast(AppData.main.getString(R.string.loading_text));
     loadingTimeOutThread.start();
     startThread.start();
   }

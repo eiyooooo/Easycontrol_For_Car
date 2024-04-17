@@ -35,15 +35,12 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   public final TextureView textureView;
   private SurfaceTexture surfaceTexture;
 
-  private final SmallView smallView;
-  private final MiniView miniView;
   private FullActivity fullView;
 
   private Pair<Integer, Integer> realDeviceSize;
   private Pair<Integer, Integer> videoSize;
   private Pair<Integer, Integer> maxSize;
   private Pair<Integer, Integer> surfaceSize;
-  public boolean lastTouchIsInside = true;
   boolean lightState;
   public int multiLink = 0;
 
@@ -53,26 +50,12 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     this.device = new Device(device.uuid, device.type);
     Device.copyDevice(device, this.device);
     textureView = new TextureView(AppData.main);
-    if (!AppData.setting.getAlwaysFullMode()) {
-      smallView = new SmallView(this);
-      miniView = new MiniView(this);
-    } else {
-      smallView = null;
-      miniView = null;
-    }
     this.controlPacket = controlPacket;
     this.changeMode = changeMode;
     this.onReady = onReady;
     this.onClose = onClose;
     setTouchListener();
     textureView.setSurfaceTextureListener(this);
-    if (smallView != null) smallView.changeMode(mode);
-  }
-
-  public void updateDevice() {
-    if (multiLink != 0) return;
-    Device.copyDevice(device, deviceOriginal);
-    AppData.dbHelper.update(device);
   }
 
   public void changeSize(float ratio) {
@@ -144,7 +127,6 @@ public class ClientView implements TextureView.SurfaceTextureListener {
 
   public void changeMode(int mode) {
     this.mode = mode;
-    if (smallView != null) smallView.changeMode(mode);
     if (fullView != null) fullView.changeMode(mode);
   }
 
@@ -160,22 +142,8 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     AppData.activity.startActivity(intent);
   }
 
-  public synchronized void changeToSmall() {
-    if (smallView == null) return;
-    hide(false);
-    smallView.show();
-  }
-
-  public synchronized void changeToMini(int mode) {
-    if (miniView == null) return;
-    hide(false);
-    miniView.show(mode);
-  }
-
   public synchronized void hide(boolean isRelease) {
     if (fullView != null) fullView.hide();
-    if (smallView != null) smallView.hide();
-    if (miniView != null) miniView.hide();
     if (isRelease && surfaceTexture != null) surfaceTexture.release();
   }
 
@@ -197,10 +165,6 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     return videoSize;
   }
 
-  public Pair<Integer, Integer> getMaxSize() {
-    return maxSize;
-  }
-
   public Surface getSurface() {
     return new Surface(surfaceTexture);
   }
@@ -218,13 +182,6 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     ViewGroup.LayoutParams layoutParams = textureView.getLayoutParams();
     layoutParams.width = surfaceSize.first;
     layoutParams.height = surfaceSize.second;
-    textureView.setLayoutParams(layoutParams);
-  }
-  public void reCalculateTextureViewSize(int width, int height) {
-    surfaceSize = new Pair<>(width, height);
-    ViewGroup.LayoutParams layoutParams = textureView.getLayoutParams();
-    layoutParams.width = width;
-    layoutParams.height = height;
     textureView.setLayoutParams(layoutParams);
   }
 

@@ -52,7 +52,6 @@
 <ol>
     <li>若安卓14及以上版本画面出现异常，可尝试在设置中打开“安卓14兼容模式”</li>
     <li>app未打开状态通过快捷方式直接启动USB设备需点击两次，第二次弹出的授权通知请授权</li>
-    <li>画中画内使用请务必在软件设置内打开“始终全屏模式”</li>
 </ol>
 <h2>准备操作</h2>
 <ol>
@@ -111,25 +110,10 @@
     </li>
     <li>
         <p>界面使用</p>
-        <img src="small_usage.webp">
-        <li><strong>建议横屏观看此图片</strong></li>
         <ol>
             <li>工具栏
                 <ul>
-                    <li>在小窗模式下点击上横条，可查看工具栏</li>
                     <li>在全屏模式下点击导航栏更多按钮，可查看工具栏</li>
-                </ul>
-            </li>
-            <li>小窗模式
-                <ul>
-                    <li>可通过拖动横条移动小窗</li>
-                    <li>拖动右下角可更改小窗大小</li>
-                </ul>
-            </li>
-            <li>最小化模式
-                <ul>
-                    <li>可上下拖动</li>
-                    <li>单击返回小窗模式</li>
                 </ul>
             </li>
             <li>全屏模式
@@ -172,24 +156,6 @@
                             <li>action：start</li>
                             <li>uuid：设备ID</li>
                             <li>mode：0, 1 （可选，默认为0，0:屏幕镜像，1:应用流转）</li>
-                        </ul>
-                    </li>
-                    <li>目标设备变成小窗：
-                        <ul>
-                            <li>action：changeToSmall</li>
-                            <li>uuid：设备ID</li>
-                        </ul>
-                    </li>
-                    <li>目标设备最小化：
-                        <ul>
-                            <li>action：changeToMini</li>
-                            <li>uuid：设备ID</li>
-                        </ul>
-                    </li>
-                    <li>目标设备全屏：
-                        <ul>
-                            <li>action：changeToFull</li>
-                            <li>uuid：设备ID</li>
                         </ul>
                     </li>
                     <li>目标设备按下电源键：

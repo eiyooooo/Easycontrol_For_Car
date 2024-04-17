@@ -39,7 +39,6 @@ public class AppData {
   public static WifiManager wifiManager;
   public static UsbManager usbManager;
   public static WindowManager windowManager;
-  public static SensorManager sensorManager;
   public static UiModeManager uiModeManager;
 
   // 设置值
@@ -64,7 +63,6 @@ public class AppData {
     wifiManager = (WifiManager) main.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     usbManager = (UsbManager) main.getSystemService(Context.USB_SERVICE);
     windowManager = (WindowManager) main.getSystemService(Context.WINDOW_SERVICE);
-    sensorManager = (SensorManager) main.getSystemService(Context.SENSOR_SERVICE);
     uiModeManager = (UiModeManager) main.getSystemService(Context.UI_MODE_SERVICE);
     nightMode = uiModeManager.getNightMode();
     myBroadcastReceiver.register(main);

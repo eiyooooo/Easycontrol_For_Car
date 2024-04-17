@@ -22,7 +22,7 @@ import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.databinding.ActivityFullBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 
-public class FullActivity extends Activity implements SensorEventListener {
+public class FullActivity extends Activity {
   private ClientView clientView;
   private ActivityFullBinding fullActivity;
 
@@ -45,19 +45,12 @@ public class FullActivity extends Activity implements SensorEventListener {
       clientView.updateMaxSize(new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight()));
       setNavBarHide(AppData.setting.getDefaultShowNavBar());
     });
-    // 页面自动旋转
-    AppData.sensorManager.registerListener(this, AppData.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     super.onCreate(savedInstanceState);
   }
 
   @Override
   protected void onPause() {
-    AppData.sensorManager.unregisterListener(this);
     if (isChangingConfigurations()) fullActivity.textureViewLayout.removeView(clientView.textureView);
-    else if (clientView != null) {
-      if (AppData.setting.getFullToMiniOnExit()) clientView.changeToMini(2);
-      else clientView.changeToSmall();
-    }
     super.onPause();
   }
 
@@ -129,13 +122,6 @@ public class FullActivity extends Activity implements SensorEventListener {
       setNavBarHide(fullActivity.navBar.getVisibility() == View.GONE);
       barViewTimer();
     });
-    if (!AppData.setting.getAlwaysFullMode()) {
-      fullActivity.buttonMini.setOnClickListener(v -> clientView.changeToMini(0));
-      fullActivity.buttonFullExit.setOnClickListener(v -> clientView.changeToSmall());
-    } else {
-      fullActivity.buttonMini.setOnClickListener(v -> PublicTools.logToast(getString(R.string.error_mode_not_support)));
-      fullActivity.buttonFullExit.setOnClickListener(v -> PublicTools.logToast(getString(R.string.error_mode_not_support)));
-    }
     fullActivity.buttonClose.setOnClickListener(v -> clientView.onClose.run());
     if (clientView.mode == 1) fullActivity.buttonTransfer.setImageResource(R.drawable.share_in);
     fullActivity.buttonTransfer.setOnClickListener(v -> {
@@ -159,23 +145,10 @@ public class FullActivity extends Activity implements SensorEventListener {
       clientView.controlPacket.sendPowerEvent();
       barViewTimer();
     });
-    if (AppData.setting.getAlwaysFullMode()) {
-      lockOrientation = true;
-      fullActivity.buttonLock.setImageResource(R.drawable.unlock);
-      fullActivity.buttonLock.setOnClickListener(v -> PublicTools.logToast(getString(R.string.error_mode_not_support)));
-      DisplayMetrics metrics = getResources().getDisplayMetrics();
-      int orientation;
-      if (metrics.widthPixels > metrics.heightPixels) orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-      else orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-      setRequestedOrientation(orientation);
-      lastOrientation = orientation;
-    } else {
-      fullActivity.buttonLock.setOnClickListener(v -> {
-        lockOrientation = !lockOrientation;
-        fullActivity.buttonLock.setImageResource(lockOrientation ? R.drawable.unlock : R.drawable.lock);
-        barViewTimer();
-      });
-    }
+    DisplayMetrics metrics = getResources().getDisplayMetrics();
+    if (metrics.widthPixels > metrics.heightPixels) orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+    else orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    setRequestedOrientation(orientation);
   }
 
   // 导航栏隐藏
@@ -185,10 +158,12 @@ public class FullActivity extends Activity implements SensorEventListener {
     if (clientView.device.setResolution) clientView.changeSize(getRatio(isShow));
   }
 
+  private int orientation;
+
   private void changeBarView() {
     if (clientView == null) return;
     boolean toShowView = fullActivity.barView.getVisibility() == View.GONE;
-    boolean isLandscape = lastOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || lastOrientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+    boolean isLandscape = orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
     clientView.viewAnim(fullActivity.barView, toShowView, 0, PublicTools.dp2px(40f) * (isLandscape ? -1 : 1), (isStart -> {
       if (isStart && toShowView) fullActivity.barView.setVisibility(View.VISIBLE);
       else if (!isStart && !toShowView) fullActivity.barView.setVisibility(View.GONE);
@@ -208,33 +183,6 @@ public class FullActivity extends Activity implements SensorEventListener {
       }
     });
     barViewTimerThread.start();
-  }
-
-  private boolean lockOrientation = false;
-  private int lastOrientation = -1;
-
-  @Override
-  public void onSensorChanged(SensorEvent sensorEvent) {
-    if (lockOrientation || Sensor.TYPE_ACCELEROMETER != sensorEvent.sensor.getType()) return;
-    float[] values = sensorEvent.values;
-    float x = values[0];
-    float y = values[1];
-    int newOrientation = lastOrientation;
-
-    if (x > -3 && x < 3 && y >= 4.5) newOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    else if (y > -3 && y < 3 && x >= 4.5) newOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-    else if (y > -3 && y < 3 && x <= -4.5) newOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-    else if (x > -3 && x < 3 && y <= -4.5) newOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-
-    if (lastOrientation != newOrientation) {
-      lastOrientation = newOrientation;
-      setRequestedOrientation(newOrientation);
-    }
-  }
-
-  @Override
-  public void onAccuracyChanged(Sensor sensor, int i) {
-
   }
 
   // 设置键盘监听

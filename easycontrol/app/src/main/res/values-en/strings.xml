@@ -24,19 +24,9 @@
   <string name="set_light_on_on_close_error">Please turn off \u0022Lock the screen after disconnection\u0022</string>
   <string name="set_display_keep_screen_awake">Keep the controlled end awake</string>
   <string name="set_display_keep_screen_awake_detail">The controlled end does not lock during the connection process</string>
-  <string name="set_display_auto_back_on_start_default">Return to launcher after a connection</string>
-  <string name="set_display_auto_back_on_start_default_detail">Return to launcher automatically when default device connected</string>
   <string name="set_display_default_show_nav_bar">Show navigation bar by default</string>
-  <string name="set_display_default_show_nav_bar_detail">Sets whether the navigation bar is displayed by default in small window and full screen modes</string>
-  <string name="set_display_default_mini_on_outside">Minimize when touching outside the small window</string>
-  <string name="set_display_default_mini_on_outside_detail">(Small window mode) Minimized when touching outside the small window</string>
-  <string name="set_display_mini_recover_on_timeout">Floating window auto minimize</string>
-  <string name="set_display_mini_recover_on_timeout_detail">Touch outside of floating window to minimize it</string>
-  <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
-  <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
+  <string name="set_display_default_show_nav_bar_detail">Sets whether the navigation bar is displayed by default</string>
   <string name="set_other">Other</string>
-  <string name="set_always_full_mode">Always full screen mode</string>
-  <string name="set_always_full_mode_detail">Always connect to the device in full screen mode, ignoring \u0022Default full screen\u0022 settings in the device (Only one default device can be opened when the software starts)</string>
   <string name="set_mirror_mode">Android 14 compatibility mode</string>
   <string name="set_mirror_mode_detail">If display issues occur on Android 14 and above, try enabling this option</string>
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
@@ -121,7 +111,6 @@
   <string name="error_app_not_found">The specified package name application does not exist</string>
   <string name="error_device_not_found">Device not found</string>
   <string name="error_default_device_not_found">Default device not found</string>
-  <string name="error_mode_not_support">Not supported in always full screen mode</string>
 
   <!-- 提示 -->
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>

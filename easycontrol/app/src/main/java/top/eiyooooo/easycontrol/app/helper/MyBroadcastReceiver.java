@@ -89,15 +89,6 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
       for (Client client : Client.allClient) {
         if (Objects.equals(client.uuid, uuid)) {
             switch (action) {
-                case "changeToSmall":
-                    client.clientView.changeToSmall();
-                    break;
-                case "changeToFull":
-                    client.clientView.changeToFull();
-                    break;
-                case "changeToMini":
-                    client.clientView.changeToMini(0);
-                    break;
                 case "buttonPower":
                     client.controlPacket.sendPowerEvent();
                     break;

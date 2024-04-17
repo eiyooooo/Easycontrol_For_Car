@@ -39,12 +39,6 @@ public class MainActivity extends Activity {
     PublicTools.setLocale(this);
     mainActivity = ActivityMainBinding.inflate(this.getLayoutInflater());
     setContentView(mainActivity.getRoot());
-    // 检测权限
-    if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) startApp();
-    else createAlert();
-  }
-
-  private void startApp() {
     // 设置设备列表适配器、广播接收器
     deviceListAdapter = new DeviceListAdapter(this, mainActivity.devicesList);
     mainActivity.devicesList.setAdapter(deviceListAdapter);
@@ -66,41 +60,7 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onResume() {
-    if (!AppData.setting.getAlwaysFullMode() && !haveOverlayPermission()) createAlert();
     super.onResume();
-  }
-
-  // 检查权限
-  private boolean haveOverlayPermission() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return Settings.canDrawOverlays(this);
-    else {
-      AppOpsManager appOps = (AppOpsManager) this.getSystemService(APP_OPS_SERVICE);
-      if (appOps != null) {
-        int mode = appOps.checkOpNoThrow("android:system_alert_window", android.os.Process.myUid(), this.getPackageName());
-        return mode == AppOpsManager.MODE_ALLOWED || mode == AppOpsManager.MODE_IGNORED;
-      } else return true;
-    }
-  }
-
-  // 创建无权限提示
-  private void createAlert() {
-    ItemRequestPermissionBinding requestPermissionView = ItemRequestPermissionBinding.inflate(LayoutInflater.from(this));
-    requestPermissionView.buttonGoToSet.setOnClickListener(v -> startActivity(PublicTools.getOverlayPermissionIntent(this)));
-    requestPermissionView.buttonAlwaysFullMode.setOnClickListener(v -> AppData.setting.setAlwaysFullMode(true));
-    Dialog dialog = PublicTools.createDialog(this, false, requestPermissionView.getRoot());
-    dialog.show();
-    checkPermissionDelay(dialog);
-  }
-
-  // 定时检查
-  private void checkPermissionDelay(Dialog dialog) {
-    // 因为某些设备可能会无法进入设置或其他问题，导致不会有返回结果，为了减少不确定性，使用定时检测的方法
-    AppData.uiHandler.postDelayed(() -> {
-      if (AppData.setting.getAlwaysFullMode() || haveOverlayPermission()) {
-        dialog.cancel();
-        startApp();
-      } else checkPermissionDelay(dialog);
-    }, 1000);
   }
 
   // 设置按钮监听
