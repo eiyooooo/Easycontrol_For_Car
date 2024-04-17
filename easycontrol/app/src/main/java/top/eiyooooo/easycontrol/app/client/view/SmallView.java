@@ -337,9 +337,9 @@ public class SmallView extends ViewOutlineProvider {
       controlPacket.sendRotateEvent();
       changeBarView();
     });
-    smallView.buttonBack.setOnClickListener(v -> controlPacket.sendKeyEvent(4, 0));
-    smallView.buttonHome.setOnClickListener(v -> controlPacket.sendKeyEvent(3, 0));
-    smallView.buttonSwitch.setOnClickListener(v -> controlPacket.sendKeyEvent(187, 0));
+    smallView.buttonBack.setOnClickListener(v -> controlPacket.sendKeyEvent(4, 0, -1));
+    smallView.buttonHome.setOnClickListener(v -> controlPacket.sendKeyEvent(3, 0, -1));
+    smallView.buttonSwitch.setOnClickListener(v -> controlPacket.sendKeyEvent(187, 0, -1));
     smallView.buttonNavBar.setOnClickListener(v -> {
       setNavBarHide(smallView.navBar.getVisibility() == View.GONE);
       barViewTimer();
@@ -507,7 +507,7 @@ public class SmallView extends ViewOutlineProvider {
     smallView.editText.setInputType(InputType.TYPE_NULL);
     smallView.editText.setOnKeyListener((v, keyCode, event) -> {
       if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode != KeyEvent.KEYCODE_VOLUME_UP && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN) {
-        controlPacket.sendKeyEvent(event.getKeyCode(), event.getMetaState());
+        controlPacket.sendKeyEvent(event.getKeyCode(), event.getMetaState(), 0);
         return true;
       }
       return false;

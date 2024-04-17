@@ -63,13 +63,14 @@ public class ControlPacket {
   }
 
   // 发送按键事件
-  public void sendKeyEvent(int key, int meta) {
-    ByteBuffer byteBuffer = ByteBuffer.allocate(9);
+  public void sendKeyEvent(int key, int meta, int displayIdToInject) {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(13);
     // 输入事件
     byteBuffer.put((byte) 2);
     // 按键类型
     byteBuffer.putInt(key);
     byteBuffer.putInt(meta);
+    byteBuffer.putInt(displayIdToInject);
     byteBuffer.flip();
     write.run(byteBuffer);
   }

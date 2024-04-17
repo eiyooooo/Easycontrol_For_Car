@@ -66,7 +66,7 @@ public final class Scrcpy {
             // 程序运行
             timeOutThread.interrupt();
             if (Options.TurnOnScreenIfStart) {
-                Device.keyEvent(224, 0);
+                Device.keyEvent(224, 0, 0);
                 if (Options.TurnOffScreenIfStart)
                     postDelayed(() -> Device.changeScreenPowerMode(Display.STATE_UNKNOWN), 2000);
             }
@@ -251,7 +251,7 @@ public final class Scrcpy {
         // 5
         try {
             if (timeoutClose || lastScrcpy) {
-                if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0);
+                if (Options.TurnOffScreenIfStop) Device.keyEvent(223, 0, 0);
                 else if (Options.TurnOnScreenIfStop) Device.changeScreenPowerMode(Display.STATE_ON);
             }
         } catch (Exception e) {
