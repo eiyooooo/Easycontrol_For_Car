@@ -168,6 +168,7 @@ public class FullActivity extends Activity implements SensorEventListener {
       if (metrics.widthPixels > metrics.heightPixels) orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
       else orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
       setRequestedOrientation(orientation);
+      lastOrientation = orientation;
     } else {
       fullActivity.buttonLock.setOnClickListener(v -> {
         lockOrientation = !lockOrientation;
