@@ -1,4 +1,4 @@
-# 易控车机版(Easycontrol_For_Car)
+# 易控车机画中画版(Easycontrol_For_Car)
 [![GitHub license](https://img.shields.io/github/license/eiyooooo/Easycontrol_For_Car.svg)](https://github.com/eiyooooo/Easycontrol_For_Car/blob/main/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/eiyooooo/Easycontrol_For_Car.svg)](https://GitHub.com/eiyooooo/Easycontrol_For_Car/releases/)
 [![Github all releases](https://img.shields.io/github/downloads/eiyooooo/Easycontrol_For_Car/total.svg)](https://GitHub.com/eiyooooo/Easycontrol_For_Car/releases/)
@@ -30,9 +30,6 @@
 如有需要开发版本请自行[编译](HOW_TO_BUILD.md)
 
 ## 截图
-<img src="pic/screenshot/main.webp" width="300px">
-<img src="pic/screenshot/small.webp" width="300px">
-<img src="pic/screenshot/small_landscape.webp" width="300px">
 <img src="pic/screenshot/full.webp" width="300px">
 
 ## 捐赠鼓励
