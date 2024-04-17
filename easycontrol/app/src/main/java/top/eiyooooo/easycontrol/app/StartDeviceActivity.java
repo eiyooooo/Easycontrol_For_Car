@@ -23,6 +23,10 @@ public class StartDeviceActivity extends Activity {
 
         if (uuid != null) {
             Device device = AppData.dbHelper.getByUUID(uuid);
+            if (device == null) {
+                Toast.makeText(this, getString(R.string.error_device_not_found), Toast.LENGTH_SHORT).show();
+                return;
+            }
             UsbDevice usbDevice = null;
             if (device.isLinkDevice()) {
                 if (DeviceListAdapter.linkDevices.containsKey(device.uuid)) {
