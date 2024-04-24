@@ -5,7 +5,7 @@
   android:layout_height="match_parent"
   android:background="@color/background"
   android:orientation="vertical"
-  tools:context=".LogActivity">
+  tools:context=".WebViewActivity">
 
   <ImageView
     android:id="@+id/back_button"
@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:visibility="gone"
-    android:text="placeholder"
+    android:text="@string/app_name"
     android:textColor="@color/onBackground"
     android:textSize="@dimen/middleFont"
     tools:ignore="HardcodedText"/>
