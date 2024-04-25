@@ -53,6 +53,14 @@
       android:tint="@color/onBackground" />
 
     <ImageView
+      android:id="@+id/button_pair"
+      android:layout_width="54dp"
+      android:layout_height="54dp"
+      android:padding="14dp"
+      android:src="@drawable/pair"
+      android:tint="@color/onBackground" />
+
+    <ImageView
       android:id="@+id/button_add"
       android:layout_width="54dp"
       android:layout_height="54dp"
