@@ -85,11 +85,12 @@ public class PairActivity extends Activity {
             pairActivity.pairing.setText(getString(R.string.pair_pair) + "...");
 
             String ip = String.valueOf(pairActivity.ip.getText());
-            int pairingPort = Integer.parseInt(String.valueOf(pairActivity.pairingPort.getText()));
+            String pairingPort = String.valueOf(pairActivity.pairingPort.getText());
             String pairingCode = String.valueOf(pairActivity.pairingCode.getText());
 
             try {
-                AdbPairManager.INSTANCE.pair(ip, pairingPort, pairingCode);
+                if (ip.isEmpty() || pairingPort.isEmpty() || pairingCode.isEmpty()) throw new Exception();
+                AdbPairManager.INSTANCE.pair(ip, Integer.parseInt(pairingPort), pairingCode);
                 pairActivity.pairing.setText(getString(R.string.pair_pair) + getString(R.string.pair_success));
             } catch (Exception ignored) {
                 pairActivity.pairing.setText(getString(R.string.pair_pair) + getString(R.string.pair_failed));
@@ -104,10 +105,11 @@ public class PairActivity extends Activity {
             pairActivity.openingPort.setText(getString(R.string.pair_open_port) + "...");
 
             String ip = String.valueOf(pairActivity.ip.getText());
-            int debugPort = Integer.parseInt(String.valueOf(pairActivity.debugPort.getText()));
+            String debugPort = String.valueOf(pairActivity.debugPort.getText());
 
             try {
-                AdbPairManager.INSTANCE.connect(ip, debugPort);
+                if (ip.isEmpty() || debugPort.isEmpty()) throw new Exception();
+                AdbPairManager.INSTANCE.connect(ip, Integer.parseInt(debugPort));
                 AdbPairManager.INSTANCE.openStream("tcpip:5555");
                 AdbPairManager.INSTANCE.disconnect();
                 pairActivity.openingPort.setText(getString(R.string.pair_open_port) + getString(R.string.pair_success));
