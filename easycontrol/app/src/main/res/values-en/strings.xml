@@ -43,6 +43,8 @@
   <string name="set_display_default_show_nav_bar">Show navigation bar by default</string>
   <string name="set_display_default_show_nav_bar_detail">Sets whether the navigation bar is displayed by default</string>
   <string name="set_other">Other</string>
+  <string name="set_audio_channel">Audio output channel</string>
+  <string name="set_audio_channel_detail">Please keep 0 if there is no special need</string>
   <string name="set_mirror_mode">Android 14 compatibility mode</string>
   <string name="set_mirror_mode_detail">If display issues occur on Android 14 and above, try enabling this option</string>
   <string name="set_force_desktop_mode">Force desktop mode when using application transfer</string>
