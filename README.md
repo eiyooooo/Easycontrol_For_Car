@@ -24,6 +24,9 @@
 - [点击此处前往](https://github.com/eiyooooo/Easycontrol_For_Car/releases)
 
 ## 使用说明
+- 建议在软件内阅读
+  - 首次打开软件将会显示
+  - 亦可在软件设置中再次打开
 - [点击此处前往](HOW_TO_USE.md)
 
 ## 关于开发版本编译

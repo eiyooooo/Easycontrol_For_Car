@@ -39,7 +39,26 @@
         }
 
         li {
+            margin-bottom: 5px;
             overflow-x: auto;
+        }
+
+        ol {
+            padding-left: 15px;
+        }
+
+        ul {
+            counter-reset: sectioncounter;
+            padding-left: 10px;
+            li{
+                margin-bottom: 3px;
+            }
+        }
+
+        ul li:before {
+            content: counter(sectioncounter) ". ";
+            counter-increment: sectioncounter;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -66,7 +85,7 @@
         </ul>
     </li>
 </ol>
-<h4>注意: 重启被控端手机后，需要重新检查上述操作</h4>
+<h4>注意: 重启被控端手机后，需要重新检查上述有序号的操作</h4>
 <h2>软件使用</h2>
 <ol>
     <li>
@@ -84,11 +103,10 @@
         <ol>
             <li>主控端安装易控车机版，打开软件，给予悬浮窗授权或使用始终全屏模式</li>
             <li>确保主控端能够访问被控端（例如在一个wifi下面）</li>
-            <li>
+            <li><strong>需开启ADB无线端口</strong>
                 <ul>
-                    <li>打开被控端无线调试（并非开发者选项中的无线调试）</li>
-                    <li>（可使用上面有线连接，随后长按设备点击“打开无线”按钮实现）</li>
-                    <li>（安卓11及以上可在被控端下载Shizuku，在Shizuku内配对）</li>
+                    <li>有线连接设备后，长按设备点击“打开无线”按钮开启5555端口</li>
+                    <li>安卓11及以上设备可在软件主页进入无线开启5555端口页面开启</li>
                 </ul>
             </li>
             <li>主控端易控车机版界面点击右上角添加设备
@@ -109,8 +127,7 @@
         </ol>
     </li>
     <li>
-        <p>界面使用</p>
-        <img src="small_usage.webp">
+        <p>界面使用<img src="pic/small_usage.webp" alt="界面使用图片"></p>
         <li><strong>建议横屏观看此图片</strong></li>
         <ol>
             <li>工具栏
