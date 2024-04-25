@@ -51,6 +51,8 @@
   <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
   <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
   <string name="set_other">Other</string>
+  <string name="set_audio_channel">Audio output channel</string>
+  <string name="set_audio_channel_detail">Please keep 0 if there is no special need</string>
   <string name="set_always_full_mode">Always full screen mode</string>
   <string name="set_always_full_mode_detail">Always connect to the device in full screen mode, ignoring \u0022Default full screen\u0022 settings in the device (Only one default device can be opened when the software starts)</string>
   <string name="set_mirror_mode">Android 14 compatibility mode</string>

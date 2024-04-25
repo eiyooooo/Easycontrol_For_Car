@@ -3,6 +3,7 @@ package top.eiyooooo.easycontrol.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -12,6 +13,8 @@ import top.eiyooooo.easycontrol.app.helper.ShortcutHelper;
 
 public class SetActivity extends Activity {
   private ActivitySetBinding setActivity;
+
+  private static final ArrayAdapter<String> audioChannelAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"});
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +92,7 @@ public class SetActivity extends Activity {
     setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_full_to_mini_on_exit), getString(R.string.set_display_full_to_mini_on_exit_detail), AppData.setting.getFullToMiniOnExit(), isChecked -> AppData.setting.setFullToMiniOnExit(isChecked)).getRoot());
     setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_default_show_nav_bar), getString(R.string.set_display_default_show_nav_bar_detail), AppData.setting.getDefaultShowNavBar(), isChecked -> AppData.setting.setDefaultShowNavBar(isChecked)).getRoot());
     // 其他
+    setActivity.setOther.addView(PublicTools.createSpinnerCard(this, getString(R.string.set_audio_channel), getString(R.string.set_audio_channel_detail), String.valueOf(AppData.setting.getAudioChannel()), audioChannelAdapter, str -> AppData.setting.setAudioChannel(Integer.parseInt(str))).getRoot());
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_always_full_mode), getString(R.string.set_always_full_mode_detail), AppData.setting.getAlwaysFullMode(), isChecked -> AppData.setting.setAlwaysFullMode(isChecked)).getRoot());
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_mirror_mode), getString(R.string.set_mirror_mode_detail), AppData.setting.getMirrorMode(), isChecked -> AppData.setting.setMirrorMode(isChecked)).getRoot());
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_force_desktop_mode), getString(R.string.set_force_desktop_mode_detail), AppData.setting.getForceDesktopMode(), isChecked -> AppData.setting.setForceDesktopMode(isChecked)).getRoot());

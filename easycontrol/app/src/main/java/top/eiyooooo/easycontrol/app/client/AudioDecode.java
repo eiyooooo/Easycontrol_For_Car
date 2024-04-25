@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
+import top.eiyooooo.easycontrol.app.entity.AppData;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -125,6 +126,8 @@ public class AudioDecode {
       AudioAttributes.Builder audioAttributesBulider = new AudioAttributes.Builder();
       audioAttributesBulider.setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE);
       audioAttributesBulider.setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN);
+      int audioChannel = AppData.setting.getAudioChannel();
+      if (audioChannel != 0) audioAttributesBulider.setLegacyStreamType(audioChannel);
       // 2
       AudioFormat.Builder audioFormat = new AudioFormat.Builder();
       audioFormat.setEncoding(AudioFormat.ENCODING_PCM_16BIT);
