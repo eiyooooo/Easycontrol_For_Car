@@ -9,6 +9,22 @@
   <string name="main_float_permission_button">Go authorize</string>
   <string name="main_no_float_mode_button">Always full</string>
 
+  <!-- 配对页面 -->
+  <string name="pair_ip">IP address</string>
+  <string name="pair_ip_hint">IP address of the device to be connected on the same network</string>
+  <string name="pair_pair">Pair</string>
+  <string name="pair_pairing_port_hint">Pairing port</string>
+  <string name="pair_pairing_code_hint">Pairing code</string>
+  <string name="pair_open_port">Open port 5555</string>
+  <string name="pair_debug_port_hint">Debug port</string>
+  <string name="pair_run">Run</string>
+  <string name="pair_cert">Pairing certificate</string>
+  <string name="pair_generating_cert">Pairing certificate generating</string>
+  <string name="pair_no_cert">No Pairing Certificate, please try regenerate</string>
+  <string name="pair_cert_regenerate">Regenerate</string>
+  <string name="pair_success"> success</string>
+  <string name="pair_failed"> failed</string>
+
   <!-- 设置页面 -->
   <string name="set_default">Default settings</string>
   <string name="set_display">Display</string>

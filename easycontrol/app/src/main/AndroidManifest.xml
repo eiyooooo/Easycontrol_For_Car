@@ -46,6 +46,9 @@
       android:allowEmbedded="true"
       android:exported="false" />
     <activity
+      android:name=".PairActivity"
+      android:exported="false" />
+    <activity
       android:name=".SetActivity"
       android:allowEmbedded="true"
       android:configChanges="keyboardHidden|screenSize|orientation|uiMode"
