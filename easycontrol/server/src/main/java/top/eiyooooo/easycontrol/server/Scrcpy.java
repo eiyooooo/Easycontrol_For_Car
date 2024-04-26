@@ -22,9 +22,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public final class Scrcpy {
-    private static LocalSocket socket;
-    private static FileDescriptor fileDescriptor;
-    public static DataInputStream inputStream;
     private static final Object object = new Object();
     private static final int timeoutDelay = 5 * 1000;
 
@@ -92,11 +89,19 @@ public final class Scrcpy {
         }).start();
     }
 
+    private static LocalSocket mainSocket;
+    private static FileDescriptor mainFD;
+    private static LocalSocket videoSocket;
+    private static FileDescriptor videoFD;
+    public static DataInputStream inputStream;
+
     private static void connectClient() throws IOException {
         try (LocalServerSocket serverSocket = new LocalServerSocket("easycontrol_for_car_scrcpy")) {
-            socket = serverSocket.accept();
-            fileDescriptor = socket.getFileDescriptor();
-            inputStream = new DataInputStream(socket.getInputStream());
+            mainSocket = serverSocket.accept();
+            videoSocket = serverSocket.accept();
+            mainFD = mainSocket.getFileDescriptor();
+            videoFD = videoSocket.getFileDescriptor();
+            inputStream = new DataInputStream(mainSocket.getInputStream());
         }
     }
 
@@ -178,8 +183,12 @@ public final class Scrcpy {
         }
     }
 
-    public synchronized static void write(ByteBuffer byteBuffer) throws IOException, ErrnoException {
-        while (byteBuffer.remaining() > 0) Os.write(fileDescriptor, byteBuffer);
+    public synchronized static void writeMain(ByteBuffer byteBuffer) throws IOException, ErrnoException {
+        while (byteBuffer.remaining() > 0) Os.write(mainFD, byteBuffer);
+    }
+
+    public synchronized static void writeVideo(ByteBuffer byteBuffer) throws IOException, ErrnoException {
+        while (byteBuffer.remaining() > 0) Os.write(videoFD, byteBuffer);
     }
 
     public static void errorClose(Exception e) {
@@ -203,7 +212,8 @@ public final class Scrcpy {
         // 1
         try {
             inputStream.close();
-            socket.close();
+            mainSocket.close();
+            videoSocket.close();
         } catch (Exception e) {
             L.e("release error", e);
         }

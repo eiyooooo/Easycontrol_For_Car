@@ -31,13 +31,13 @@ public final class AudioEncode {
             audioCapture = AudioCapture.init();
         } catch (Exception e) {
             L.w(e);
-            Scrcpy.write(ByteBuffer.wrap(bytes));
+            Scrcpy.writeMain(ByteBuffer.wrap(bytes));
             return false;
         }
         bytes[0] = 1;
-        Scrcpy.write(ByteBuffer.wrap(bytes));
+        Scrcpy.writeMain(ByteBuffer.wrap(bytes));
         bytes[0] = (byte) (useOpus ? 1 : 0);
-        Scrcpy.write(ByteBuffer.wrap(bytes));
+        Scrcpy.writeMain(ByteBuffer.wrap(bytes));
         return true;
     }
 
@@ -59,6 +59,7 @@ public final class AudioEncode {
             int inIndex;
             do inIndex = encoder.dequeueInputBuffer(-1); while (inIndex < 0);
             ByteBuffer buffer = encoder.getInputBuffer(inIndex);
+            if (buffer == null) return;
             int size = Math.min(buffer.remaining(), frameSize);
             audioCapture.read(buffer, size);
             encoder.queueInputBuffer(inIndex, 0, size, 0, 0);
@@ -75,6 +76,7 @@ public final class AudioEncode {
             int outIndex;
             do outIndex = encoder.dequeueOutputBuffer(bufferInfo, -1); while (outIndex < 0);
             ByteBuffer buffer = encoder.getOutputBuffer(outIndex);
+            if (buffer == null) return;
             if (useOpus) {
                 if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     buffer.getLong();
@@ -87,8 +89,7 @@ public final class AudioEncode {
                     return;
                 }
             }
-            int frameSize = buffer.remaining();
-            ControlPacket.sendAudioEvent(frameSize, buffer);
+            ControlPacket.sendAudioEvent(buffer);
             encoder.releaseOutputBuffer(outIndex, false);
         } catch (IllegalStateException e) {
             L.e("AudioEncode encodeOut error", e);

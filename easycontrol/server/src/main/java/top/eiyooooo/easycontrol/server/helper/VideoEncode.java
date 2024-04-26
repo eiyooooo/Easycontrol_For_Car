@@ -33,7 +33,12 @@ public final class VideoEncode {
 
     public static void init() throws Exception {
         useH265 = Options.useH265 && Device.isEncoderSupport("hevc");
-        Scrcpy.write(ByteBuffer.wrap(new byte[]{(byte) (useH265 ? 1 : 0)}));
+        ByteBuffer byteBuffer = ByteBuffer.allocate(9);
+        byteBuffer.put((byte) (useH265 ? 1 : 0));
+        byteBuffer.putInt(Device.videoSize.first);
+        byteBuffer.putInt(Device.videoSize.second);
+        byteBuffer.flip();
+        Scrcpy.writeVideo(byteBuffer);
         // 创建显示器
         try {
             display = SurfaceControl.createDisplay("easycontrol_for_car", Build.VERSION.SDK_INT < Build.VERSION_CODES.R || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME)));
@@ -134,7 +139,9 @@ public final class VideoEncode {
             // 找到已完成的输出缓冲区
             int outIndex;
             do outIndex = encoder.dequeueOutputBuffer(bufferInfo, -1); while (outIndex < 0);
-            ControlPacket.sendVideoEvent(bufferInfo.size, bufferInfo.presentationTimeUs, encoder.getOutputBuffer(outIndex));
+            ByteBuffer buffer = encoder.getOutputBuffer(outIndex);
+            if (buffer == null) return;
+            ControlPacket.sendVideoEvent(bufferInfo.presentationTimeUs, buffer);
             encoder.releaseOutputBuffer(outIndex, false);
         } catch (IllegalStateException e) {
             L.e("encodeOut error", e);
