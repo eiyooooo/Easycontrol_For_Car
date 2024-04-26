@@ -25,14 +25,12 @@ public final class Scrcpy {
     private static LocalSocket socket;
     private static FileDescriptor fileDescriptor;
     public static DataInputStream inputStream;
-    public static boolean started = false;
     private static final Object object = new Object();
     private static final int timeoutDelay = 5 * 1000;
 
     public static void main(String... args) {
         L.logMode = 1;
         L.postLog();
-        started = true;
         try {
             Thread timeOutThread = new Thread(() -> {
                 try {
@@ -80,7 +78,6 @@ public final class Scrcpy {
         } finally {
             // 释放资源
             release();
-            started = false;
         }
     }
 
@@ -117,7 +114,7 @@ public final class Scrcpy {
                 if (frame > 120) {
                     if (System.currentTimeMillis() - lastKeepAliveTime > timeoutDelay) {
                         timeoutClose = true;
-                        throw new IOException("连接断开");
+                        throw new IOException("Connection disconnected");
                     }
                     frame = 0;
                 }
