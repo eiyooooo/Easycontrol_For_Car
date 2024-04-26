@@ -10,23 +10,26 @@ import java.nio.charset.StandardCharsets;
 
 public final class ControlPacket {
 
-    public static void sendVideoEvent(int size, long pts, ByteBuffer data) throws IOException, ErrnoException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(13 + size);
-        byteBuffer.put((byte) 1);
+    public static void sendVideoEvent(long pts, ByteBuffer data) throws IOException, ErrnoException {
+        int size = data.remaining();
+        if (size < 0) return;
+        ByteBuffer byteBuffer = ByteBuffer.allocate(12 + size);
         byteBuffer.putInt(size);
         byteBuffer.put(data);
         byteBuffer.putLong(pts);
         byteBuffer.flip();
-        Scrcpy.write(byteBuffer);
+        Scrcpy.writeVideo(byteBuffer);
     }
 
-    public static void sendAudioEvent(int size, ByteBuffer data) throws IOException, ErrnoException {
+    public static void sendAudioEvent(ByteBuffer data) throws IOException, ErrnoException {
+        int size = data.remaining();
+        if (size < 0) return;
         ByteBuffer byteBuffer = ByteBuffer.allocate(5 + size);
         byteBuffer.put((byte) 2);
         byteBuffer.putInt(size);
         byteBuffer.put(data);
         byteBuffer.flip();
-        Scrcpy.write(byteBuffer);
+        Scrcpy.writeMain(byteBuffer);
     }
 
     public static void sendClipboardEvent(String newClipboardText) {
@@ -38,7 +41,7 @@ public final class ControlPacket {
         byteBuffer.put(tmpTextByte);
         byteBuffer.flip();
         try {
-            Scrcpy.write(byteBuffer);
+            Scrcpy.writeMain(byteBuffer);
         } catch (IOException | ErrnoException e) {
             Scrcpy.errorClose(e);
         }
@@ -50,11 +53,11 @@ public final class ControlPacket {
         byteBuffer.putInt(Device.videoSize.first);
         byteBuffer.putInt(Device.videoSize.second);
         byteBuffer.flip();
-        Scrcpy.write(byteBuffer);
+        Scrcpy.writeMain(byteBuffer);
     }
 
     public static void sendKeepAlive() throws IOException, ErrnoException {
-        Scrcpy.write(ByteBuffer.wrap(new byte[]{5}));
+        Scrcpy.writeMain(ByteBuffer.wrap(new byte[]{5}));
     }
 
     public static void handleTouchEvent() throws IOException {
