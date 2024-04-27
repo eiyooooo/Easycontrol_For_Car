@@ -178,6 +178,7 @@ public class Adb {
   }
 
   public final String restartOnTcpip(int port) throws InterruptedException {
+    closing = true;
     BufferStream bufferStream = open("tcpip:" + port, false);
     do {
       synchronized (this) {
@@ -319,8 +320,10 @@ public class Adb {
         }
       }
     } catch (Exception e) {
-      L.log(uuid, e);
-      PublicTools.logToast(AppData.main.getString(R.string.log_notify));
+      if (!closing) {
+        L.log(uuid, e);
+        PublicTools.logToast(AppData.main.getString(R.string.log_notify));
+      }
       close();
     }
   }
@@ -333,8 +336,10 @@ public class Adb {
         channel.flush();
       }
     } catch (Exception e) {
-      L.log(uuid, e);
-      PublicTools.logToast(AppData.main.getString(R.string.log_notify));
+      if (!closing) {
+        L.log(uuid, e);
+        PublicTools.logToast(AppData.main.getString(R.string.log_notify));
+      }
       close();
     }
   }
@@ -369,8 +374,11 @@ public class Adb {
     });
   }
 
+  boolean closing = false;
+
   public void close() {
     adbMap.remove(uuid);
+    closing = true;
     for (Object bufferStream : connectionStreams.values().toArray()) ((BufferStream) bufferStream).close();
     handleInThread.interrupt();
     handleOutThread.interrupt();
