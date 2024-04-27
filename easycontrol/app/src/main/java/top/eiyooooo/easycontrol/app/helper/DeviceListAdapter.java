@@ -284,6 +284,9 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     });
     itemSetDeviceBinding.buttonDelete.setOnClickListener(v -> {
       AppData.dbHelper.delete(device);
+      if (Adb.adbMap.containsKey(device.uuid)) {
+        Objects.requireNonNull(Adb.adbMap.get(device.uuid)).close();
+      }
       update();
       dialog.cancel();
     });
