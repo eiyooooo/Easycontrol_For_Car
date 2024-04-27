@@ -82,7 +82,7 @@ public class PairActivity extends Activity {
                 PublicTools.logToast(getString(R.string.pair_no_cert));
                 return;
             }
-            pairActivity.pairing.setText(getString(R.string.pair_pair) + "...");
+            pairActivity.pairing.post(() -> pairActivity.pairing.setText(getString(R.string.pair_pair) + "..."));
 
             String ip = String.valueOf(pairActivity.ip.getText());
             String pairingPort = String.valueOf(pairActivity.pairingPort.getText());
@@ -91,9 +91,9 @@ public class PairActivity extends Activity {
             try {
                 if (ip.isEmpty() || pairingPort.isEmpty() || pairingCode.isEmpty()) throw new Exception();
                 AdbPairManager.INSTANCE.pair(ip, Integer.parseInt(pairingPort), pairingCode);
-                pairActivity.pairing.setText(getString(R.string.pair_pair) + getString(R.string.pair_success));
+                pairActivity.pairing.post(() -> pairActivity.pairing.setText(getString(R.string.pair_pair) + getString(R.string.pair_success)));
             } catch (Exception ignored) {
-                pairActivity.pairing.setText(getString(R.string.pair_pair) + getString(R.string.pair_failed));
+                pairActivity.pairing.post(() -> pairActivity.pairing.setText(getString(R.string.pair_pair) + getString(R.string.pair_failed)));
             }
         }).start());
 
@@ -102,7 +102,7 @@ public class PairActivity extends Activity {
                 PublicTools.logToast(getString(R.string.pair_no_cert));
                 return;
             }
-            pairActivity.openingPort.setText(getString(R.string.pair_open_port) + "...");
+            pairActivity.openingPort.post(() -> pairActivity.openingPort.setText(getString(R.string.pair_open_port) + "..."));
 
             String ip = String.valueOf(pairActivity.ip.getText());
             String debugPort = String.valueOf(pairActivity.debugPort.getText());
@@ -112,9 +112,9 @@ public class PairActivity extends Activity {
                 AdbPairManager.INSTANCE.connect(ip, Integer.parseInt(debugPort));
                 AdbPairManager.INSTANCE.openStream("tcpip:5555");
                 AdbPairManager.INSTANCE.disconnect();
-                pairActivity.openingPort.setText(getString(R.string.pair_open_port) + getString(R.string.pair_success));
+                pairActivity.openingPort.post(() -> pairActivity.openingPort.setText(getString(R.string.pair_open_port) + getString(R.string.pair_success)));
             } catch (Exception ignored) {
-                pairActivity.openingPort.setText(getString(R.string.pair_open_port) + getString(R.string.pair_failed));
+                pairActivity.openingPort.post(() -> pairActivity.openingPort.setText(getString(R.string.pair_open_port) + getString(R.string.pair_failed)));
             }
         }).start());
 
