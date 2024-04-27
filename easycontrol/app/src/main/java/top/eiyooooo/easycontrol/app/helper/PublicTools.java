@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import top.eiyooooo.easycontrol.app.R;
 import top.eiyooooo.easycontrol.app.WebViewActivity;
+import top.eiyooooo.easycontrol.app.adb.Adb;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.databinding.ItemAddDeviceBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemLoadingBinding;
@@ -182,7 +183,12 @@ public class PublicTools {
     });
     // 设置确认按钮监听
     itemAddDeviceBinding.ok.setOnClickListener(v -> {
-      if (device.type == Device.TYPE_NORMAL && String.valueOf(itemAddDeviceBinding.address.getText()).equals("")) return;
+      if (device.type == Device.TYPE_NORMAL) {
+        if (String.valueOf(itemAddDeviceBinding.address.getText()).isEmpty()) return;
+        else if (Adb.adbMap.containsKey(device.uuid) && !Objects.equals(device.address, String.valueOf(itemAddDeviceBinding.address.getText()))) {
+          Objects.requireNonNull(Adb.adbMap.get(device.uuid)).close();
+        }
+      }
       device.name = String.valueOf(itemAddDeviceBinding.name.getText());
       device.address = String.valueOf(itemAddDeviceBinding.address.getText());
       device.specified_app = String.valueOf(itemAddDeviceBinding.specifiedApp.getText());
