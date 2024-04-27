@@ -46,10 +46,18 @@
 
     <ImageView
       android:id="@+id/button_refresh"
-      android:layout_width="40dp"
-      android:layout_height="40dp"
-      android:padding="6dp"
+      android:layout_width="54dp"
+      android:layout_height="54dp"
+      android:padding="13.5dp"
       android:src="@drawable/refresh"
+      android:tint="@color/onBackground" />
+
+    <ImageView
+      android:id="@+id/button_pair"
+      android:layout_width="54dp"
+      android:layout_height="54dp"
+      android:padding="14dp"
+      android:src="@drawable/pair"
       android:tint="@color/onBackground" />
 
     <ImageView

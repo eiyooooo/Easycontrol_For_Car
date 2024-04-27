@@ -118,9 +118,9 @@ public class FullActivity extends Activity implements SensorEventListener {
       clientView.controlPacket.sendRotateEvent();
       barViewTimer();
     });
-    fullActivity.buttonBack.setOnClickListener(v -> clientView.controlPacket.sendKeyEvent(4, 0));
-    fullActivity.buttonHome.setOnClickListener(v -> clientView.controlPacket.sendKeyEvent(3, 0));
-    fullActivity.buttonSwitch.setOnClickListener(v -> clientView.controlPacket.sendKeyEvent(187, 0));
+    fullActivity.buttonBack.setOnClickListener(v -> clientView.controlPacket.sendKeyEvent(4, 0, -1));
+    fullActivity.buttonHome.setOnClickListener(v -> clientView.controlPacket.sendKeyEvent(3, 0, -1));
+    fullActivity.buttonSwitch.setOnClickListener(v -> clientView.controlPacket.sendKeyEvent(187, 0, -1));
     fullActivity.buttonMore.setOnClickListener(v -> {
       changeBarView();
       barViewTimer();
@@ -168,6 +168,7 @@ public class FullActivity extends Activity implements SensorEventListener {
       if (metrics.widthPixels > metrics.heightPixels) orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
       else orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
       setRequestedOrientation(orientation);
+      lastOrientation = orientation;
     } else {
       fullActivity.buttonLock.setOnClickListener(v -> {
         lockOrientation = !lockOrientation;
@@ -242,7 +243,7 @@ public class FullActivity extends Activity implements SensorEventListener {
     fullActivity.editText.setInputType(InputType.TYPE_NULL);
     fullActivity.editText.setOnKeyListener((v, keyCode, event) -> {
       if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode != KeyEvent.KEYCODE_VOLUME_UP && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN) {
-        clientView.controlPacket.sendKeyEvent(event.getKeyCode(), event.getMetaState());
+        clientView.controlPacket.sendKeyEvent(event.getKeyCode(), event.getMetaState(), 0);
         return true;
       }
       return false;

@@ -1,5 +1,7 @@
 # 易控车机版(Easycontrol_For_Car)编译说明
 
+### 此方法编译的apk不包含签名部分设备可能无法使用
+
 ### 注意：需要GitHub账号
 
 <img src="pic/build/1-2.webp">

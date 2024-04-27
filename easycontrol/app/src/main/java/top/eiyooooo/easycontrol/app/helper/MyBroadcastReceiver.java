@@ -102,10 +102,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                     client.controlPacket.sendPowerEvent();
                     break;
                 case "buttonWake":
-                    client.controlPacket.sendKeyEvent(224, 0);
+                    client.controlPacket.sendKeyEvent(224, 0, 0);
                     break;
                 case "buttonLock":
-                    client.controlPacket.sendKeyEvent(223, 0);
+                    client.controlPacket.sendKeyEvent(223, 0, 0);
                     break;
                 case "buttonLight":
                     client.controlPacket.sendLightEvent(1);
@@ -114,13 +114,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                     client.controlPacket.sendLightEvent(0);
                     break;
                 case "buttonBack":
-                    client.controlPacket.sendKeyEvent(4, 0);
+                    client.controlPacket.sendKeyEvent(4, 0, -1);
                     break;
                 case "buttonHome":
-                    client.controlPacket.sendKeyEvent(3, 0);
+                    client.controlPacket.sendKeyEvent(3, 0, -1);
                     break;
                 case "buttonSwitch":
-                    client.controlPacket.sendKeyEvent(187, 0);
+                    client.controlPacket.sendKeyEvent(187, 0, -1);
                     break;
                 case "buttonRotate":
                     client.controlPacket.sendRotateEvent();

@@ -2,11 +2,14 @@ package top.eiyooooo.easycontrol.app.helper;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
 import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 
@@ -18,6 +21,14 @@ public class MyApplication extends Application implements Application.ActivityLi
     public void onCreate() {
         super.onCreate();
         registerActivityLifecycleCallbacks(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            HiddenApiBypass.addHiddenApiExemptions("L");
+        }
     }
 
     @Override

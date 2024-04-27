@@ -69,7 +69,11 @@ public final class ControlPacket {
     public static void handleKeyEvent() throws IOException {
         int keyCode = Scrcpy.inputStream.readInt();
         int meta = Scrcpy.inputStream.readInt();
-        Device.keyEvent(keyCode, meta);
+        int displayIdToInject = Scrcpy.inputStream.readInt();
+        if (displayIdToInject == -1)
+            Device.keyEvent(keyCode, meta, Device.displayId);
+        else
+            Device.keyEvent(keyCode, meta, displayIdToInject);
     }
 
     public static void handleClipboardEvent() throws IOException {

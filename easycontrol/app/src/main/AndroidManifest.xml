@@ -39,6 +39,12 @@
       android:name=".LogActivity"
       android:exported="false" />
     <activity
+      android:name=".WebViewActivity"
+      android:exported="false" />
+    <activity
+      android:name=".PairActivity"
+      android:exported="false" />
+    <activity
       android:name=".SetActivity"
       android:configChanges="keyboardHidden|screenSize|orientation|uiMode"
       android:exported="false" />

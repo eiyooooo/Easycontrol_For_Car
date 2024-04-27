@@ -10,8 +10,8 @@ android {
     applicationId 'top.eiyooooo.easycontrol.app'
     minSdk 21
     targetSdk 34
-    versionCode 10412
-    versionName "1.4.12"
+    versionCode 10501
+    versionName "1.5.1"
     ndk {
       abiFilters "arm64-v8a"
     }
@@ -47,4 +47,7 @@ android {
 }
 
 dependencies {
+  implementation 'com.github.MuntashirAkon:libadb-android:3.0.0'
+  implementation 'com.github.MuntashirAkon:sun-security-android:1.1'
+  implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 }

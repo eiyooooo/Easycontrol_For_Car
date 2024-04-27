@@ -64,6 +64,7 @@ public class Server {
             L.d("RESPONSE: " + response);
             byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
             outputStream.writeInt(responseBytes.length);
+            outputStream.writeInt(responseBytes.length);
             outputStream.write(responseBytes);
         } catch (Exception e) {
             L.e("postResponse error", e);

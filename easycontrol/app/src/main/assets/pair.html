@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无线调试说明</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            background-color: #F3F4F6;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            margin-top: 10px;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+            overflow-x: auto;
+        }
+
+        ol {
+            padding-left: 0;
+        }
+
+        ul {
+            counter-reset: sectioncounter;
+            padding-left: 10px;
+            li{
+                margin-bottom: 3px;
+            }
+        }
+
+        ul li:before {
+            content: counter(sectioncounter) ". ";
+            counter-increment: sectioncounter;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h2>无线开启5555端口说明</h2>
+<h2>注意</h2>
+<ol>
+    <li>通过配对开启无线调试仅支持安卓11及以上、开发者选项内有“无线调试”选项的手机</li>
+    <li>其他手机请使用USB连接后长按设备点击“打开无线”开启</li>
+    <li>调试端口和配对端口非同一端口，请注意填入是否正确</li>
+</ol>
+<h2>准备操作</h2>
+<ol>
+    <li>被控端手机连续点击关于手机-版本号，直至提示打开开发者选项</li>
+    <li>被控端手机设置中找到开发者选项
+        <ul>
+            <li>打开“USB调试”</li>
+            <li>打开“USB调试(安全调试)”（MIUI设备）</li>
+            <li>打开“USB安装”（如果有则打开）</li>
+            <li>打开“关闭权限监控”（如果有则打开）</li>
+            <li>打开“无线调试”，并进入“无线调试”页面</li>
+        </ul>
+        <img src="pic/dev_option.webp" alt="开发者选项">
+    </li>
+</ol>
+<h4>重启被控端手机后，需要重新检查上述有序号的操作</h4>
+<h2>配对</h2>
+<ol>
+    <li>注意:配对证书名称在“已配对的设备”列表中可跳过配对步骤</li>
+    <li><img src="pic/paired.webp" alt="已配对的设备"></li>
+    <li>配对步骤
+        <ul>
+            <li>确认配对证书是否存在</li>
+            <li>使用配对码配对设备<img src="pic/pair_code.webp" alt="使用配对码配对设备"></li>
+            <li>找到配对端口和配对码<img src="pic/pair_code&port.webp" alt="配对码和端口"></li>
+            <li>将IP地址、配对端口和配对码填入本页面输入框内</li>
+            <li>点击“运行”</li>
+        </ul>
+    </li>
+</ol>
+<h2>打开5555端口</h2>
+<ol>
+    <li>打开5555端口步骤
+        <ul>
+            <li>确认配对证书是否存在</li>
+            <li>找到调试端口<img src="pic/pair_debug_port.webp" alt="调试端口"></li>
+            <li>将IP地址和调试端口填入本页面输入框内</li>
+            <li>点击“运行”（失败可尝试关闭再打开无线调试后回到第二步重试）</li>
+        </ul>
+    </li>
+    <li>成功后可返回主页面正常添加无线设备，端口为5555</li>
+</ol>
+</body>
+</html>

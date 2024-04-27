@@ -9,6 +9,22 @@
   <string name="main_float_permission_button">Go authorize</string>
   <string name="main_no_float_mode_button">Always full</string>
 
+  <!-- 配对页面 -->
+  <string name="pair_ip">IP address</string>
+  <string name="pair_ip_hint">IP address of the device to be connected on the same network</string>
+  <string name="pair_pair">Pair</string>
+  <string name="pair_pairing_port_hint">Pairing port</string>
+  <string name="pair_pairing_code_hint">Pairing code</string>
+  <string name="pair_open_port">Open port 5555</string>
+  <string name="pair_debug_port_hint">Debug port</string>
+  <string name="pair_run">Run</string>
+  <string name="pair_cert">Pairing certificate</string>
+  <string name="pair_generating_cert">Pairing certificate generating</string>
+  <string name="pair_no_cert">No Pairing Certificate, please try regenerate</string>
+  <string name="pair_cert_regenerate">Regenerate</string>
+  <string name="pair_success"> success</string>
+  <string name="pair_failed"> failed</string>
+
   <!-- 设置页面 -->
   <string name="set_default">Default settings</string>
   <string name="set_display">Display</string>
@@ -35,6 +51,8 @@
   <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
   <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
   <string name="set_other">Other</string>
+  <string name="set_audio_channel">Audio output channel</string>
+  <string name="set_audio_channel_detail">Please keep 0 if there is no special need</string>
   <string name="set_always_full_mode">Always full screen mode</string>
   <string name="set_always_full_mode_detail">Always connect to the device in full screen mode, ignoring \u0022Default full screen\u0022 settings in the device (Only one default device can be opened when the software starts)</string>
   <string name="set_mirror_mode">Android 14 compatibility mode</string>
@@ -55,6 +73,7 @@
   <string name="set_about_website">Website</string>
   <string name="set_about_how_to_use">Instructions for use</string>
   <string name="set_about_privacy">Privacy Policy</string>
+  <string name="set_license">License</string>
   <string name="set_about_version">Version: </string>
 
   <!-- 查看IP地址页面 -->

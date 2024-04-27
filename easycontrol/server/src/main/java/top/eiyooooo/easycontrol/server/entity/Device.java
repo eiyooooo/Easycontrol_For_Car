@@ -163,23 +163,24 @@ public final class Device {
                 action = MotionEvent.ACTION_POINTER_DOWN | (pointer.id << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
         }
         MotionEvent event = MotionEvent.obtain(pointer.downTime, pointer.downTime + offsetTime, action, pointerCount, pointersState.pointerProperties, pointersState.pointerCoords, 0, 0, 1f, 1f, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
-        injectEvent(event);
+        if (Options.mirrorMode == 1 && display2virtualDisplay.containsKey(displayId))
+            injectEvent(event, display2virtualDisplay.get(displayId));
+        else
+            injectEvent(event, displayId);
     }
 
-    public static void keyEvent(int keyCode, int meta) {
+    public static void keyEvent(int keyCode, int meta, int displayIdToInject) {
         long now = SystemClock.uptimeMillis();
         KeyEvent event1 = new KeyEvent(now, now, MotionEvent.ACTION_DOWN, keyCode, 0, meta, -1, 0, 0, InputDevice.SOURCE_KEYBOARD);
         KeyEvent event2 = new KeyEvent(now, now, MotionEvent.ACTION_UP, keyCode, 0, meta, -1, 0, 0, InputDevice.SOURCE_KEYBOARD);
-        injectEvent(event1);
-        injectEvent(event2);
+        injectEvent(event1, displayIdToInject);
+        injectEvent(event2, displayIdToInject);
     }
 
-    private static void injectEvent(InputEvent inputEvent) {
+    private static void injectEvent(InputEvent inputEvent, int displayIdToInject) {
         try {
-            if (Options.mirrorMode == 1 && display2virtualDisplay.containsKey(displayId))
-                InputManager.setDisplayId(inputEvent, display2virtualDisplay.get(displayId));
-            else if (displayId != Display.DEFAULT_DISPLAY)
-                InputManager.setDisplayId(inputEvent, displayId);
+            if (displayIdToInject != Display.DEFAULT_DISPLAY)
+                InputManager.setDisplayId(inputEvent, displayIdToInject);
             InputManager.injectInputEvent(inputEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
         } catch (Exception e) {
             L.e("injectEvent error", e);
@@ -210,7 +211,7 @@ public final class Device {
     }
 
     public static void changePower() {
-        keyEvent(26, 0);
+        keyEvent(26, 0, 0);
     }
 
     public static void rotateDevice() {

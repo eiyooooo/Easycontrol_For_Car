@@ -232,6 +232,24 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getShowUsage() {
+    return sharedPreferences.getBoolean("showUsage", false);
+  }
+
+  public void setShowUsage(boolean value) {
+    editor.putBoolean("showUsage", value);
+    editor.apply();
+  }
+
+  public int getAudioChannel() {
+    return sharedPreferences.getInt("audioChannel", 0);
+  }
+
+  public void setAudioChannel(int value) {
+    editor.putInt("audioChannel", value);
+    editor.apply();
+  }
+
   public Setting(SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
     this.editor = sharedPreferences.edit();

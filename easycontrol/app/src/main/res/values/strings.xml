@@ -9,6 +9,22 @@
   <string name="main_float_permission_button">前往授权悬浮</string>
   <string name="main_no_float_mode_button">始终全屏模式</string>
 
+  <!-- 配对页面 -->
+  <string name="pair_ip">IP地址</string>
+  <string name="pair_ip_hint">同一网络下待连接设备的IP地址</string>
+  <string name="pair_pair">配对</string>
+  <string name="pair_pairing_port_hint">配对端口</string>
+  <string name="pair_pairing_code_hint">配对码</string>
+  <string name="pair_open_port">打开5555端口</string>
+  <string name="pair_debug_port_hint">调试端口</string>
+  <string name="pair_run">运行</string>
+  <string name="pair_cert">配对证书</string>
+  <string name="pair_generating_cert">配对证书生成中</string>
+  <string name="pair_no_cert">无配对证书，请尝试重置</string>
+  <string name="pair_cert_regenerate">重置</string>
+  <string name="pair_success">成功</string>
+  <string name="pair_failed">失败</string>
+
   <!-- 设置页面 -->
   <string name="set_default">默认参数</string>
   <string name="set_display">显示</string>
@@ -35,6 +51,8 @@
   <string name="set_display_full_to_mini_on_exit">全屏意外退出时挂起</string>
   <string name="set_display_full_to_mini_on_exit_detail">在全屏模式下意外退出时自动最小化(关闭时为自动小窗)</string>
   <string name="set_other">其他</string>
+  <string name="set_audio_channel">音频输出声道</string>
+  <string name="set_audio_channel_detail">没有特殊需要请保持0声道</string>
   <string name="set_always_full_mode">始终全屏模式</string>
   <string name="set_always_full_mode_detail">始终以全屏模式连接设备，忽略在设备内设置的全屏启动(\u0022软件启动时打开\u0022仅支持打开一个默认设备)</string>
   <string name="set_mirror_mode">安卓14兼容模式</string>
@@ -55,6 +73,7 @@
   <string name="set_about_website">项目主页</string>
   <string name="set_about_how_to_use">使用说明</string>
   <string name="set_about_privacy">隐私政策</string>
+  <string name="set_license">开源证书</string>
   <string name="set_about_version">版本: </string>
 
   <!-- 查看IP地址页面 -->

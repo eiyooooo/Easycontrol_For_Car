@@ -51,6 +51,11 @@ public class MainActivity extends Activity {
     AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
     // 设置按钮监听
     setButtonListener();
+    // 首次使用显示使用说明
+    if (!AppData.setting.getShowUsage()) {
+      AppData.setting.setShowUsage(true);
+      AppData.uiHandler.postDelayed(() -> PublicTools.openWebViewActivity(this, "file:///android_asset/usage.html"), 1500);
+    }
   }
 
   @Override
@@ -117,6 +122,7 @@ public class MainActivity extends Activity {
       });
       rotation.start();
     });
+    mainActivity.buttonPair.setOnClickListener(v -> startActivity(new Intent(this, PairActivity.class)));
     mainActivity.buttonAdd.setOnClickListener(v -> PublicTools.createAddDeviceView(this, Device.getDefaultDevice(UUID.randomUUID().toString(), Device.TYPE_NORMAL), deviceListAdapter).show());
     mainActivity.buttonSet.setOnClickListener(v -> startActivity(new Intent(this, SetActivity.class)));
   }

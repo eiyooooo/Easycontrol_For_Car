@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/background"
+  android:orientation="vertical"
+  tools:context=".PairActivity">
+
+  <ImageView
+    android:id="@+id/back_button"
+    android:layout_width="54dp"
+    android:layout_height="54dp"
+    android:padding="15dp"
+    android:src="@drawable/chevron_left"
+    android:tint="@color/onBackground"/>
+
+  <TextView
+    android:id="@+id/night_mode_detector"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    android:text="placeholder"
+    android:textColor="@color/onBackground"
+    android:textSize="@dimen/middleFont"
+    tools:ignore="HardcodedText"/>
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <WebView
+      android:id="@+id/webview"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_alignParentStart="true"
+      android:layout_toStartOf="@+id/panel_landscape"
+      android:visibility="invisible"
+      android:layout_marginStart="10dp"
+      android:layout_marginEnd="10dp"
+      android:background="@drawable/background_cron"
+      android:gravity="center">
+
+    </WebView>
+
+    <ScrollView
+      android:id="@+id/panel_landscape"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_alignParentEnd="true"
+      android:layout_margin="10dp"
+      android:background="@drawable/background_cron">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/pair_ip"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont"/>
+
+        <EditText
+          android:id="@+id/ip"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="4dp"
+          android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]-.:*"
+          android:hint="@string/pair_ip_hint"
+          android:gravity="center"
+          android:textColor="@color/onCardBackground"
+          android:textColorHint="@color/onCardBackgroundSecond"
+          android:textSize="@dimen/smallFont"/>
+
+        <TextView
+          android:id="@+id/pairing"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/pair_pair"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont"/>
+
+        <GridLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="4dp"
+          android:columnCount="3">
+
+          <EditText
+            android:id="@+id/pairing_port"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="5"
+            android:inputType="number"
+            android:maxLength="5"
+            android:hint="@string/pair_pairing_port_hint"
+            android:gravity="center"
+            android:textColor="@color/onCardBackground"
+            android:textColorHint="@color/onCardBackgroundSecond"
+            android:textSize="@dimen/smallFont"/>
+
+          <EditText
+            android:id="@+id/pairing_code"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="5"
+            android:inputType="number"
+            android:maxLength="6"
+            android:hint="@string/pair_pairing_code_hint"
+            android:gravity="center"
+            android:textColor="@color/onCardBackground"
+            android:textColorHint="@color/onCardBackgroundSecond"
+            android:textSize="@dimen/smallFont"/>
+
+          <Button
+            android:id="@+id/run_pair"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_gravity="end"
+            android:background="@drawable/background_cron"
+            android:backgroundTint="@color/button"
+            android:gravity="center"
+            android:text="@string/pair_run"
+            android:textColor="@color/onButton"
+            android:textSize="@dimen/smallFont"/>
+
+        </GridLayout>
+
+        <TextView
+          android:id="@+id/opening_port"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/pair_open_port"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont"/>
+
+        <GridLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="4dp"
+          android:columnCount="2">
+
+          <EditText
+            android:id="@+id/debug_port"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="5"
+            android:inputType="number"
+            android:maxLength="5"
+            android:hint="@string/pair_debug_port_hint"
+            android:gravity="center"
+            android:textColor="@color/onCardBackground"
+            android:textColorHint="@color/onCardBackgroundSecond"
+            android:textSize="@dimen/smallFont"/>
+
+          <Button
+            android:id="@+id/run_open_port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_gravity="end"
+            android:background="@drawable/background_cron"
+            android:backgroundTint="@color/button"
+            android:gravity="center"
+            android:text="@string/pair_run"
+            android:textColor="@color/onButton"
+            android:textSize="@dimen/smallFont"/>
+
+        </GridLayout>
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/pair_cert"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont"/>
+
+        <GridLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:columnCount="2">
+
+          <TextView
+            android:id="@+id/cert_name"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="5"
+            android:gravity="center"
+            android:textColor="@color/onCardBackground"
+            android:textColorHint="@color/onCardBackgroundSecond"
+            android:text="@string/pair_generating_cert"
+            android:textSize="@dimen/smallFont"/>
+
+          <Button
+            android:id="@+id/cert_regenerate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_gravity="end"
+            android:clickable="false"
+            android:background="@drawable/background_cron"
+            android:backgroundTint="@color/button"
+            android:gravity="center"
+            android:text="@string/pair_cert_regenerate"
+            android:textColor="@color/onButton"
+            android:textSize="@dimen/smallFont"/>
+
+        </GridLayout>
+
+      </LinearLayout>
+
+    </ScrollView>
+
+  </RelativeLayout>
+
+</LinearLayout>

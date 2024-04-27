@@ -139,9 +139,11 @@ public class Adb {
     serverShell.readAllBytes();
     serverShell.write(ByteBuffer.wrap(requestCmd.getBytes()));
     serverShell.readByteArray(requestCmd.length() + 1);
-    waitingData(4);
-    int len = serverShell.readInt();
-    return serverShell.readByteArray(len).array();
+    waitingData(8);
+    int len1 = serverShell.readInt();
+    int len2 = serverShell.readInt();
+    if (len1 == len2) return serverShell.readByteArray(len1).array();
+    else throw new Exception("bad data format");
   }
 
   ArrayList<Integer> dataReceivingList = new ArrayList<>();
