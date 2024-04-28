@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import org.json.JSONArray;
@@ -36,10 +37,12 @@ public class Client {
   // 连接
   public Adb adb;
   private BufferStream bufferStream;
+  private BufferStream videoStream;
   private BufferStream shell;
 
   // 子服务
   private final Thread executeStreamInThread = new Thread(this::executeStreamIn);
+  private final Thread executeStreamVideoThread = new Thread(this::executeStreamVideo);
   private HandlerThread handlerThread;
   private Handler handler;
   private VideoDecode videoDecode;
@@ -80,6 +83,7 @@ public class Client {
     clientView = new ClientView(device, controlPacket, this::changeMode, () -> {
       status = 1;
       executeStreamInThread.start();
+      executeStreamVideoThread.start();
       AppData.uiHandler.post(this::executeOtherService);
     }, () -> release(null));
     Pair<View, WindowManager.LayoutParams> loading = PublicTools.createLoading(AppData.main);
@@ -262,6 +266,7 @@ public class Client {
     for (int i = 0; i < 60; i++) {
       try {
         bufferStream = adb.localSocketForward("easycontrol_for_car_scrcpy");
+        videoStream = adb.localSocketForward("easycontrol_for_car_scrcpy");
         return;
       } catch (Exception ignored) {
         Thread.sleep(50);
@@ -271,34 +276,39 @@ public class Client {
   }
 
   // 服务分发
-  private static final int VIDEO_EVENT = 1;
   private static final int AUDIO_EVENT = 2;
   private static final int CLIPBOARD_EVENT = 3;
   private static final int CHANGE_SIZE_EVENT = 4;
   private static final int KEEP_ALIVE_EVENT = 5;
 
+  private void executeStreamVideo() {
+    try {
+      // 视频流参数
+      boolean useH265 = videoStream.readByte() == 1;
+      Pair<Integer, Integer> videoSize = new Pair<>(videoStream.readInt(), videoStream.readInt());
+      Surface surface = clientView.getSurface();
+      byte[] videoFrame = controlPacket.readFrame(videoStream);
+      Pair<byte[], Long> csd0 = new Pair<>(videoFrame, videoStream.readLong());
+      Pair<byte[], Long> csd1 = useH265 ? null : new Pair<>(videoFrame, videoStream.readLong());
+      videoDecode = new VideoDecode(videoSize, surface, csd0, csd1, handler);
+      // 循环处理报文
+      while (!Thread.interrupted()) {
+        videoDecode.decodeIn(controlPacket.readFrame(videoStream), videoStream.readLong());
+      }
+    } catch (Exception e) {
+      L.log(uuid, e);
+      release(AppData.main.getString(R.string.log_notify));
+    }
+  }
+
   private void executeStreamIn() {
     try {
-      Pair<byte[], Long> videoCsd = null;
-      // 音视频流参数
+      // 音频流参数
       boolean useOpus = true;
       if (bufferStream.readByte() == 1) useOpus = bufferStream.readByte() == 1;
-      boolean useH265 = bufferStream.readByte() == 1;
       // 循环处理报文
       while (!Thread.interrupted()) {
         switch (bufferStream.readByte()) {
-          case VIDEO_EVENT:
-            byte[] videoFrame = controlPacket.readFrame(bufferStream);
-            if (videoDecode != null) videoDecode.decodeIn(videoFrame, bufferStream.readLong());
-            else {
-              if (clientView.getVideoSize() == null) break;
-              if (useH265) videoDecode = new VideoDecode(clientView.getVideoSize(), clientView.getSurface(), new Pair<>(videoFrame, bufferStream.readLong()), null, handler);
-              else {
-                if (videoCsd == null) videoCsd = new Pair<>(videoFrame, bufferStream.readLong());
-                else videoDecode = new VideoDecode(clientView.getVideoSize(), clientView.getSurface(), videoCsd, new Pair<>(videoFrame, bufferStream.readLong()), handler);
-              }
-            }
-            break;
           case AUDIO_EVENT:
             byte[] audioFrame = controlPacket.readFrame(bufferStream);
             if (audioDecode != null) audioDecode.decodeIn(audioFrame);
@@ -384,6 +394,7 @@ public class Client {
           case 3:
             keepAliveThread.interrupt();
             executeStreamInThread.interrupt();
+            executeStreamVideoThread.interrupt();
             if (handlerThread != null) handlerThread.quit();
             break;
           case 4:
