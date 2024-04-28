@@ -1,6 +1,8 @@
 package top.eiyooooo.easycontrol.server.wrappers;
 
+import android.annotation.TargetApi;
 import android.os.IInterface;
+import android.view.IDisplayFoldListener;
 import android.view.IRotationWatcher;
 import top.eiyooooo.easycontrol.server.utils.L;
 
@@ -20,6 +22,7 @@ public final class WindowManager {
     private static Method watchRotationExMethod = null;
     private static Method watchRotationMethod = null;
     private static Method removeRotationWatcherMethod = null;
+    private static Method registerDisplayFoldListenerMethod = null;
     private static IRotationWatcher rotationWatcher_saved;
 
     public static void init(IInterface m) {
@@ -129,6 +132,17 @@ public final class WindowManager {
         return removeRotationWatcherMethod;
     }
 
+    private static Method getRegisterDisplayFoldListenerMethod() throws ReflectiveOperationException {
+        if (registerDisplayFoldListenerMethod == null) {
+            if (CLASS == null) {
+                L.e("Error in getRegisterDisplayFoldListenerMethod: CLASS is null");
+                return null;
+            }
+            registerDisplayFoldListenerMethod = CLASS.getMethod("registerDisplayFoldListener", IDisplayFoldListener.class);
+        }
+        return registerDisplayFoldListenerMethod;
+    }
+
     public static void freezeRotation(int displayId, int rotation) {
         try {
             Method method = getFreezeDisplayRotationMethod();
@@ -230,6 +244,15 @@ public final class WindowManager {
             Objects.requireNonNull(getRemoveRotationWatcherMethod()).invoke(manager, rotationWatcher_saved);
         } catch (Exception e) {
             L.e("removeRotationWatcher error", e);
+        }
+    }
+
+    @TargetApi(29)
+    public static void registerDisplayFoldListener(IDisplayFoldListener displayFoldListener) {
+        try {
+            Objects.requireNonNull(getRegisterDisplayFoldListenerMethod()).invoke(manager, displayFoldListener);
+        } catch (Exception e) {
+            L.e("Could not register display fold listener", e);
         }
     }
 }
