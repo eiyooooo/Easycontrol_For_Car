@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.util.Pair;
 import android.view.*;
 import top.eiyooooo.easycontrol.server.Channel;
+import top.eiyooooo.easycontrol.server.Scrcpy;
 import top.eiyooooo.easycontrol.server.helper.ControlPacket;
 import top.eiyooooo.easycontrol.server.helper.VideoEncode;
 import top.eiyooooo.easycontrol.server.utils.L;
@@ -41,6 +42,8 @@ public final class Device {
         getDeviceSize();
         // 旋转监听
         setRotationListener();
+        // 折叠监听
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) setDisplayFoldListener();
         // 剪切板监听
         setClipBoardListener();
         // 设置不息屏
@@ -132,6 +135,19 @@ public final class Device {
                 VideoEncode.isHasChangeConfig = true;
             }
         }, displayId);
+    }
+
+    private static void setDisplayFoldListener() {
+        WindowManager.registerDisplayFoldListener(new IDisplayFoldListener.Stub() {
+            @Override
+            public void onDisplayFoldChanged(int displayId, boolean folded) {
+                if (Device.displayId != displayId) return;
+                Scrcpy.postDelayed(() -> {
+                    getDeviceSize();
+                    VideoEncode.isHasChangeConfig = true;
+                }, 1000);
+            }
+        });
     }
 
     private static final PointersState pointersState = new PointersState();
