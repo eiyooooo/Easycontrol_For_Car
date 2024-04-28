@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
@@ -73,13 +72,7 @@ public class MainActivity extends Activity {
   // 检查权限
   private boolean haveOverlayPermission() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return Settings.canDrawOverlays(this);
-    else {
-      AppOpsManager appOps = (AppOpsManager) this.getSystemService(APP_OPS_SERVICE);
-      if (appOps != null) {
-        int mode = appOps.checkOpNoThrow("android:system_alert_window", android.os.Process.myUid(), this.getPackageName());
-        return mode == AppOpsManager.MODE_ALLOWED || mode == AppOpsManager.MODE_IGNORED;
-      } else return true;
-    }
+    else return PublicTools.checkOpNoThrow(this, "OP_SYSTEM_ALERT_WINDOW", 24);
   }
 
   // 创建无权限提示

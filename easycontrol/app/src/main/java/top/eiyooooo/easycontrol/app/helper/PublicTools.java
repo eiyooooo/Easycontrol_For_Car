@@ -3,9 +3,11 @@ package top.eiyooooo.easycontrol.app.helper;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -26,6 +28,8 @@ import android.view.*;
 import android.widget.*;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.*;
@@ -898,6 +902,28 @@ public class PublicTools {
     } catch (Exception ignored) {
     }
     return "";
+  }
+
+  public static boolean checkOpNoThrow(Context context, String opFieldName, int opDefaultValue) {
+    AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+    ApplicationInfo appInfo = context.getApplicationInfo();
+    String pkg = context.getApplicationContext().getPackageName();
+    int uid = appInfo.uid;
+    try {
+      Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
+      int opValue;
+      try {
+        Field opValueField = appOpsClass.getDeclaredField(opFieldName);
+        opValue = (int) opValueField.get(Integer.class);
+      } catch (NoSuchFieldException e) {
+        opValue = opDefaultValue;
+      }
+      Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
+      return ((int) checkOpNoThrowMethod.invoke(appOps, opValue, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+    } catch (ClassNotFoundException | NoSuchMethodException |
+             InvocationTargetException | IllegalAccessException | RuntimeException e) {
+      return true;
+    }
   }
 
   public interface MyFunction {
