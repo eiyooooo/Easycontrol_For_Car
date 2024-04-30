@@ -230,10 +230,10 @@ public final class Device {
         keyEvent(26, 0, 0);
     }
 
-    public static void rotateDevice() {
+    public static void rotateDevice(int rotation) {
         boolean accelerometerRotation = !WindowManager.isRotationFrozen(displayId);
-        int newRotation = (getCurrentRotation(displayId) & 1) ^ 1; // 0->1, 1->0, 2->1, 3->0
-        WindowManager.freezeRotation(displayId, newRotation);
+        if (rotation == -1) rotation = (getCurrentRotation(displayId) & 1) ^ 1; // 0->1, 1->0, 2->1, 3->0
+        WindowManager.freezeRotation(displayId, rotation);
         if (accelerometerRotation) WindowManager.thawRotation(displayId);
     }
 
