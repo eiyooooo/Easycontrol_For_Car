@@ -65,7 +65,7 @@ public class FullActivity extends Activity implements SensorEventListener {
 
   @Override
   protected void onResume() {
-    PublicTools.setFullScreen(this);
+    if (AppData.setting.getSetFullScreen()) PublicTools.setFullScreen(this);
     super.onResume();
   }
 
