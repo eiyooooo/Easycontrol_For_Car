@@ -86,7 +86,7 @@ public class SmallView extends ViewOutlineProvider {
       InitSize++;
       if (InitSize < 2) return;
 
-      if (clientView.device.setResolution) {
+      if (clientView.mode == 1 && clientView.device.setResolution) {
         if (clientView.device.small_free_x == 0 && clientView.device.small_free_y == 0) {
           clientView.updateMaxSize(new Pair<>(clientView.device.small_free_width, clientView.device.small_free_height));
           ViewGroup.LayoutParams layoutParams = clientView.textureView.getLayoutParams();
@@ -216,6 +216,11 @@ public class SmallView extends ViewOutlineProvider {
     smallView.buttonHome.setVisibility(mode == 0 ? View.VISIBLE : View.INVISIBLE);
     if (mode == 0) smallView.buttonTransfer.setImageResource(R.drawable.share_out);
     else smallView.buttonTransfer.setImageResource(R.drawable.share_in);
+    InitPos = false;
+    if (clientView.mode == 1 && clientView.device.setResolution) {
+      needSetResolution = true;
+      clientView.updateMaxSize(new Pair<>(clientView.textureView.getWidth(), clientView.textureView.getHeight()));
+    }
   }
 
   // 设置焦点监听
@@ -294,7 +299,7 @@ public class SmallView extends ViewOutlineProvider {
           smallViewParams.x = paramsX.get() + flipX;
           smallViewParams.y = paramsY.get() + flipY;
 
-          if (clientView.device.setResolution) {
+          if (clientView.mode == 1 && clientView.device.setResolution) {
             clientView.device.small_free_x = smallViewParams.x;
             clientView.device.small_free_y = smallViewParams.y;
           }
@@ -466,7 +471,7 @@ public class SmallView extends ViewOutlineProvider {
         int sizeY = (int) (event.getRawY() - smallViewParams.y);
         if (sizeX < minSize || sizeY < minSize) return true;
 
-        if (clientView.device.setResolution) {
+        if (clientView.mode == 1 && clientView.device.setResolution) {
           clientView.reCalculateTextureViewSize(sizeX, sizeY);
 
           clientView.device.small_free_width = sizeX;
@@ -493,7 +498,8 @@ public class SmallView extends ViewOutlineProvider {
             }
           }
         }
-      } else if (clientView.device.setResolution & event.getActionMasked() == MotionEvent.ACTION_UP) {
+      } else if (event.getActionMasked() == MotionEvent.ACTION_UP
+              && clientView.mode == 1 && clientView.device.setResolution) {
         needSetResolution = true;
         InitPos = false;
         clientView.updateMaxSize(new Pair<>(clientView.textureView.getWidth(), clientView.textureView.getHeight()));

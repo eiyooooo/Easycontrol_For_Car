@@ -167,8 +167,8 @@
   <string name="option_use_opus_detail">优先使用OPUS，音频体积小延迟低，实际以支持情况为主</string>
   <string name="option_default_full">全屏启动</string>
   <string name="option_default_full_detail">开启后在连接成功后直接进入全屏状态</string>
-  <string name="option_set_resolution">宽高比例自由缩放</string>
-  <string name="option_set_resolution_detail">开启后屏幕宽高比例可自由设置(实验性功能，出错可手动恢复分辨率)</string>
+  <string name="option_set_resolution">应用流转宽高比例自由缩放</string>
+  <string name="option_set_resolution_detail">开启后应用流转宽高比例可自由设置</string>
 
   <!-- 设备列表展开 -->
   <string name="start_display_mirroring">屏幕镜像</string>
