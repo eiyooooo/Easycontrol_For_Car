@@ -23,6 +23,8 @@ import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class ClientView implements TextureView.SurfaceTextureListener {
   public final Device device;
   public final Device deviceOriginal;
@@ -75,8 +77,18 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     AppData.dbHelper.update(device);
   }
 
+  public final AtomicBoolean changeSizeLock = new AtomicBoolean(false);
   public void changeSize(float ratio) {
     new Thread(() -> {
+      if (!changeSizeLock.get()) {
+        try {
+          synchronized (changeSizeLock) {
+            changeSizeLock.wait(5000);
+          }
+        } catch (InterruptedException ignored) {
+        }
+      }
+      if (!changeSizeLock.get() || mode == 0 || displayId == 0) return;
       try {
         float targetRatio = ratio;
         if (targetRatio > 4 || targetRatio < 0.25) return;
@@ -85,7 +97,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
           String displayInfo = Adb.getStringResponseFromServer(device, "getDisplayInfo");
           JSONArray jsonArray = new JSONArray(displayInfo);
           for (int i = 0; i < jsonArray.length(); i++) {
-            if (jsonArray.getJSONObject(i).getInt("id") == displayId) {
+            if (jsonArray.getJSONObject(i).getInt("id") == 0) {
               int width = jsonArray.getJSONObject(i).getInt("width");
               int height = jsonArray.getJSONObject(i).getInt("height");
               int rotation = jsonArray.getJSONObject(i).getInt("rotation");
