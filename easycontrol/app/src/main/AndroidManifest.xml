@@ -47,6 +47,7 @@
       android:exported="false" />
     <activity
       android:name=".PairActivity"
+      android:allowEmbedded="true"
       android:exported="false" />
     <activity
       android:name=".SetActivity"
