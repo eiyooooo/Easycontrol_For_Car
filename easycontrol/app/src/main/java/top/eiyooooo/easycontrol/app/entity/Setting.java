@@ -187,6 +187,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getSetFullScreen() {
+    return sharedPreferences.getBoolean("setFullScreen", true);
+  }
+
+  public void setSetFullScreen(boolean value) {
+    editor.putBoolean("setFullScreen", value);
+    editor.apply();
+  }
+
   public int getAudioChannel() {
     return sharedPreferences.getInt("audioChannel", 0);
   }

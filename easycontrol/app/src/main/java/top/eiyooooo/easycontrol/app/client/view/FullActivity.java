@@ -58,7 +58,7 @@ public class FullActivity extends Activity {
 
   @Override
   protected void onResume() {
-    PublicTools.setFullScreen(this);
+    if (AppData.setting.getSetFullScreen()) PublicTools.setFullScreen(this);
     super.onResume();
   }
 

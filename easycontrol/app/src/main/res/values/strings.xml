@@ -45,6 +45,8 @@
   <string name="set_other">其他</string>
   <string name="set_audio_channel">音频输出声道</string>
   <string name="set_audio_channel_detail">没有特殊需要请保持0声道</string>
+  <string name="set_set_full_screen">沉浸式全屏模式</string>
+  <string name="set_set_full_screen_detail">若不希望全屏模式时本机导航栏消失，可关闭</string>
   <string name="set_mirror_mode">安卓14兼容模式</string>
   <string name="set_mirror_mode_detail">安卓14及以上系统若出现画面异常可尝试开启此选项</string>
   <string name="set_force_desktop_mode">应用流转时强制桌面模式</string>
