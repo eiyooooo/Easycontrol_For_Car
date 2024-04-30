@@ -53,6 +53,8 @@
   <string name="set_other">其他</string>
   <string name="set_audio_channel">音频输出声道</string>
   <string name="set_audio_channel_detail">没有特殊需要请保持0声道</string>
+  <string name="set_set_full_screen">沉浸式全屏模式</string>
+  <string name="set_set_full_screen_detail">若不希望全屏模式时本机导航栏消失，可关闭</string>
   <string name="set_always_full_mode">始终全屏模式</string>
   <string name="set_always_full_mode_detail">始终以全屏模式连接设备，忽略在设备内设置的全屏启动(\u0022软件启动时打开\u0022仅支持打开一个默认设备)</string>
   <string name="set_mirror_mode">安卓14兼容模式</string>
@@ -167,8 +169,8 @@
   <string name="option_use_opus_detail">优先使用OPUS，音频体积小延迟低，实际以支持情况为主</string>
   <string name="option_default_full">全屏启动</string>
   <string name="option_default_full_detail">开启后在连接成功后直接进入全屏状态</string>
-  <string name="option_set_resolution">宽高比例自由缩放</string>
-  <string name="option_set_resolution_detail">开启后屏幕宽高比例可自由设置(实验性功能，出错可手动恢复分辨率)</string>
+  <string name="option_set_resolution">应用流转宽高比例自由缩放</string>
+  <string name="option_set_resolution_detail">开启后应用流转宽高比例可自由设置</string>
 
   <!-- 设备列表展开 -->
   <string name="start_display_mirroring">屏幕镜像</string>

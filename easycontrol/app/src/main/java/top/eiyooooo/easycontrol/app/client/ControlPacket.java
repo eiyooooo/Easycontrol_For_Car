@@ -103,7 +103,15 @@ public class ControlPacket {
 
   // 发送旋转请求事件
   public void sendRotateEvent() {
-    write.run(ByteBuffer.wrap(new byte[]{6}));
+    sendRotateEvent(-1);
+  }
+
+  public void sendRotateEvent(int rotation) {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(5);
+    byteBuffer.put((byte) 6);
+    byteBuffer.putInt(rotation);
+    byteBuffer.flip();
+    write.run(byteBuffer);
   }
 
   // 发送背光控制事件
