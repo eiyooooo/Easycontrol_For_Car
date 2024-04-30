@@ -458,6 +458,7 @@ public class Client {
   public void changeMode(int mode) {
     if (this.mode == mode) return;
     this.mode = mode;
+    clientView.changeSizeLock.set(false);
     if (mode == 0) {
       try {
         Adb.getStringResponseFromServer(clientView.device, "releaseVirtualDisplay", "id=" + displayId);
@@ -476,6 +477,10 @@ public class Client {
         }
         controlPacket.sendConfigChangedEvent(-displayId);
         if (mode != 0) appTransfer(clientView.device);
+        synchronized (clientView.changeSizeLock) {
+          clientView.changeSizeLock.set(true);
+          clientView.changeSizeLock.notifyAll();
+        }
       } catch (Exception ignored) {
       }
     }).start();
