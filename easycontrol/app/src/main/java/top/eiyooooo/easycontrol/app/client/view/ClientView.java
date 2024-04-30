@@ -122,7 +122,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
         }
         if (deviceSize == null) return;
 
-        boolean differentOrientation = (targetRatio > 1 && deviceSize.first < deviceSize.second) || (targetRatio < 1 && deviceSize.first > deviceSize.second);
+        int rotation = targetRatio > 1 ? 1 : 0;
 
         if (targetRatio > 1) targetRatio = 1 / targetRatio;
 
@@ -147,7 +147,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
           if (displayId == 0) controlPacket.sendConfigChangedEvent(1);
           else controlPacket.sendConfigChangedEvent(2);
           Thread.sleep(300);
-          if (differentOrientation) controlPacket.sendRotateEvent();
+          controlPacket.sendRotateEvent(rotation);
         }
       } catch (Exception ignored) {
       }
