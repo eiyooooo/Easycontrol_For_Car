@@ -164,7 +164,7 @@ public final class Scrcpy {
                         Device.handleConfigChanged(inputStream.readInt());
                         break;
                     case 6:
-                        Device.rotateDevice();
+                        Device.rotateDevice(inputStream.readInt());
                         break;
                     case 7:
                         Device.changeScreenPowerMode(inputStream.readByte());
