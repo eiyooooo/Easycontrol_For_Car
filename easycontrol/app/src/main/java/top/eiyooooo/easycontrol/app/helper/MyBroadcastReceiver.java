@@ -172,12 +172,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
   // 处理USB授权结果
   private void onGetUsbPer(UsbDevice usbDevice) {
+    // 有线设备使用序列号作为唯一标识符
+    String uuid = usbDevice.getSerialNumber();
+    if (uuid == null) return;
     // 查找ADB的接口
     for (int i = 0; i < usbDevice.getInterfaceCount(); i++) {
       UsbInterface tmpUsbInterface = usbDevice.getInterface(i);
       if ((tmpUsbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC) && (tmpUsbInterface.getInterfaceSubclass() == 66) && (tmpUsbInterface.getInterfaceProtocol() == 1)) {
-        // 有线设备使用序列号作为唯一标识符
-        String uuid = usbDevice.getSerialNumber();
         // 若没有该设备，则新建设备
         Device device = AppData.dbHelper.getByUUID(uuid);
         if (device == null) {
