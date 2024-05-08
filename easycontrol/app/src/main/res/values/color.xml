@@ -7,6 +7,7 @@
   <color name="cardBackground">#FFFFFF</color>
   <color name="onCardBackground">#000000</color>
   <color name="onCardBackgroundSecond">#696969</color>
+  <color name="onCardDivider">#32000000</color>
 
   <!-- 特殊色彩 -->
   <color name="button">#2E2E2E</color>
