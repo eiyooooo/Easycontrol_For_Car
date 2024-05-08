@@ -363,7 +363,7 @@ public class Adb {
 
       @Override
       public void flush(BufferStream bufferStream) {
-        sendBuffer.write(AdbProtocol.generateClose(localId, remoteId));
+        sendBuffer.write(AdbProtocol.generateOkay(localId, remoteId));
       }
 
       @Override
