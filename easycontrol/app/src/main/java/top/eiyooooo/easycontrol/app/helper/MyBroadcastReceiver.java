@@ -147,9 +147,11 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
     String action = intent.getAction();
     if (usbDevice == null && action != null) return;
-    if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_ATTACHED)) onConnectUsb(context, usbDevice);
-    else if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_DETACHED)) onCutUsb(usbDevice);
-    else if (Objects.equals(action, ACTION_USB_PERMISSION)) if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) onGetUsbPer(usbDevice);
+    if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_DETACHED)) onCutUsb(usbDevice);
+    if (AppData.setting.getEnableUSB()) {
+        if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_ATTACHED)) onConnectUsb(context, usbDevice);
+        else if (Objects.equals(action, ACTION_USB_PERMISSION)) if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) onGetUsbPer(usbDevice);
+    }
   }
 
   // 检查已连接设备

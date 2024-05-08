@@ -53,6 +53,8 @@
   <string name="set_other">其他</string>
   <string name="set_audio_channel">音频输出声道</string>
   <string name="set_audio_channel_detail">没有特殊需要请保持0声道</string>
+  <string name="set_enable_usb">启用USB设备检测</string>
+  <string name="set_enable_usb_detail">若不希望使用有线连接，可关闭</string>
   <string name="set_set_full_screen">沉浸式全屏模式</string>
   <string name="set_set_full_screen_detail">若不希望全屏模式时本机导航栏消失，可关闭</string>
   <string name="set_always_full_mode">始终全屏模式</string>
