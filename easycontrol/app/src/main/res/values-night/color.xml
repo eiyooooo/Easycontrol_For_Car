@@ -7,6 +7,7 @@
   <color name="cardBackground">#3D3D3D</color>
   <color name="onCardBackground">#FFFFFF</color>
   <color name="onCardBackgroundSecond">#8B8B8B</color>
+  <color name="onCardDivider">#80FFFFFF</color>
 
   <!-- 特殊色彩 -->
   <color name="button">#FFFFFF</color>
