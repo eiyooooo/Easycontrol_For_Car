@@ -187,6 +187,16 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getEnableUSB() {
+    return sharedPreferences.getBoolean("enableUSB", true);
+  }
+
+  public void setEnableUSB(boolean value) {
+    editor.putBoolean("enableUSB", value);
+    editor.apply();
+    if (value) AppData.myBroadcastReceiver.checkConnectedUsb(AppData.main);
+  }
+
   public boolean getSetFullScreen() {
     return sharedPreferences.getBoolean("setFullScreen", true);
   }
