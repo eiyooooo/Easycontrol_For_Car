@@ -280,9 +280,8 @@ public class Client {
       boolean useH265 = videoStream.readByte() == 1;
       Pair<Integer, Integer> videoSize = new Pair<>(videoStream.readInt(), videoStream.readInt());
       Surface surface = clientView.getSurface();
-      byte[] videoFrame = controlPacket.readFrame(videoStream);
-      Pair<byte[], Long> csd0 = new Pair<>(videoFrame, videoStream.readLong());
-      Pair<byte[], Long> csd1 = useH265 ? null : new Pair<>(videoFrame, videoStream.readLong());
+      Pair<byte[], Long> csd0 = new Pair<>(controlPacket.readFrame(videoStream), videoStream.readLong());
+      Pair<byte[], Long> csd1 = useH265 ? null : new Pair<>(controlPacket.readFrame(videoStream), videoStream.readLong());
       videoDecode = new VideoDecode(videoSize, surface, csd0, csd1, handler);
       // 循环处理报文
       while (!Thread.interrupted()) {
