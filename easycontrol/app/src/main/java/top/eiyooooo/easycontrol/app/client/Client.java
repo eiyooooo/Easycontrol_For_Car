@@ -116,7 +116,7 @@ public class Client {
         startServer(device);
         connectServer();
         AppData.uiHandler.post(() -> {
-          controlPacket.sendNightModeEvent(AppData.nightMode);
+          if (device.nightModeSync) controlPacket.sendNightModeEvent(AppData.nightMode);
           if (AppData.setting.getAlwaysFullMode() || device.defaultFull) clientView.changeToFull();
           else clientView.changeToSmall();
         });
