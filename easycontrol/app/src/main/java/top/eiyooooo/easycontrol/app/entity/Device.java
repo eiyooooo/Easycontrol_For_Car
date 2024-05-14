@@ -153,7 +153,7 @@ public class Device {
   }
 
   public static Device getDefaultDevice(String uuid, int type) {
-    return new Device(uuid, type, uuid, "", "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), false, true, true, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
+    return new Device(uuid, type, uuid, "", "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), AppData.setting.getDefaultFull(), AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), false, AppData.setting.getDefaultClipboardSync(), AppData.setting.getDefaultNightModeSync(), SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT, SMALL_X, SMALL_Y, SMALL_WIDTH, SMALL_HEIGHT,MINI_Y);
   }
 
   public boolean isNormalDevice() {
