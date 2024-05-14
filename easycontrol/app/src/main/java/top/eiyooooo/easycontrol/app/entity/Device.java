@@ -79,7 +79,7 @@ public class Device {
   }
 
   public static Device getDefaultDevice(String uuid, int type) {
-    return new Device(uuid, type, uuid, "", "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), true, AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), false, true, true);
+    return new Device(uuid, type, uuid, "", "", AppData.setting.getDefaultIsAudio(), AppData.setting.getDefaultMaxSize(), AppData.setting.getDefaultMaxFps(), AppData.setting.getDefaultMaxVideoBit(), AppData.setting.getDefaultSetResolution(), true, AppData.setting.getDefaultUseH265(), AppData.setting.getDefaultUseOpus(), false, AppData.setting.getDefaultClipboardSync(), AppData.setting.getDefaultNightModeSync());
   }
 
   public boolean isNormalDevice() {
