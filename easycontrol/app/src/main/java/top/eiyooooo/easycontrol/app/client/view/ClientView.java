@@ -123,6 +123,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
         newHeight = newHeight + 8 & ~15;
         if (newWidth == newHeight) newWidth -= 16;
 
+        if (mode == 0 || displayId == 0) return;
         String output = Adb.getStringResponseFromServer(device, "resizeDisplay", "width=" + newWidth, "height=" + newHeight, "id=" + displayId);
 
         if (output.contains("success")) {
