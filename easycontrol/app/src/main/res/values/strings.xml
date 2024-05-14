@@ -118,8 +118,14 @@
 
   <!-- 设备设置模块 -->
   <string name="set_device_title">干什么◔ ‸◔?</string>
-  <string name="set_device_button_recover">恢复分辨率</string>
-  <string name="set_device_button_recover_success">恢复成功</string>
+  <string name="set_device_button_night_mode">黑暗模式</string>
+  <string name="night_mode_current">当前黑暗模式: </string>
+  <string name="night_mode_auto">自动</string>
+  <string name="night_mode_custom">自定义</string>
+  <string name="night_mode_yes">开启</string>
+  <string name="night_mode_no">关闭</string>
+  <string name="change_night_mode_success">设置成功</string>
+  <string name="change_night_mode_failed">设置失败</string>
   <string name="set_device_button_recover_error">连接失败，请检查ADB和网络</string>
   <string name="set_device_button_get_uuid">获取ID</string>
   <string name="set_device_button_get_uuid_success">已复制</string>
@@ -148,6 +154,8 @@
   <!-- 提示 -->
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>
   <string name="tip_default_device">默认设备</string>
+  <string name="confirm">确认</string>
+  <string name="cancel">取消</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_startup_device">软件启动时打开</string>

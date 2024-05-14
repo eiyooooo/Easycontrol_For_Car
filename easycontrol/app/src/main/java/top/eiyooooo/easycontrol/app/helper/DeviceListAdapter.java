@@ -262,13 +262,9 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     } else {
       itemSetDeviceBinding.buttonStartWireless.setVisibility(View.GONE);
     }
-    itemSetDeviceBinding.buttonRecover.setOnClickListener(v -> {
+    itemSetDeviceBinding.buttonNightMode.setOnClickListener(v -> {
       dialog.cancel();
-      if (device.isLinkDevice()) {
-        UsbDevice usbDevice = linkDevices.get(device.uuid);
-        if (usbDevice == null) return;
-        Client.runOnceCmd(device, usbDevice, "wm size reset", result -> AppData.uiHandler.post(() -> Toast.makeText(AppData.main, AppData.main.getString(result ? R.string.set_device_button_recover_success : R.string.set_device_button_recover_error), Toast.LENGTH_SHORT).show()));
-      } else Client.runOnceCmd(device, null, "wm size reset", result -> AppData.uiHandler.post(() -> Toast.makeText(AppData.main, AppData.main.getString(result ? R.string.set_device_button_recover_success : R.string.set_device_button_recover_error), Toast.LENGTH_SHORT).show()));
+      PublicTools.showNightModeChanger(context, device);
     });
     itemSetDeviceBinding.buttonGetUuid.setOnClickListener(v -> {
       dialog.cancel();

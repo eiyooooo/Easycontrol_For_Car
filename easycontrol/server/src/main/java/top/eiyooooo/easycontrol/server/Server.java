@@ -10,6 +10,7 @@ import top.eiyooooo.easycontrol.server.utils.L;
 import top.eiyooooo.easycontrol.server.utils.Workarounds;
 import top.eiyooooo.easycontrol.server.wrappers.DisplayManager;
 import top.eiyooooo.easycontrol.server.wrappers.ServiceManager;
+import top.eiyooooo.easycontrol.server.wrappers.UiModeManager;
 
 import java.io.DataOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -287,6 +288,19 @@ public class Server {
                     if (cmd == null) throw new Exception("parameter 'cmd' not found");
                     L.d("runShell cmd: " + cmd);
                     postResponse(Channel.execReadOutput(cmd));
+                    break;
+                }
+                case "/getNightMode": {
+                    int nightMode = UiModeManager.getNightMode();
+                    L.d("nightMode: " + nightMode);
+                    postResponse(String.valueOf(nightMode));
+                    break;
+                }
+                case "/setNightMode": {
+                    String nightMode = request.get("nightMode");
+                    if (nightMode == null) throw new Exception("parameter 'nightMode' not found");
+                    UiModeManager.setNightMode(Integer.parseInt(nightMode));
+                    postResponse("success");
                     break;
                 }
                 default:

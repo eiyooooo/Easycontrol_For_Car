@@ -118,8 +118,14 @@
 
   <!-- 设备设置模块 -->
   <string name="set_device_title">Do what◔ ‸◔?</string>
-  <string name="set_device_button_recover">Reset resolution</string>
-  <string name="set_device_button_recover_success">Success</string>
+  <string name="set_device_button_night_mode">Dark mode</string>
+  <string name="night_mode_auto">Auto</string>
+  <string name="night_mode_current">Current dark mode: </string>
+  <string name="night_mode_custom">Custom</string>
+  <string name="night_mode_yes">Open</string>
+  <string name="night_mode_no">Close</string>
+  <string name="change_night_mode_success">Success</string>
+  <string name="change_night_mode_failed">Failed</string>
   <string name="set_device_button_recover_error">Connection failed, please check ADB and network</string>
   <string name="set_device_button_get_uuid">Copy ID</string>
   <string name="set_device_button_get_uuid_success">Copied</string>
@@ -148,6 +154,8 @@
   <!-- 提示 -->
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>
   <string name="tip_default_device">Default device</string>
+  <string name="confirm">Confirm</string>
+  <string name="cancel">Cancel</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_startup_device">Open when software starts</string>

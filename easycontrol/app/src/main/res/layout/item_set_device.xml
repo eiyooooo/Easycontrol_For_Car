@@ -54,12 +54,12 @@
       android:layout_columnSpan="3" />
 
     <Button
-      android:id="@+id/button_recover"
+      android:id="@+id/button_night_mode"
       android:layout_columnWeight="9"
       android:background="@drawable/background_cron"
       android:backgroundTint="@color/button"
       android:gravity="center"
-      android:text="@string/set_device_button_recover"
+      android:text="@string/set_device_button_night_mode"
       android:textColor="@color/onButton"
       android:textSize="@dimen/smallFont" />
 
