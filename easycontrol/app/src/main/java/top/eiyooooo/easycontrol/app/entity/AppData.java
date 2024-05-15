@@ -55,7 +55,7 @@ public class AppData {
 
   public static void init(Activity m) {
     activity = m;
-    uiHandler = new android.os.Handler(m.getMainLooper());
+    uiHandler = new Handler(m.getMainLooper());
     if (main != null) return;
     main = m.getApplicationContext();
     dbHelper = new DbHelper(main);
