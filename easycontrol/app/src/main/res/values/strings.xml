@@ -62,7 +62,7 @@
   <string name="set_mirror_mode">安卓14兼容模式</string>
   <string name="set_mirror_mode_detail">安卓14及以上系统若出现画面异常可尝试开启此选项</string>
   <string name="set_force_desktop_mode">应用流转时强制桌面模式</string>
-  <string name="set_force_desktop_mode_detail">开启后输入法可同步流转，首个流转应用关闭后不会重新流转前台应用(不建议开启此功能，此桌面模式非三星dex模式或类似功能)</string>
+  <string name="set_force_desktop_mode_detail">开启后输入法可同步流转(不建议开启此功能，此桌面模式非三星dex模式或类似功能)</string>
   <string name="set_try_start_default_in_app_transfer">打开默认设备时尝试应用流转</string>
   <string name="set_try_start_default_in_app_transfer_detail">打开默认设备时尝试应用流转(注: 设备指定包名后通过快捷方式启动时自动尝试应用流转无需打开此开关)</string>
   <string name="set_other_custom_key">自定义密钥(需重新授权)</string>
@@ -124,8 +124,8 @@
   <string name="night_mode_custom">自定义</string>
   <string name="night_mode_yes">开启</string>
   <string name="night_mode_no">关闭</string>
-  <string name="change_night_mode_success">设置成功</string>
-  <string name="change_night_mode_failed">设置失败</string>
+  <string name="change_night_mode_success">请求成功</string>
+  <string name="change_night_mode_failed">请求失败</string>
   <string name="set_device_button_recover_error">连接失败，请检查ADB和网络</string>
   <string name="set_device_button_get_uuid">获取ID</string>
   <string name="set_device_button_get_uuid_success">已复制</string>
@@ -170,13 +170,13 @@
   <string name="option_max_size_detail">设置画面长和宽的最大大小</string>
   <string name="option_max_size_original">原始分辨率</string>
   <string name="option_max_fps">最大帧率</string>
-  <string name="option_max_fps_detail">最大帧率限制，值越低画面越卡顿，但流量也越小，延迟也会降低</string>
+  <string name="option_max_fps_detail">最大帧率限制，值越低画面越卡顿</string>
   <string name="option_max_video_bit">最大码率</string>
-  <string name="option_max_video_bit_detail">码率越大视频损失越小体积越大，建议设置为4，过高会导致延迟增加</string>
+  <string name="option_max_video_bit_detail">码率越大视频损失越小体积越大，建议设置为4</string>
   <string name="option_use_h265">优先H265</string>
-  <string name="option_use_h265_detail">优先使用H265，视频体积小延迟低，实际以支持情况为主，若视频异常可尝试关闭</string>
+  <string name="option_use_h265_detail">优先使用H265，实际以支持情况为主，若视频异常可尝试关闭</string>
   <string name="option_use_opus">优先Opus</string>
-  <string name="option_use_opus_detail">优先使用OPUS，音频体积小延迟低，实际以支持情况为主</string>
+  <string name="option_use_opus_detail">优先使用OPUS，实际以支持情况为主</string>
   <string name="option_default_full">全屏启动</string>
   <string name="option_default_full_detail">开启后在连接成功后直接进入全屏状态</string>
   <string name="option_set_resolution">应用流转宽高比例自由缩放</string>
