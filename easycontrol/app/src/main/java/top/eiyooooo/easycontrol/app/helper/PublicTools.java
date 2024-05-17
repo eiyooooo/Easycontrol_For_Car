@@ -645,6 +645,19 @@ public class PublicTools {
     return getApplicationDetailsIntent(context);
   }
 
+  public static boolean checkUsageStatsPermission(Context context) {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1
+            && PublicTools.checkOpNoThrow(context, "android:get_usage_stats");
+  }
+
+  public static Intent getPackagePermissionIntent(Context context) {
+    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) intent.setData(Uri.parse("package:" + context.getPackageName()));
+    if (!areActivityIntent(context, intent)) intent = getApplicationDetailsIntent(context);
+    if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    return intent;
+  }
+
   private static Intent addSubIntentToMainIntent(Intent mainIntent, Intent subIntent) {
     if (mainIntent == null && subIntent != null) return subIntent;
     if (subIntent == null) return mainIntent;
@@ -989,6 +1002,15 @@ public class PublicTools {
              InvocationTargetException | IllegalAccessException | RuntimeException e) {
       return true;
     }
+  }
+
+  public static boolean checkOpNoThrow(Context context, String opName) {
+    AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+    int mode;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      mode = appOps.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+    } else mode = appOps.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+    return mode == AppOpsManager.MODE_ALLOWED;
   }
 
   public interface MyFunction {

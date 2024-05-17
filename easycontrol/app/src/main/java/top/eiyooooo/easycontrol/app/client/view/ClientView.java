@@ -161,6 +161,16 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     if (fullView != null) fullView.changeMode(mode);
   }
 
+  /**
+   * 1:Mini
+   * <p>
+   * 2:Small
+   * <p>
+   * 3:Full
+   */
+  public int viewMode;
+  public boolean needResumeToSmall = false;
+
   public synchronized void changeToFull() {
     hide(false);
     Intent intent = new Intent(AppData.activity, FullActivity.class);
@@ -171,18 +181,22 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     }
     intent.putExtra("index", i);
     AppData.activity.startActivity(intent);
+    viewMode = 3;
   }
 
   public synchronized void changeToSmall() {
+    needResumeToSmall = false;
     if (smallView == null) return;
     hide(false);
     smallView.show();
+    viewMode = 2;
   }
 
   public synchronized void changeToMini(int mode) {
     if (miniView == null) return;
     hide(false);
     miniView.show(mode);
+    viewMode = 1;
   }
 
   public synchronized void hide(boolean isRelease) {

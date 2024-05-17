@@ -3,11 +3,13 @@ package top.eiyooooo.easycontrol.app.entity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.UiModeManager;
+import android.app.usage.UsageStatsManager;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -19,6 +21,7 @@ import java.io.File;
 import top.eiyooooo.easycontrol.app.adb.AdbBase64;
 import top.eiyooooo.easycontrol.app.adb.AdbKeyPair;
 import top.eiyooooo.easycontrol.app.helper.DbHelper;
+import top.eiyooooo.easycontrol.app.helper.EventMonitor;
 import top.eiyooooo.easycontrol.app.helper.MyBroadcastReceiver;
 
 public class AppData {
@@ -41,6 +44,7 @@ public class AppData {
   public static WindowManager windowManager;
   public static SensorManager sensorManager;
   public static UiModeManager uiModeManager;
+  public static UsageStatsManager usageStatsManager;
 
   // 设置值
   public static Setting setting;
@@ -66,6 +70,10 @@ public class AppData {
     windowManager = (WindowManager) main.getSystemService(Context.WINDOW_SERVICE);
     sensorManager = (SensorManager) main.getSystemService(Context.SENSOR_SERVICE);
     uiModeManager = (UiModeManager) main.getSystemService(Context.UI_MODE_SERVICE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+      usageStatsManager = (UsageStatsManager) main.getSystemService(Context.USAGE_STATS_SERVICE);
+      uiHandler.postDelayed(() -> EventMonitor.monitorEventsList = dbHelper.getAllMonitorEvents(), 1000);
+    }
     nightMode = uiModeManager.getNightMode();
     myBroadcastReceiver.register(main);
     myBroadcastReceiver.checkConnectedUsb(main);

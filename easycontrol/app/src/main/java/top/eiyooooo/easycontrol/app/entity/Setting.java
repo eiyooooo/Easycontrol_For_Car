@@ -269,6 +269,24 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getMonitorState() {
+    return sharedPreferences.getBoolean("monitorState", false);
+  }
+
+  public void setMonitorState(boolean value) {
+    editor.putBoolean("monitorState", value);
+    editor.apply();
+  }
+
+  public int getMonitorLatency() {
+    return sharedPreferences.getInt("monitorLatency", 1500);
+  }
+
+  public void setMonitorLatency(int value) {
+    editor.putInt("monitorLatency", value);
+    editor.apply();
+  }
+
   public Setting(SharedPreferences sharedPreferences) {
     this.sharedPreferences = sharedPreferences;
     this.editor = sharedPreferences.edit();

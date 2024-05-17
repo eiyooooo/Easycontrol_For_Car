@@ -9,6 +9,7 @@
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
   <uses-permission android:name="android.permission.USB_PERMISSION" /> <!-- USB -->
   <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- 桌面快捷方式 -->
+  <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" /> <!-- 使用统计 -->
 
   <uses-feature android:name="android.hardware.usb.host" />
 
@@ -32,6 +33,10 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <activity
+      android:name=".MonitorActivity"
+      android:configChanges="keyboardHidden|screenSize|orientation|uiMode"
+      android:exported="false" />
     <activity
       android:name=".IpActivity"
       android:exported="false" />

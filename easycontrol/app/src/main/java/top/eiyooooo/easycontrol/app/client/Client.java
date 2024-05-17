@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
+import top.eiyooooo.easycontrol.app.helper.EventMonitor;
 import top.eiyooooo.easycontrol.app.helper.L;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
 import top.eiyooooo.easycontrol.app.BuildConfig;
@@ -72,6 +73,7 @@ public class Client {
       }
     }
     allClient.add(this);
+    if (!EventMonitor.monitorRunning && AppData.setting.getMonitorState()) EventMonitor.startMonitor();
     // 初始化
     uuid = device.uuid;
     if (mode == 0) specifiedTransferred = true;

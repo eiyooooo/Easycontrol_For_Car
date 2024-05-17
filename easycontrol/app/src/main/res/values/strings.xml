@@ -70,6 +70,8 @@
   <string name="set_other_clear_key_code">已刷新</string>
   <string name="set_other_locale">语言切换(中文/English)</string>
   <string name="set_other_locale_code">OK, you may need to restart the APP</string>
+  <string name="set_app_monitor">软件监测(实验性)</string>
+  <string name="set_app_monitor_detail">可实现打开360影像时全部最小化、关闭时恢复，详情见使用说明</string>
   <string name="set_create_startup_shortcut">创建默认设备快捷方式</string>
   <string name="set_other_log">查看日志</string>
   <string name="set_about">关于</string>
@@ -89,6 +91,25 @@
   <string name="ip_scanning_device">扫描中…</string>
   <string name="ip_scan_finish_copy">扫描完成(点击复制)</string>
   <string name="ip_scan_finish_none">扫描完成(无设备)</string>
+
+  <!-- 360监测页面 -->
+  <string name="monitor_title">软件监测(实验性)</string>
+  <string name="monitor_permission_request">点此授予使用统计权限</string>
+  <string name="monitor_enable">启用检测</string>
+  <string name="monitor_latency">监测间隔(毫秒)</string>
+  <string name="monitor_latency_detail">越小检测越快，但也可能导致卡顿</string>
+  <string name="monitor_android_version_not_support">当前安卓版本不支持</string>
+  <string name="monitor_capture_event">捕获事件</string>
+  <string name="monitor_no_permission">请先授予使用统计权限</string>
+  <string name="monitor_no_event">请先捕获事件</string>
+  <string name="monitor_capture_event_start">点击开始捕获</string>
+  <string name="monitor_capture_event_stop">请触发软件，点击结束捕获</string>
+  <string name="monitor_show_event">相关事件(若无事件请先捕获)</string>
+  <string name="monitor_add_event">添加当前事件到</string>
+  <string name="monitor_add_change_to_mini_event">触发收起</string>
+  <string name="monitor_add_change_to_small_event">触发还原</string>
+  <string name="monitor_change_to_mini_event">触发收起(点击删除)</string>
+  <string name="monitor_change_to_small_event">触发还原(点击删除)</string>
 
   <!-- 查看日志页面 -->
   <string name="log_title">日志</string>

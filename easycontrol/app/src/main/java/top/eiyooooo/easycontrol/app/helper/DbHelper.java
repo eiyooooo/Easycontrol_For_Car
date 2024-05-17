@@ -11,12 +11,14 @@ import java.util.ArrayList;
 
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
+import top.eiyooooo.easycontrol.app.entity.MonitorEvent;
 
 public class DbHelper extends SQLiteOpenHelper {
 
   private static final String dataBaseName = "app.db";
-  private static final int version = 18;
+  private static final int version = 19;
   private final String tableName = "DevicesDb";
+  private final String monitorTableName = "MonitorEventsDb";
 
   public DbHelper(Context context) {
     super(context, dataBaseName, null, version);
@@ -25,6 +27,7 @@ public class DbHelper extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     db.execSQL("CREATE TABLE " + tableName + " (\n" + "\t uuid text PRIMARY KEY,\n" + "\t type integer,\n" + "\t name text,\n" + "\t address text,\n" + "\t specified_app text,\n" + "\t isAudio integer,\n" + "\t maxSize integer,\n" + "\t maxFps integer,\n" + "\t maxVideoBit integer,\n" + "\t setResolution integer,\n" + "\t defaultFull integer,\n" + "\t useH265 integer,\n" + "\t useOpus integer,\n" + "\t connectOnStart integer,\n" + "\t clipboardSync integer,\n" + "\t nightModeSync integer,\n" + "\t small_p_p_x integer,\n" + "\t small_p_p_y integer,\n" + "\t small_p_p_width integer,\n" + "\t small_p_p_height integer,\n" + "\t small_p_l_x integer,\n" + "\t small_p_l_y integer,\n" + "\t small_p_l_width integer,\n" + "\t small_p_l_height integer,\n" + "\t small_l_p_x integer,\n" + "\t small_l_p_y integer,\n" + "\t small_l_p_width integer,\n" + "\t small_l_p_height integer,\n" + "\t small_l_l_x integer,\n" + "\t small_l_l_y integer,\n" + "\t small_l_l_width integer,\n" + "\t small_l_l_height integer,\n" + "\t small_free_x integer,\n" + "\t small_free_y integer,\n" + "\t small_free_width integer,\n" + "\t small_free_height integer,\n" + "\t mini_y integer\n" + ");");
+    db.execSQL("CREATE TABLE IF NOT EXISTS " + monitorTableName + " (\n" + "\t uuid text PRIMARY KEY,\n" + " packageName text,\n" + " className text,\n" + " eventType integer,\n" + " responseType" + " integer\n" + ");");
   }
 
   @SuppressLint("Range")
@@ -43,6 +46,47 @@ public class DbHelper extends SQLiteOpenHelper {
       db.execSQL("drop table tempTable");
     }
   }
+
+  public ArrayList<MonitorEvent> getAllMonitorEvents() {
+    return getAllMonitorEvents(getReadableDatabase());
+  }
+
+  @SuppressLint("Range")
+  private ArrayList<MonitorEvent> getAllMonitorEvents(SQLiteDatabase db) {
+    ArrayList<MonitorEvent> events = new ArrayList<>();
+    try (Cursor cursor = db.query(monitorTableName, null, null, null, null, null, null)) {
+      if (cursor.moveToFirst()) {
+        do {
+          String uuid = cursor.getString(cursor.getColumnIndex("uuid"));
+          String packageName = cursor.getString(cursor.getColumnIndex("packageName"));
+          String className = cursor.getString(cursor.getColumnIndex("className"));
+          int eventType = cursor.getInt(cursor.getColumnIndex("eventType"));
+          int responseType = cursor.getInt(cursor.getColumnIndex("responseType"));
+          events.add(new MonitorEvent(uuid, packageName, className, eventType, responseType));
+        } while (cursor.moveToNext());
+      }
+    }
+    return events;
+  }
+
+  private ContentValues getValues(MonitorEvent event) {
+    ContentValues values = new ContentValues();
+    values.put("uuid", event.uuid);
+    values.put("packageName", event.packageName);
+    values.put("className", event.className);
+    values.put("eventType", event.eventType);
+    values.put("responseType", event.responseType);
+    return values;
+  }
+
+  public void insert(MonitorEvent event) {
+    getWritableDatabase().insert(monitorTableName, null, getValues(event));
+  }
+
+  public void delete(MonitorEvent event) {
+    getWritableDatabase().delete(monitorTableName, "uuid=?", new String[]{String.valueOf(event.uuid)});
+  }
+
 
   // 读取数据库设备列表
   @SuppressLint("Range")

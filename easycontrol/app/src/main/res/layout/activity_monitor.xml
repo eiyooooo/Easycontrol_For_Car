@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/background"
+  android:orientation="vertical"
+  tools:context=".MonitorActivity">
+
+  <ImageView
+    android:id="@+id/back_button"
+    android:layout_width="54dp"
+    android:layout_height="54dp"
+    android:padding="15dp"
+    android:src="@drawable/chevron_left"
+    android:tint="@color/onBackground" />
+
+  <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingStart="15dp"
+      android:paddingEnd="15dp">
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginBottom="5dp"
+      android:text="@string/monitor_title"
+      android:textColor="@color/onBackground"
+      android:textSize="@dimen/middleFont" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@drawable/background_cron"
+      android:orientation="vertical"
+      android:padding="15dp" >
+
+      <LinearLayout
+        android:id="@+id/container_enable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal">
+
+        <FrameLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1">
+          <TextView
+            android:id="@+id/text_enable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/monitor_enable"
+            android:textColor="@color/onCardBackground"
+            android:textSize="@dimen/smallFont" />
+        </FrameLayout>
+
+        <Switch
+          android:id="@+id/switch_enable"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="10dp"
+          android:thumbTint="@color/button"
+          android:thumbTintMode="multiply"
+          android:trackTint="@color/button"
+          android:trackTintMode="multiply"
+          tools:ignore="UseSwitchCompatOrMaterialXml" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:id="@+id/container_latency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+          android:id="@+id/text_latency"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/monitor_latency"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont" />
+
+        <Spinner
+          android:id="@+id/spinner_latency"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="10dp"
+          android:backgroundTint="@color/onCardBackground"
+          android:textSize="@dimen/smallFont" />
+      </LinearLayout>
+
+      <TextView
+        android:id="@+id/text_latency_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="6dp"
+        android:text="@string/monitor_latency_detail"
+        android:textColor="@color/onCardBackgroundSecond"
+        android:textSize="@dimen/smallSmallFont" />
+
+      <TextView
+        android:id="@+id/permission_checker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="@string/monitor_permission_request"
+        android:textColor="@color/onCardBackground"
+        android:textSize="@dimen/smallFont" />
+
+    </LinearLayout>
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/monitor_capture_event"
+        android:textColor="@color/onBackground"
+        android:textSize="@dimen/middleFont" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_cron"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+          android:id="@+id/capture_event"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:text="@string/monitor_capture_event_start"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont" />
+
+        <LinearLayout
+          android:id="@+id/captured_events"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:paddingStart="15dp" />
+
+      </LinearLayout>
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/monitor_show_event"
+        android:textColor="@color/onBackground"
+        android:textSize="@dimen/middleFont" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/background_cron"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:text="@string/monitor_change_to_mini_event"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont" />
+
+        <LinearLayout
+          android:id="@+id/change_to_mini_events"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:paddingStart="15dp" />
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:layout_marginBottom="8dp"
+          android:text="@string/monitor_change_to_small_event"
+          android:textColor="@color/onCardBackground"
+          android:textSize="@dimen/smallFont" />
+
+        <LinearLayout
+          android:id="@+id/change_to_small_events"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:paddingStart="15dp" />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </ScrollView>
+
+</LinearLayout>
