@@ -80,7 +80,7 @@ public final class Setting {
   }
 
   public boolean getDefaultClipboardSync() {
-    return sharedPreferences.getBoolean("defaultClipboardSync", true);
+    return sharedPreferences.getBoolean("defaultClipboardSync", false);
   }
 
   public void setDefaultClipboardSync(boolean value) {
@@ -89,7 +89,7 @@ public final class Setting {
   }
 
   public boolean getDefaultNightModeSync() {
-    return sharedPreferences.getBoolean("defaultNightModeSync", true);
+    return sharedPreferences.getBoolean("defaultNightModeSync", false);
   }
 
   public void setDefaultNightModeSync(boolean value) {
