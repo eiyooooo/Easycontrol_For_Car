@@ -196,12 +196,12 @@ public final class Setting {
     editor.apply();
   }
 
-  public boolean getMirrorMode() {
-    return sharedPreferences.getBoolean("MirrorMode", false);
+  public boolean getNewMirrorMode() {
+    return sharedPreferences.getBoolean("newMirrorMode", true);
   }
 
-  public void setMirrorMode(boolean value) {
-    editor.putBoolean("MirrorMode", value);
+  public void setNewMirrorMode(boolean value) {
+    editor.putBoolean("newMirrorMode", value);
     editor.apply();
   }
 
