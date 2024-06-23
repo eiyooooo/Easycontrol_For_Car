@@ -31,10 +31,16 @@ public class FullActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     PublicTools.setLocale(this);
     fullActivity = ActivityFullBinding.inflate(this.getLayoutInflater());
     setContentView(fullActivity.getRoot());
+    if (Client.allClient.isEmpty()) {
+      finish();
+      return;
+    }
     clientView = Client.allClient.get(getIntent().getIntExtra("index", 0)).clientView;
+    if (clientView.textureView.getParent() != null) clientView.hide(false);
     clientView.setFullView(this);
     // 按键监听
     setButtonListener();
@@ -47,7 +53,6 @@ public class FullActivity extends Activity {
       setNavBarHide(AppData.setting.getDefaultShowNavBar());
       changeMode(-clientView.mode);
     });
-    super.onCreate(savedInstanceState);
   }
 
   @Override

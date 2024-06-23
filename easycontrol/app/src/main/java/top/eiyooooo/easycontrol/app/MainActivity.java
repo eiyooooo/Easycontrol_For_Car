@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import java.util.UUID;
 
 import android.view.animation.LinearInterpolator;
+
+import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.databinding.ActivityMainBinding;
 import top.eiyooooo.easycontrol.app.databinding.ItemRequestPermissionBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
@@ -50,6 +52,9 @@ public class MainActivity extends Activity {
       AppData.setting.setShowUsage(true);
       AppData.uiHandler.postDelayed(() -> PublicTools.openWebViewActivity(this, "file:///android_asset/usage.html"), 1500);
     }
+    if (!Client.allClient.isEmpty()) {
+      Client.allClient.get(0).clientView.changeToFull();
+    }
   }
 
   @Override
@@ -60,6 +65,9 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onResume() {
+    if (!Client.allClient.isEmpty()) {
+      Client.allClient.get(0).clientView.changeToFull();
+    }
     super.onResume();
   }
 
