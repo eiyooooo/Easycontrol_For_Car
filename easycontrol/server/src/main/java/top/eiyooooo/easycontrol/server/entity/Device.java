@@ -17,6 +17,9 @@ import top.eiyooooo.easycontrol.server.wrappers.SurfaceControl;
 import top.eiyooooo.easycontrol.server.wrappers.WindowManager;
 import top.eiyooooo.easycontrol.server.wrappers.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -253,11 +256,36 @@ public final class Device {
             Matcher matcher = Pattern.compile("\\d+").matcher(output);
             if (matcher.find()) {
                 int timeout = Integer.parseInt(matcher.group());
-                if (timeout >= 20 && timeout <= 60 * 30) oldScreenOffTimeout = timeout;
+                if (timeout >= 1000 && timeout <= 1800000) {
+                    oldScreenOffTimeout = timeout;
+                    saveTimeoutToFile(timeout);
+                } else {
+                    oldScreenOffTimeout = readTimeoutFromFile();
+                }
             }
             Channel.execReadOutput("settings put system screen_off_timeout 600000000");
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            L.e("setKeepScreenLight error", e);
         }
+    }
+
+    private static void saveTimeoutToFile(int timeout) {
+        try (FileWriter writer = new FileWriter("/data/local/tmp/easycontrol_for_car_ScreenOffTimeout")) {
+            writer.write(String.valueOf(timeout));
+        } catch (IOException e) {
+            L.e("saveTimeoutToFile error", e);
+        }
+    }
+
+    private static int readTimeoutFromFile() {
+        int timeout = 60000;
+        try (BufferedReader reader = new BufferedReader(new FileReader("/data/local/tmp/easycontrol_for_car_ScreenOffTimeout"))) {
+            String line = reader.readLine();
+            if (line != null) timeout = Integer.parseInt(line);
+        } catch (Exception e) {
+            L.e("readTimeoutFromFile error", e);
+        }
+        return timeout;
     }
 
     public static boolean isEncoderSupport(String mimeName) {
