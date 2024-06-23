@@ -16,6 +16,7 @@ public class LogActivity extends Activity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     PublicTools.setStatusAndNavBar(this);
     PublicTools.setLocale(this);
     logActivity = ActivityLogBinding.inflate(this.getLayoutInflater());
@@ -46,6 +47,5 @@ public class LogActivity extends Activity {
       public void onNothingSelected(AdapterView<?> parent) {
       }
     });
-    super.onCreate(savedInstanceState);
   }
 }

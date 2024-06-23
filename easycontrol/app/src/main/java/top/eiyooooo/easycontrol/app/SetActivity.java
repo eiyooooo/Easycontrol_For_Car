@@ -18,6 +18,7 @@ public class SetActivity extends Activity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     PublicTools.setStatusAndNavBar(this);
     PublicTools.setLocale(this);
     setActivity = ActivitySetBinding.inflate(this.getLayoutInflater());
@@ -25,7 +26,6 @@ public class SetActivity extends Activity {
     // 设置页面
     drawUi();
     setButtonListener();
-    super.onCreate(savedInstanceState);
   }
 
   // 设置默认值
