@@ -363,9 +363,8 @@ public class Client {
       try {
         switch (i) {
           case 0:
-            try {
+            if (displayId != 0) {
               Adb.getStringResponseFromServer(clientView.device, "releaseVirtualDisplay", "id=" + displayId);
-            } catch (Exception ignored) {
             }
             break;
           case 1:
