@@ -21,6 +21,7 @@ public class AdbKeyActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     PublicTools.setStatusAndNavBar(this);
     PublicTools.setLocale(this);
     activityAdbKeyBinding = ActivityAdbKeyBinding.inflate(this.getLayoutInflater());
@@ -28,7 +29,6 @@ public class AdbKeyActivity extends Activity {
     readKey();
     activityAdbKeyBinding.backButton.setOnClickListener(v -> finish());
     activityAdbKeyBinding.ok.setOnClickListener(v -> writeKey());
-    super.onCreate(savedInstanceState);
   }
 
   // 读取旧的密钥公钥文件
