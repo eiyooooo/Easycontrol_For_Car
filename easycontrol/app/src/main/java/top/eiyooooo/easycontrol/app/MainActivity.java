@@ -81,6 +81,9 @@ public class MainActivity extends Activity {
     requestPermissionView.buttonGoToSet.setOnClickListener(v -> startActivity(PublicTools.getOverlayPermissionIntent(this)));
     requestPermissionView.buttonAlwaysFullMode.setOnClickListener(v -> AppData.setting.setAlwaysFullMode(true));
     Dialog dialog = PublicTools.createDialog(this, false, requestPermissionView.getRoot());
+    dialog.setOnCancelListener(dialog1 -> {
+      if (!AppData.setting.getAlwaysFullMode() && !haveOverlayPermission()) dialog.show();
+    });
     dialog.show();
     checkPermissionDelay(dialog);
   }
