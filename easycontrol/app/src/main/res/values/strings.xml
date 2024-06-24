@@ -55,6 +55,11 @@
   <string name="set_force_desktop_mode_detail">开启后输入法可同步流转(不建议开启此功能，此桌面模式非三星dex模式或类似功能)</string>
   <string name="set_try_start_default_in_app_transfer">打开默认设备时尝试应用流转</string>
   <string name="set_try_start_default_in_app_transfer_detail">打开默认设备时尝试应用流转(注: 设备指定包名后通过快捷方式启动时自动尝试应用流转无需打开此开关)</string>
+  <string name="set_reconnect">显示重连对话框</string>
+  <string name="set_reconnect_detail">设备异常断开时显示重连对话框</string>
+  <string name="set_countdown_reconnect">重连前等待时长 (秒)</string>
+  <string name="set_countdown_reconnect_detail">设备异常断开时自动重连前等待时长</string>
+  <string name="set_no_auto_reconnect">不自动重连</string>
   <string name="set_other_custom_key">自定义密钥(需重新授权)</string>
   <string name="set_other_clear_key">重新生成密钥(需重新授权)</string>
   <string name="set_other_clear_key_code">已刷新</string>
@@ -143,6 +148,7 @@
   <!-- 提示 -->
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>
   <string name="tip_default_device">默认设备</string>
+  <string name="tip_reconnect">设备异常断开，是否重新连接？</string>
   <string name="confirm">确认</string>
   <string name="cancel">取消</string>
 
