@@ -358,7 +358,11 @@ public class Client {
     if (status == -1) return;
     status = -1;
     allClient.remove(this);
-    if (error != null) PublicTools.logToast(error);
+    if (error != null) {
+      PublicTools.logToast(error);
+      if (AppData.setting.getShowReconnect())
+        AppData.uiHandler.postDelayed(() -> AppData.myBroadcastReceiver.handleReconnect(uuid, mode), 500);
+    }
     for (int i = 0; i < 7; i++) {
       try {
         switch (i) {

@@ -15,6 +15,7 @@ public class SetActivity extends Activity {
   private ActivitySetBinding setActivity;
 
   private static final ArrayAdapter<String> audioChannelAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"});
+  private static final ArrayAdapter<String> reconnectTimeAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, new String[]{AppData.main.getString(R.string.set_no_auto_reconnect), "3", "5", "10"});
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,8 @@ public class SetActivity extends Activity {
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_mirror_mode), getString(R.string.set_mirror_mode_detail), AppData.setting.getNewMirrorMode(), isChecked -> AppData.setting.setNewMirrorMode(isChecked)).getRoot());
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_force_desktop_mode), getString(R.string.set_force_desktop_mode_detail), AppData.setting.getForceDesktopMode(), isChecked -> AppData.setting.setForceDesktopMode(isChecked)).getRoot());
     setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_try_start_default_in_app_transfer), getString(R.string.set_try_start_default_in_app_transfer_detail), AppData.setting.getTryStartDefaultInAppTransfer(), isChecked -> AppData.setting.setTryStartDefaultInAppTransfer(isChecked)).getRoot());
+    setActivity.setOther.addView(PublicTools.createSwitchCard(this, getString(R.string.set_reconnect), getString(R.string.set_reconnect_detail), AppData.setting.getShowReconnect(), isChecked -> AppData.setting.setShowReconnect(isChecked)).getRoot());
+    setActivity.setOther.addView(PublicTools.createSpinnerCard(this, getString(R.string.set_countdown_reconnect), getString(R.string.set_countdown_reconnect_detail), AppData.setting.getReconnectTime(), reconnectTimeAdapter, str -> AppData.setting.setReconnectTime(str)).getRoot());
     setActivity.setOther.addView(PublicTools.createTextCardDetail(this, getString(R.string.set_app_monitor), getString(R.string.set_app_monitor_detail), () -> startActivity(new Intent(this, MonitorActivity.class))).getRoot());
     setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_create_startup_shortcut), () -> ShortcutHelper.addShortcut(AppData.main, StartDeviceActivity.class, getString(R.string.tip_default_device), R.drawable.phones, null)).getRoot());
     setActivity.setOther.addView(PublicTools.createTextCard(this, getString(R.string.set_other_log), () -> startActivity(new Intent(this, LogActivity.class))).getRoot());

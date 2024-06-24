@@ -223,6 +223,24 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getShowReconnect() {
+    return sharedPreferences.getBoolean("showReconnect", true);
+  }
+
+  public void setShowReconnect(boolean value) {
+    editor.putBoolean("showReconnect", value);
+    editor.apply();
+  }
+
+  public String getReconnectTime() {
+    return sharedPreferences.getString("reconnectTime", "5");
+  }
+
+  public void setReconnectTime(String value) {
+    editor.putString("reconnectTime", value);
+    editor.apply();
+  }
+
   public boolean getAlwaysFullMode() {
     return sharedPreferences.getBoolean("alwaysFullMode", false);
   }

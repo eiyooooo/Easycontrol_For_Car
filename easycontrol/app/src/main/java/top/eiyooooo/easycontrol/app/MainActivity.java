@@ -23,10 +23,12 @@ import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.helper.DeviceListAdapter;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
+import top.eiyooooo.easycontrol.app.helper.ReconnectHelper;
 
 public class MainActivity extends Activity {
   // 设备列表
   private DeviceListAdapter deviceListAdapter;
+  private ReconnectHelper reconnectHelper;
 
   // 创建界面
   private ActivityMainBinding mainActivity;
@@ -50,6 +52,8 @@ public class MainActivity extends Activity {
     deviceListAdapter = new DeviceListAdapter(this, mainActivity.devicesList);
     mainActivity.devicesList.setAdapter(deviceListAdapter);
     AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
+    reconnectHelper = new ReconnectHelper(this);
+    AppData.myBroadcastReceiver.setReconnectHelper(reconnectHelper);
     // 设置按钮监听
     setButtonListener();
     // 首次使用显示使用说明
@@ -70,7 +74,14 @@ public class MainActivity extends Activity {
   @Override
   protected void onDestroy() {
     AppData.myBroadcastReceiver.setDeviceListAdapter(null);
+    AppData.myBroadcastReceiver.setReconnectHelper(null);
     super.onDestroy();
+  }
+
+  @Override
+  protected void onPause() {
+    AppData.myBroadcastReceiver.setReconnectHelper(null);
+    super.onPause();
   }
 
   @Override
@@ -84,6 +95,7 @@ public class MainActivity extends Activity {
         }
       }
     }
+    AppData.myBroadcastReceiver.setReconnectHelper(reconnectHelper);
     super.onResume();
   }
 

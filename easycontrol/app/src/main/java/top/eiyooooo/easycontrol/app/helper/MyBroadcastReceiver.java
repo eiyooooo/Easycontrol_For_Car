@@ -28,6 +28,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
   public static final String ACTION_CONFIGURATION_CHANGED = "android.intent.action.CONFIGURATION_CHANGED";
 
   private DeviceListAdapter deviceListAdapter;
+  private ReconnectHelper reconnectHelper;
 
   // 注册广播
   @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -69,6 +70,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
   public void setDeviceListAdapter(DeviceListAdapter deviceListAdapter) {
     this.deviceListAdapter = deviceListAdapter;
+  }
+
+  public void setReconnectHelper(ReconnectHelper reconnectHelper) {
+    this.reconnectHelper = reconnectHelper;
   }
 
   private void handleScreenOff() {
@@ -141,6 +146,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         }
       }
     }
+  }
+
+  public void handleReconnect(String uuid, int mode) {
+    ReconnectHelper.show(reconnectHelper, uuid, mode);
   }
 
   private void handleUSB(Context context, Intent intent) {
