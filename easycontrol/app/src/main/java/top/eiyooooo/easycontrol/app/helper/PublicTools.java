@@ -106,6 +106,7 @@ public class PublicTools {
     builder.setView(dialogView);
     Dialog dialog = builder.create();
     dialog.setCanceledOnTouchOutside(canCancel);
+    dialog.setCancelable(canCancel);
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     return dialog;
   }
