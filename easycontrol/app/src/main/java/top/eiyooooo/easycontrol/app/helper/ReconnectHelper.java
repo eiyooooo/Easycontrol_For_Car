@@ -15,6 +15,8 @@ import top.eiyooooo.easycontrol.app.databinding.ModuleDialogBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 
 public class ReconnectHelper {
+    public static boolean status;
+
     private final Context context;
 
     public ReconnectHelper(Context c) {
@@ -48,7 +50,7 @@ public class ReconnectHelper {
         } catch (NumberFormatException ignored) {
             reconnectTime = 0;
         }
-        if (reconnectTime == 0) {
+        if (reconnectTime == 0 || !status) {
             reconnectView.buttonConfirm.setOnClickListener(v -> {
                 DeviceListAdapter.startByUUID(uuid, mode);
                 dialog.cancel();
@@ -75,6 +77,10 @@ public class ReconnectHelper {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
+                if (!status) {
+                    reconnectView.buttonConfirm.setText(AppData.main.getString(R.string.confirm));
+                    return;
+                }
                 if (secondsLeft[0] > 0) {
                     reconnectView.buttonConfirm.setText(AppData.main.getString(R.string.confirm) + " (" + secondsLeft[0] + "s)");
                     secondsLeft[0]--;
