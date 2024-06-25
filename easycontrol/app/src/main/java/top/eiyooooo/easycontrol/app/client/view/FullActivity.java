@@ -35,12 +35,16 @@ public class FullActivity extends Activity implements SensorEventListener {
     PublicTools.setLocale(this);
     fullActivity = ActivityFullBinding.inflate(this.getLayoutInflater());
     setContentView(fullActivity.getRoot());
-    if (Client.allClient.isEmpty()) {
+    Client client;
+    try {
+      client = Client.allClient.get(getIntent().getIntExtra("index", 0));
+      if (client.isClosed()) throw new Exception();
+      if (client.clientView.textureView.getParent() != null) client.clientView.hide(false);
+    } catch (Exception ignored) {
       finish();
       return;
     }
-    clientView = Client.allClient.get(getIntent().getIntExtra("index", 0)).clientView;
-    if (clientView.textureView.getParent() != null) clientView.hide(false);
+    clientView = client.clientView;
     clientView.setFullView(this);
     // 按键监听
     setButtonListener();
