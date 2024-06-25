@@ -457,6 +457,10 @@ public class Client {
     return status == 1 && clientView != null;
   }
 
+  public boolean isClosed() {
+    return status == -1 || clientView == null;
+  }
+
   public void changeMode(int mode) {
     if (this.mode == mode) return;
     this.mode = mode;
