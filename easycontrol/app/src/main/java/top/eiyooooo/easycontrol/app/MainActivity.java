@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
     AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
     reconnectHelper = new ReconnectHelper(this);
     AppData.myBroadcastReceiver.setReconnectHelper(reconnectHelper);
+    ReconnectHelper.status = true;
     // 设置按钮监听
     setButtonListener();
     // 首次使用显示使用说明
@@ -75,12 +76,13 @@ public class MainActivity extends Activity {
   protected void onDestroy() {
     AppData.myBroadcastReceiver.setDeviceListAdapter(null);
     AppData.myBroadcastReceiver.setReconnectHelper(null);
+    ReconnectHelper.status = false;
     super.onDestroy();
   }
 
   @Override
   protected void onPause() {
-    AppData.myBroadcastReceiver.setReconnectHelper(null);
+    ReconnectHelper.status = false;
     super.onPause();
   }
 
@@ -95,7 +97,7 @@ public class MainActivity extends Activity {
         }
       }
     }
-    AppData.myBroadcastReceiver.setReconnectHelper(reconnectHelper);
+    ReconnectHelper.status = true;
     super.onResume();
   }
 

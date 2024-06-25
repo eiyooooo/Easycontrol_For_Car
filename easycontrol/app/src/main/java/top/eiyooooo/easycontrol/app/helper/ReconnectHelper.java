@@ -21,6 +21,8 @@ import top.eiyooooo.easycontrol.app.databinding.ModuleDialogBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 
 public class ReconnectHelper {
+    public static boolean status;
+
     private final Context context;
 
     public ReconnectHelper(Context c) {
@@ -28,7 +30,7 @@ public class ReconnectHelper {
     }
 
     public static void show(ReconnectHelper reconnectHelper, String uuid, int mode) {
-        if (reconnectHelper != null) {
+        if (reconnectHelper != null && (status || AppData.setting.getAlwaysFullMode())) {
             AppData.uiHandler.post(() -> reconnectHelper.showDialog(uuid, mode));
         } else if (haveOverlayPermission()) {
             showOverlay(uuid, mode);
@@ -56,14 +58,14 @@ public class ReconnectHelper {
         } catch (NumberFormatException ignored) {
             reconnectTime = 0;
         }
-        if (reconnectTime == 0) {
+        if (reconnectTime == 0 || !status) {
             reconnectView.buttonConfirm.setOnClickListener(v -> {
                 DeviceListAdapter.startByUUID(uuid, mode);
                 dialog.cancel();
             });
             reconnectView.buttonCancel.setOnClickListener(v -> dialog.cancel());
         } else {
-            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime);
+            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime, true);
             AppData.uiHandler.post(countdownRunnable);
             reconnectView.buttonConfirm.setOnClickListener(v -> {
                 AppData.uiHandler.removeCallbacks(countdownRunnable);
@@ -102,7 +104,7 @@ public class ReconnectHelper {
             });
             reconnectView.buttonCancel.setOnClickListener(v -> removeViewSafely(reconnectView.getRoot()));
         } else {
-            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime);
+            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime, false);
             AppData.uiHandler.post(countdownRunnable);
             reconnectView.buttonConfirm.setOnClickListener(v -> {
                 AppData.uiHandler.removeCallbacks(countdownRunnable);
@@ -116,12 +118,16 @@ public class ReconnectHelper {
         }
     }
 
-    private static Runnable getCountdownRunnable(ItemReconnectBinding reconnectView, int reconnectTime) {
+    private static Runnable getCountdownRunnable(ItemReconnectBinding reconnectView, int reconnectTime, boolean detectStatus) {
         final int[] secondsLeft = {reconnectTime};
         return new Runnable() {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
+                if (detectStatus && !status) {
+                    reconnectView.buttonConfirm.setText(AppData.main.getString(R.string.confirm));
+                    return;
+                }
                 if (secondsLeft[0] > 0) {
                     reconnectView.buttonConfirm.setText(AppData.main.getString(R.string.confirm) + " (" + secondsLeft[0] + "s)");
                     secondsLeft[0]--;
