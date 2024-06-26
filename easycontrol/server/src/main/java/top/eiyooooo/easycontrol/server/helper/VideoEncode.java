@@ -83,22 +83,14 @@ public final class VideoEncode {
         if (Options.mirrorMode == 1) {
             try {
                 VirtualDisplay virtualDisplay = virtualDisplays.get(Device.displayId);
-                if (virtualDisplay == null) {
-                    virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car",
-                            Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
-                    virtualDisplays.put(Device.displayId, virtualDisplay);
-                    int displayId = virtualDisplay.getDisplay().getDisplayId();
-                    WindowManager.freezeRotation(displayId, 0);
-                    Device.display2virtualDisplay.put(Device.displayId, displayId);
-                    L.d("mirroring display " + Device.displayId + " to " + displayId + " with size " + Device.videoSize.first + "x" + Device.videoSize.second);
-                }
-                else {
-                    virtualDisplay.setSurface(surface);
-                    virtualDisplay.resize(Device.videoSize.first, Device.videoSize.second, 1);
-                    int displayId = virtualDisplay.getDisplay().getDisplayId();
-                    WindowManager.freezeRotation(displayId, 0);
-                    L.d("resize virtual display " + displayId + " to " + Device.videoSize.first + "x" + Device.videoSize.second);
-                }
+                if (virtualDisplay != null) virtualDisplay.release();
+                virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car",
+                        Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
+                virtualDisplays.put(Device.displayId, virtualDisplay);
+                int displayId = virtualDisplay.getDisplay().getDisplayId();
+                WindowManager.freezeRotation(displayId, 0);
+                Device.display2virtualDisplay.put(Device.displayId, displayId);
+                L.d("mirroring display " + Device.displayId + " to " + displayId + " with size " + Device.videoSize.first + "x" + Device.videoSize.second);
             } catch (Exception e) {
                 L.e("createVirtualDisplay by DisplayManager error", e);
                 throw e;
