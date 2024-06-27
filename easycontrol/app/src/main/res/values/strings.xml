@@ -42,6 +42,8 @@
   <string name="set_display_keep_screen_awake_detail">连接过程中被控端不锁定(即修改自动锁定时间)</string>
   <string name="set_display_default_show_nav_bar">默认显示导航栏</string>
   <string name="set_display_default_show_nav_bar_detail">设置默认是否显示导航栏</string>
+  <string name="set_display_full_fill">全屏模式拉伸填充画面</string>
+  <string name="set_display_full_fill_detail">在全屏模式下画面拉伸并填充所有可用区域</string>
   <string name="set_other">其他</string>
   <string name="set_audio_channel">音频输出声道</string>
   <string name="set_audio_channel_detail">没有特殊需要请保持0声道</string>

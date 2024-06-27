@@ -87,6 +87,7 @@ public class SetActivity extends Activity {
             }).getRoot());
 
     setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_keep_screen_awake), getString(R.string.set_display_keep_screen_awake_detail), AppData.setting.getKeepAwake(), isChecked -> AppData.setting.setKeepAwake(isChecked)).getRoot());
+    setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_full_fill), getString(R.string.set_display_full_fill_detail), AppData.setting.getFillFull(), isChecked -> AppData.setting.setFillFull(isChecked)).getRoot());
     setActivity.setDisplay.addView(PublicTools.createSwitchCard(this, getString(R.string.set_display_default_show_nav_bar), getString(R.string.set_display_default_show_nav_bar_detail), AppData.setting.getDefaultShowNavBar(), isChecked -> AppData.setting.setDefaultShowNavBar(isChecked)).getRoot());
     // 其他
     setActivity.setOther.addView(PublicTools.createSpinnerCard(this, getString(R.string.set_audio_channel), getString(R.string.set_audio_channel_detail), String.valueOf(AppData.setting.getAudioChannel()), audioChannelAdapter, str -> AppData.setting.setAudioChannel(Integer.parseInt(str))).getRoot());

@@ -54,8 +54,10 @@ public class FullActivity extends Activity {
     changeMode(-clientView.mode);
   }
 
+  public Pair<Integer, Integer> fullMaxSize;
+
   private void updateMaxSize() {
-    Pair<Integer, Integer> fullMaxSize = new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight());
+    fullMaxSize = new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight());
     clientView.updateMaxSize(fullMaxSize);
     if (clientView.mode == 1 && clientView.device.setResolution)
       clientView.changeSize((float) fullMaxSize.first / (float) fullMaxSize.second);

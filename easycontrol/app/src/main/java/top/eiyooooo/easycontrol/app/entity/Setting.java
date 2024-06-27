@@ -151,6 +151,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getFillFull() {
+    return sharedPreferences.getBoolean("fillFull", false);
+  }
+
+  public void setFillFull(boolean value) {
+    editor.putBoolean("fillFull", value);
+    editor.apply();
+  }
+
   public boolean getNewMirrorMode() {
     return sharedPreferences.getBoolean("newMirrorMode", true);
   }

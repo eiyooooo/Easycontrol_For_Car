@@ -167,13 +167,17 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   public void updateMaxSize(Pair<Integer, Integer> maxSize) {
     if (maxSize == null || maxSize.first == 0 || maxSize.second == 0) return;
     this.maxSize = maxSize;
-    reCalculateTextureViewSize();
+    if (fullView != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
+      reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
+    else reCalculateTextureViewSize();
   }
 
   public void updateVideoSize(Pair<Integer, Integer> videoSize) {
     if (videoSize == null || videoSize.first == 0 || videoSize.second == 0) return;
     this.videoSize = videoSize;
-    reCalculateTextureViewSize();
+    if (fullView != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
+      reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
+    else reCalculateTextureViewSize();
   }
 
   public Pair<Integer, Integer> getVideoSize() {
@@ -197,6 +201,13 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     ViewGroup.LayoutParams layoutParams = textureView.getLayoutParams();
     layoutParams.width = surfaceSize.first;
     layoutParams.height = surfaceSize.second;
+    textureView.setLayoutParams(layoutParams);
+  }
+  public void reCalculateTextureViewSize(int width, int height) {
+    surfaceSize = new Pair<>(width, height);
+    ViewGroup.LayoutParams layoutParams = textureView.getLayoutParams();
+    layoutParams.width = width;
+    layoutParams.height = height;
     textureView.setLayoutParams(layoutParams);
   }
 
