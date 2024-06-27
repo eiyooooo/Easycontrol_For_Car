@@ -2,7 +2,6 @@ package top.eiyooooo.easycontrol.app.client.view;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,7 +13,6 @@ import android.util.Pair;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
@@ -26,8 +24,6 @@ import top.eiyooooo.easycontrol.app.entity.AppData;
 public class FullActivity extends Activity implements SensorEventListener {
   private ClientView clientView;
   private ActivityFullBinding fullActivity;
-
-  private Pair<Integer, Integer> fullMaxSize;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,19 +41,26 @@ public class FullActivity extends Activity implements SensorEventListener {
     }
     clientView = client.clientView;
     clientView.setFullView(this);
-    // 按键监听
+    // 监听
     setButtonListener();
     setKeyEvent();
+    fullActivity.textureViewLayout.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom)->{
+      if (left == oldLeft && top == oldTop && right == oldRight && bottom == oldBottom) return;
+      updateMaxSize();
+    });
     // 更新textureView
     fullActivity.textureViewLayout.addView(clientView.textureView, 0);
-    fullActivity.textureViewLayout.post(() -> {
-      fullMaxSize = new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight());
-      clientView.updateMaxSize(fullMaxSize);
-      setNavBarHide(AppData.setting.getDefaultShowNavBar());
-      changeMode(-clientView.mode);
-    });
+    setNavBarHide(AppData.setting.getDefaultShowNavBar());
+    changeMode(-clientView.mode);
     // 页面自动旋转
     AppData.sensorManager.registerListener(this, AppData.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+  }
+
+  private void updateMaxSize() {
+    Pair<Integer, Integer> fullMaxSize = new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight());
+    clientView.updateMaxSize(fullMaxSize);
+    if (clientView.mode == 1 && clientView.device.setResolution)
+      clientView.changeSize((float) fullMaxSize.first / (float) fullMaxSize.second);
   }
 
   @Override
@@ -75,15 +78,6 @@ public class FullActivity extends Activity implements SensorEventListener {
   protected void onResume() {
     if (AppData.setting.getSetFullScreen()) PublicTools.setFullScreen(this);
     super.onResume();
-  }
-
-  @Override
-  public void onMultiWindowModeChanged(boolean isInMultiWindowMode, Configuration newConfig) {
-    fullActivity.textureViewLayout.post(() -> {
-      fullMaxSize = new Pair<>(fullActivity.textureViewLayout.getMeasuredWidth(), fullActivity.textureViewLayout.getMeasuredHeight());
-      clientView.updateMaxSize(fullMaxSize);
-    });
-    super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig);
   }
 
   @Override
@@ -107,21 +101,7 @@ public class FullActivity extends Activity implements SensorEventListener {
     if (mode == 0) fullActivity.buttonTransfer.setImageResource(R.drawable.share_out);
     else fullActivity.buttonTransfer.setImageResource(R.drawable.share_in);
     if (mode > 0 && clientView.mode == 1 && clientView.device.setResolution) {
-      clientView.changeSize(getRatio(fullActivity.navBar.getVisibility() == View.VISIBLE));
-      clientView.updateMaxSize(fullMaxSize);
-    }
-  }
-
-  // 获取去除操作栏后的屏幕大小，用于修改宽高比例使用
-  public float getRatio(boolean barIsShow) {
-    int width = fullMaxSize.first;
-    int height = fullMaxSize.second;
-    LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) fullActivity.navBar.getLayoutParams();
-    if (barIsShow) {
-      if (width > height) return (float) (width - layoutParams.width) / (float) height;
-      else return (float) width / (float) (height - layoutParams.height);
-    } else {
-      return (float) width / (float) height;
+      updateMaxSize();
     }
   }
 
@@ -195,7 +175,6 @@ public class FullActivity extends Activity implements SensorEventListener {
   private void setNavBarHide(boolean isShow) {
     fullActivity.navBar.setVisibility(isShow ? View.VISIBLE : View.GONE);
     fullActivity.buttonNavBar.setImageResource(isShow ? R.drawable.not_equal : R.drawable.equals);
-    if (clientView.mode == 1 && clientView.device.setResolution) clientView.changeSize(getRatio(isShow));
   }
 
   private void changeBarView() {
