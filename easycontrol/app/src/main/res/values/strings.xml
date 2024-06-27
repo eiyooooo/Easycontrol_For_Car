@@ -50,6 +50,8 @@
   <string name="set_display_mini_recover_on_timeout_detail">在触发自动最小化后五秒内无操作自动恢复为原模式</string>
   <string name="set_display_full_to_mini_on_exit">全屏意外退出时挂起</string>
   <string name="set_display_full_to_mini_on_exit_detail">在全屏模式下意外退出时自动最小化(关闭时为自动小窗)</string>
+  <string name="set_display_full_fill">全屏模式拉伸填充画面</string>
+  <string name="set_display_full_fill_detail">在全屏模式下画面拉伸并填充所有可用区域</string>
   <string name="set_other">其他</string>
   <string name="set_audio_channel">音频输出声道</string>
   <string name="set_audio_channel_detail">没有特殊需要请保持0声道</string>
