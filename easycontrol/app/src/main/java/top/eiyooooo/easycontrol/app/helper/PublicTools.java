@@ -291,7 +291,12 @@ public class PublicTools {
       if (setDefault) AppData.setting.setDefaultMaxVideoBit(Integer.parseInt(str));
       else device.maxVideoBit = Integer.parseInt(str);
     }).getRoot());
-    if (device != null) fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_startup_device), context.getString(R.string.option_startup_device_detail), device.connectOnStart, isChecked -> device.connectOnStart = isChecked).getRoot());
+    if (device != null) {
+      if (device.isNormalDevice())
+        fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_startup_device), context.getString(R.string.option_startup_device_detail), device.connectOnStart, isChecked -> device.connectOnStart = isChecked).getRoot());
+      else if (device.isLinkDevice())
+        fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_default_usb_device), context.getString(R.string.option_default_usb_device_detail), device.connectOnStart, isChecked -> device.connectOnStart = isChecked).getRoot());
+    }
     fatherLayout.addView(createSwitchCard(context, context.getString(R.string.option_is_audio), context.getString(R.string.option_is_audio_detail), setDefault ? AppData.setting.getDefaultIsAudio() : device.isAudio, isChecked -> {
       if (setDefault) AppData.setting.setDefaultIsAudio(isChecked);
       else device.isAudio = isChecked;

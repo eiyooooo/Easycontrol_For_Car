@@ -29,6 +29,7 @@ import top.eiyooooo.easycontrol.app.helper.ReconnectHelper;
 public class MainActivity extends Activity {
   // 设备列表
   private DeviceListAdapter deviceListAdapter;
+  private ReconnectHelper reconnectHelper;
 
   // 创建界面
   private ActivityMainBinding mainActivity;
@@ -46,7 +47,7 @@ public class MainActivity extends Activity {
     deviceListAdapter = new DeviceListAdapter(this, mainActivity.devicesList);
     mainActivity.devicesList.setAdapter(deviceListAdapter);
     AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
-    ReconnectHelper reconnectHelper = new ReconnectHelper(this);
+    reconnectHelper = new ReconnectHelper(this);
     AppData.myBroadcastReceiver.setReconnectHelper(reconnectHelper);
     ReconnectHelper.status = true;
     // 设置按钮监听
@@ -81,8 +82,19 @@ public class MainActivity extends Activity {
     if (!Client.allClient.isEmpty()) {
       Client.allClient.get(0).clientView.changeToFull();
     }
+    AppData.uiHandler.removeCallbacks(needStartDefaultUSB);
+    AppData.uiHandler.postDelayed(needStartDefaultUSB, 1000);
     super.onResume();
   }
+
+  private final Runnable needStartDefaultUSB = new Runnable() {
+    @Override
+    public void run() {
+      if (!ReconnectHelper.needStartDefaultUSB.isEmpty() && !ReconnectHelper.showingUSBDialog) {
+        reconnectHelper.showUSBDialog();
+      }
+    }
+  };
 
   // 设置按钮监听
   private void setButtonListener() {

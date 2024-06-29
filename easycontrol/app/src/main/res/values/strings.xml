@@ -59,9 +59,9 @@
   <string name="set_try_start_default_in_app_transfer_detail">打开默认设备时尝试应用流转(注: 设备指定包名后通过快捷方式启动时自动尝试应用流转无需打开此开关)</string>
   <string name="set_reconnect">显示重连对话框</string>
   <string name="set_reconnect_detail">设备异常断开时显示重连对话框</string>
-  <string name="set_countdown_reconnect">重连前等待时长 (秒)</string>
-  <string name="set_countdown_reconnect_detail">设备异常断开时自动重连前等待时长</string>
-  <string name="set_no_auto_reconnect">不自动重连</string>
+  <string name="set_auto_countdown">自动任务等待时长 (秒)</string>
+  <string name="set_auto_countdown_detail">设备异常断开时自动重连前或默认USB设备连接前等待时长</string>
+  <string name="set_no_auto_countdown">不自动确认</string>
   <string name="set_other_custom_key">自定义密钥(需重新授权)</string>
   <string name="set_other_clear_key">重新生成密钥(需重新授权)</string>
   <string name="set_other_clear_key_code">已刷新</string>
@@ -151,12 +151,15 @@
   <string name="tip_application_transfer">应用流转为实验性功能，部分手机系统可能不支持</string>
   <string name="tip_default_device">默认设备</string>
   <string name="tip_reconnect">设备异常断开，是否重新连接？</string>
+  <string name="tip_default_usb">检测到默认USB设备，是否连接？</string>
   <string name="confirm">确认</string>
   <string name="cancel">取消</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_startup_device">软件启动时打开</string>
   <string name="option_startup_device_detail">软件启动时自动连接此设备</string>
+  <string name="option_default_usb_device">默认USB设备</string>
+  <string name="option_default_usb_device_detail">软件启动或检测到此有线设备时自动连接</string>
   <string name="option_is_audio">传输音频</string>
   <string name="option_is_audio_detail">开启后将尝试传输音频，被控端需要安卓12或以上</string>
   <string name="option_clipboard_sync">剪贴板同步</string>

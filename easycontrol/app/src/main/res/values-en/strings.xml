@@ -59,9 +59,9 @@
   <string name="set_try_start_default_in_app_transfer_detail">Try application transfer when opening default device (Note: When the device specifies the package name, the application transfer is automatically attempted without turning on this)</string>
   <string name="set_reconnect">Show reconnect dialog</string>
   <string name="set_reconnect_detail">Display a dialog to attempt reconnection when the device is unexpectedly disconnected</string>
-  <string name="set_countdown_reconnect">Waiting time before reconnection (second)</string>
-  <string name="set_countdown_reconnect_detail">Waiting time before automatic reconnection when the device is unexpectedly disconnected</string>
-  <string name="set_no_auto_reconnect">Do not auto reconnect</string>
+  <string name="set_auto_countdown">Automatic task waiting time (seconds)</string>
+  <string name="set_auto_countdown_detail">Waiting time before automatic reconnection after device disconnection or before connecting to default USB device</string>
+  <string name="set_no_auto_countdown">Do not auto confirm</string>
   <string name="set_other_custom_key">Custom key (ADB reauthorization required)</string>
   <string name="set_other_clear_key">Regenerate the key (ADB reauthorization required)</string>
   <string name="set_other_clear_key_code">Regenerated</string>
@@ -151,12 +151,15 @@
   <string name="tip_application_transfer">Application transfer is an experimental feature, and some mobile phone systems do not support it</string>
   <string name="tip_default_device">Default device</string>
   <string name="tip_reconnect">Device disconnected abnormally. Reconnect?</string>
+  <string name="tip_default_usb">Default USB device detected. Connect?</string>
   <string name="confirm">Confirm</string>
   <string name="cancel">Cancel</string>
 
   <!-- 设备参数设置及注释说明 -->
   <string name="option_startup_device">Open when software starts</string>
   <string name="option_startup_device_detail">Automatically connect to this device when the software starts</string>
+  <string name="option_default_usb_device">Default USB device</string>
+  <string name="option_default_usb_device_detail">Automatically connect when the software starts or this wired device is detected</string>
   <string name="option_is_audio">Enable audio</string>
   <string name="option_is_audio_detail">Works with Android 12 and above</string>
   <string name="option_clipboard_sync">Clipboard sync</string>
