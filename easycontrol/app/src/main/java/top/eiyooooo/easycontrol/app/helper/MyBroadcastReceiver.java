@@ -208,6 +208,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
           AppData.dbHelper.insert(device);
         }
         DeviceListAdapter.linkDevices.put(uuid, usbDevice);
+        if (device.connectOnStart && DeviceListAdapter.startedDefault) ReconnectHelper.needStartDefaultUSB.add(device);
         if (deviceListAdapter != null) deviceListAdapter.update();
         break;
       }

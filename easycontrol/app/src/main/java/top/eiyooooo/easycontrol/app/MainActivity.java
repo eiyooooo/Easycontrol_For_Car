@@ -89,17 +89,30 @@ public class MainActivity extends Activity {
   @Override
   protected void onResume() {
     if (!AppData.setting.getAlwaysFullMode() && !haveOverlayPermission()) createAlert();
-    else if (!Client.allClient.isEmpty()) {
-      for (Client client : Client.allClient) {
-        if (client.clientView.viewMode == 3) {
-          client.clientView.changeToFull();
-          break;
+    else {
+      if (!Client.allClient.isEmpty()) {
+        for (Client client : Client.allClient) {
+          if (client.clientView.viewMode == 3) {
+            client.clientView.changeToFull();
+            break;
+          }
         }
       }
+      AppData.uiHandler.removeCallbacks(needStartDefaultUSB);
+      AppData.uiHandler.postDelayed(needStartDefaultUSB, 1000);
     }
     ReconnectHelper.status = true;
     super.onResume();
   }
+
+  private final Runnable needStartDefaultUSB = new Runnable() {
+    @Override
+    public void run() {
+      if (!ReconnectHelper.needStartDefaultUSB.isEmpty() && !ReconnectHelper.showingUSBDialog) {
+        reconnectHelper.showUSBDialog();
+      }
+    }
+  };
 
   // 检查权限
   private boolean haveOverlayPermission() {

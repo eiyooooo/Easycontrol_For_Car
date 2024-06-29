@@ -241,12 +241,12 @@ public final class Setting {
     editor.apply();
   }
 
-  public String getReconnectTime() {
-    return sharedPreferences.getString("reconnectTime", "5");
+  public String getCountdownTime() {
+    return sharedPreferences.getString("countdownTime", "5");
   }
 
-  public void setReconnectTime(String value) {
-    editor.putString("reconnectTime", value);
+  public void setCountdownTime(String value) {
+    editor.putString("countdownTime", value);
     editor.apply();
   }
 
