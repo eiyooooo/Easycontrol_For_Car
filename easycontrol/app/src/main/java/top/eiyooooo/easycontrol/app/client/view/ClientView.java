@@ -167,7 +167,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   public void updateMaxSize(Pair<Integer, Integer> maxSize) {
     if (maxSize == null || maxSize.first == 0 || maxSize.second == 0) return;
     this.maxSize = maxSize;
-    if (fullView != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
+    if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
       reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
     else reCalculateTextureViewSize();
   }
@@ -175,7 +175,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   public void updateVideoSize(Pair<Integer, Integer> videoSize) {
     if (videoSize == null || videoSize.first == 0 || videoSize.second == 0) return;
     this.videoSize = videoSize;
-    if (fullView != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
+    if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
       reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
     else reCalculateTextureViewSize();
   }
