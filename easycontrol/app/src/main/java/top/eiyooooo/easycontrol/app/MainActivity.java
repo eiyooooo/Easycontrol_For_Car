@@ -23,12 +23,12 @@ import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.helper.DeviceListAdapter;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
-import top.eiyooooo.easycontrol.app.helper.ReconnectHelper;
+import top.eiyooooo.easycontrol.app.helper.ConnectHelper;
 
 public class MainActivity extends Activity {
   // 设备列表
   private DeviceListAdapter deviceListAdapter;
-  private ReconnectHelper reconnectHelper;
+  private ConnectHelper connectHelper;
 
   // 创建界面
   private ActivityMainBinding mainActivity;
@@ -52,9 +52,9 @@ public class MainActivity extends Activity {
     deviceListAdapter = new DeviceListAdapter(this, mainActivity.devicesList);
     mainActivity.devicesList.setAdapter(deviceListAdapter);
     AppData.myBroadcastReceiver.setDeviceListAdapter(deviceListAdapter);
-    reconnectHelper = new ReconnectHelper(this);
-    AppData.myBroadcastReceiver.setReconnectHelper(reconnectHelper);
-    ReconnectHelper.status = true;
+    connectHelper = new ConnectHelper(this);
+    AppData.myBroadcastReceiver.setConnectHelper(connectHelper);
+    ConnectHelper.status = true;
     // 设置按钮监听
     setButtonListener();
     // 首次使用显示使用说明
@@ -74,20 +74,23 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onDestroy() {
+    AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
     AppData.myBroadcastReceiver.setDeviceListAdapter(null);
-    AppData.myBroadcastReceiver.setReconnectHelper(null);
-    ReconnectHelper.status = false;
+    AppData.myBroadcastReceiver.setConnectHelper(null);
+    ConnectHelper.status = false;
     super.onDestroy();
   }
 
   @Override
   protected void onPause() {
-    ReconnectHelper.status = false;
+    AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
+    ConnectHelper.status = false;
     super.onPause();
   }
 
   @Override
   protected void onResume() {
+    ConnectHelper.status = true;
     if (!AppData.setting.getAlwaysFullMode() && !haveOverlayPermission()) createAlert();
     else {
       if (!Client.allClient.isEmpty()) {
@@ -98,21 +101,11 @@ public class MainActivity extends Activity {
           }
         }
       }
-      AppData.uiHandler.removeCallbacks(needStartDefaultUSB);
-      AppData.uiHandler.postDelayed(needStartDefaultUSB, 1000);
+      AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
+      AppData.uiHandler.postDelayed(connectHelper.showStartDefaultUSB, 1000);
     }
-    ReconnectHelper.status = true;
     super.onResume();
   }
-
-  private final Runnable needStartDefaultUSB = new Runnable() {
-    @Override
-    public void run() {
-      if (!ReconnectHelper.needStartDefaultUSB.isEmpty() && !ReconnectHelper.showingUSBDialog) {
-        reconnectHelper.showUSBDialog();
-      }
-    }
-  };
 
   // 检查权限
   private boolean haveOverlayPermission() {

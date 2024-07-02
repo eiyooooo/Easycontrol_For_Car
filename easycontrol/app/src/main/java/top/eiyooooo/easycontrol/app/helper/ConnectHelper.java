@@ -23,18 +23,18 @@ import top.eiyooooo.easycontrol.app.databinding.ModuleDialogBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
 
-public class ReconnectHelper {
+public class ConnectHelper {
     public static boolean status;
 
     private final Context context;
 
-    public ReconnectHelper(Context c) {
+    public ConnectHelper(Context c) {
         context = c;
     }
 
-    public static void show(ReconnectHelper reconnectHelper, String uuid, int mode) {
-        if (reconnectHelper != null && (status || AppData.setting.getAlwaysFullMode())) {
-            AppData.uiHandler.post(() -> reconnectHelper.showDialog(uuid, mode));
+    public static void show(ConnectHelper connectHelper, String uuid, int mode) {
+        if (connectHelper != null && (status || AppData.setting.getAlwaysFullMode())) {
+            AppData.uiHandler.post(() -> connectHelper.showDialog(uuid, mode));
         } else if (haveOverlayPermission()) {
             showOverlay(uuid, mode);
         }
@@ -84,6 +84,14 @@ public class ReconnectHelper {
 
     public static final HashSet<Device> needStartDefaultUSB = new HashSet<>();
     public static boolean showingUSBDialog;
+    public final Runnable showStartDefaultUSB = new Runnable() {
+        @Override
+        public void run() {
+            if (status && !needStartDefaultUSB.isEmpty() && !showingUSBDialog) {
+                showUSBDialog();
+            }
+        }
+    };
 
     public void showUSBDialog() {
         showingUSBDialog = true;

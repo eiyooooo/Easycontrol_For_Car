@@ -28,7 +28,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
   public static final String ACTION_CONFIGURATION_CHANGED = "android.intent.action.CONFIGURATION_CHANGED";
 
   private DeviceListAdapter deviceListAdapter;
-  private ReconnectHelper reconnectHelper;
+  private ConnectHelper connectHelper;
 
   // 注册广播
   @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -72,8 +72,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     this.deviceListAdapter = deviceListAdapter;
   }
 
-  public void setReconnectHelper(ReconnectHelper reconnectHelper) {
-    this.reconnectHelper = reconnectHelper;
+  public void setConnectHelper(ConnectHelper connectHelper) {
+    this.connectHelper = connectHelper;
   }
 
   private void handleScreenOff() {
@@ -149,7 +149,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
   }
 
   public void handleReconnect(String uuid, int mode) {
-    ReconnectHelper.show(reconnectHelper, uuid, mode);
+    ConnectHelper.show(connectHelper, uuid, mode);
   }
 
   private void handleUSB(Context context, Intent intent) {
@@ -208,7 +208,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
           AppData.dbHelper.insert(device);
         }
         DeviceListAdapter.linkDevices.put(uuid, usbDevice);
-        if (device.connectOnStart && DeviceListAdapter.startedDefault) ReconnectHelper.needStartDefaultUSB.add(device);
+        if (device.connectOnStart && DeviceListAdapter.startedDefault) {
+          ConnectHelper.needStartDefaultUSB.add(device);
+          if (connectHelper != null && ConnectHelper.status) {
+            AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
+            AppData.uiHandler.postDelayed(connectHelper.showStartDefaultUSB, 1000);
+          }
+        }
         if (deviceListAdapter != null) deviceListAdapter.update();
         break;
       }
