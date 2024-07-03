@@ -84,8 +84,6 @@ public class MainActivity extends Activity {
     if (!Client.allClient.isEmpty()) {
       Client.allClient.get(0).clientView.changeToFull();
     }
-    AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
-    AppData.uiHandler.postDelayed(connectHelper.showStartDefaultUSB, 1000);
     super.onResume();
   }
 
