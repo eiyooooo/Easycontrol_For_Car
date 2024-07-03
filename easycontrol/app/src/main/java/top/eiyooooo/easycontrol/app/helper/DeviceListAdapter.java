@@ -306,6 +306,7 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     devicesList.clear();
     devicesList.addAll(tmp1);
     devicesList.addAll(tmp2);
+    if (!startedDefault && devicesList.isEmpty()) startedDefault = true;
   }
 
   public static void startByUUID(String uuid, int mode) {
