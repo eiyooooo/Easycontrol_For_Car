@@ -43,7 +43,7 @@
   <string name="set_display_default_show_nav_bar">Show navigation bar by default</string>
   <string name="set_display_default_show_nav_bar_detail">Sets whether the navigation bar is displayed by default</string>
   <string name="set_display_full_fill">Stretch and fill in Fullscreen mode</string>
-  <string name="set_display_full_fill_detail">Stretch the image to fill all available areas in Fullscreen mode</string>
+  <string name="set_display_full_fill_detail">Stretch the image to fill all available areas in full-screen mode (Note: No stretching if the aspect ratio difference is too large)</string>
   <string name="set_other">Other</string>
   <string name="set_audio_channel">Audio output channel</string>
   <string name="set_audio_channel_detail">Please keep 0 if there is no special need</string>
