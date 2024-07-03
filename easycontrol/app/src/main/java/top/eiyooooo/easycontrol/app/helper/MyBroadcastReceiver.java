@@ -148,8 +148,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     }
   }
 
-  public void handleReconnect(String uuid, int mode) {
-    ConnectHelper.show(connectHelper, uuid, mode);
+  public void handleReconnect(Device device, int mode) {
+    if (device.isLinkDevice() && !DeviceListAdapter.devicesList.contains(device)) return;
+    ConnectHelper.show(connectHelper, device.uuid, mode);
   }
 
   private void handleUSB(Context context, Intent intent) {
