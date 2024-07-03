@@ -69,6 +69,8 @@
   <string name="set_try_start_default_in_app_transfer_detail">Try application transfer when opening default device (Note: When the device specifies the package name, the application transfer is automatically attempted without turning on this)</string>
   <string name="set_reconnect">Show reconnect dialog</string>
   <string name="set_reconnect_detail">Display a dialog to attempt reconnection when the device is unexpectedly disconnected</string>
+  <string name="set_connect_usb">Show connect to default USB device dialog</string>
+  <string name="set_connect_usb_detail">Display the automatic connection dialog when the default USB device is detected; if disabled, connect automatically (APP must be on the main page)</string>
   <string name="set_auto_countdown">Automatic task waiting time (seconds)</string>
   <string name="set_auto_countdown_detail">Waiting time before automatic reconnection after device disconnection or before connecting to default USB device</string>
   <string name="set_no_auto_countdown">Do not auto confirm</string>

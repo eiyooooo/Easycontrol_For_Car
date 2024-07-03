@@ -69,6 +69,8 @@
   <string name="set_try_start_default_in_app_transfer_detail">打开默认设备时尝试应用流转(注: 设备指定包名后通过快捷方式启动时自动尝试应用流转无需打开此开关)</string>
   <string name="set_reconnect">显示重连对话框</string>
   <string name="set_reconnect_detail">设备异常断开时显示重连对话框</string>
+  <string name="set_connect_usb">显示连接默认USB设备对话框</string>
+  <string name="set_connect_usb_detail">检测到默认USB设备显示自动连接对话框，关闭则自动连接(软件需处于主页面)</string>
   <string name="set_auto_countdown">自动任务等待时长 (秒)</string>
   <string name="set_auto_countdown_detail">设备异常断开时自动重连前或默认USB设备连接前等待时长</string>
   <string name="set_no_auto_countdown">不自动确认</string>

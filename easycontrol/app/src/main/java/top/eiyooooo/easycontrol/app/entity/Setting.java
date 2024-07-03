@@ -241,6 +241,15 @@ public final class Setting {
     editor.apply();
   }
 
+  public boolean getShowConnectUSB() {
+    return sharedPreferences.getBoolean("showConnectUSB", true);
+  }
+
+  public void setShowConnectUSB(boolean value) {
+    editor.putBoolean("showConnectUSB", value);
+    editor.apply();
+  }
+
   public String getCountdownTime() {
     return sharedPreferences.getString("countdownTime", "5");
   }

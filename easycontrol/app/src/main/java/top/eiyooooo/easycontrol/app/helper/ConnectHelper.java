@@ -87,8 +87,17 @@ public class ConnectHelper {
     public final Runnable showStartDefaultUSB = new Runnable() {
         @Override
         public void run() {
-            if (status && !needStartDefaultUSB.isEmpty() && !showingUSBDialog) {
-                showUSBDialog();
+            if (status && !needStartDefaultUSB.isEmpty()) {
+                if (!AppData.setting.getShowConnectUSB()) {
+                    for (Map.Entry<String, Device> entry : needStartDefaultUSB.entrySet()) {
+                        DeviceListAdapter.startDevice(entry.getValue(), AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
+                        needStartDefaultUSB.remove(entry.getKey());
+                    }
+                    return;
+                }
+                if (!showingUSBDialog) {
+                    showUSBDialog();
+                }
             }
         }
     };
