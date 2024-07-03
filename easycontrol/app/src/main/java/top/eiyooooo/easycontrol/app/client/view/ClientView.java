@@ -210,20 +210,36 @@ public class ClientView implements TextureView.SurfaceTextureListener {
     this.fullView = fullView;
   }
 
+  private static final float aspectRatioThreshold = 0.15f;
+
   public void updateMaxSize(Pair<Integer, Integer> maxSize) {
     if (maxSize == null || maxSize.first == 0 || maxSize.second == 0) return;
     this.maxSize = maxSize;
-    if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
-      reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
-    else reCalculateTextureViewSize();
+    if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution))) {
+      if (videoSize != null) {
+        float fullMaxAspectRatio = (float) fullView.fullMaxSize.first / fullView.fullMaxSize.second;
+        float videoAspectRatio = (float) videoSize.first / videoSize.second;
+        if (Math.abs(fullMaxAspectRatio - videoAspectRatio) < aspectRatioThreshold) {
+          reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
+          return;
+        }
+      }
+    }
+    reCalculateTextureViewSize();
   }
 
   public void updateVideoSize(Pair<Integer, Integer> videoSize) {
     if (videoSize == null || videoSize.first == 0 || videoSize.second == 0) return;
     this.videoSize = videoSize;
-    if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution)))
-      reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
-    else reCalculateTextureViewSize();
+    if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution))) {
+      float fullMaxAspectRatio = (float) fullView.fullMaxSize.first / fullView.fullMaxSize.second;
+      float videoAspectRatio = (float) videoSize.first / videoSize.second;
+      if (Math.abs(fullMaxAspectRatio - videoAspectRatio) < aspectRatioThreshold) {
+        reCalculateTextureViewSize(fullView.fullMaxSize.first, fullView.fullMaxSize.second);
+        return;
+      }
+    }
+    reCalculateTextureViewSize();
   }
 
   public Pair<Integer, Integer> getVideoSize() {

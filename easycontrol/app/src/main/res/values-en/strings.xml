@@ -51,7 +51,7 @@
   <string name="set_display_full_to_mini_on_exit">Fullscreen auto minimize</string>
   <string name="set_display_full_to_mini_on_exit_detail">When fullscreen not manually exits, auto minimize it (Auto mini to floating window when close)</string>
   <string name="set_display_full_fill">Stretch and fill in Fullscreen mode</string>
-  <string name="set_display_full_fill_detail">Stretch the image to fill all available areas in Fullscreen mode</string>
+  <string name="set_display_full_fill_detail">Stretch the image to fill all available areas in full-screen mode (Note: No stretching if the aspect ratio difference is too large)</string>
   <string name="set_other">Other</string>
   <string name="set_audio_channel">Audio output channel</string>
   <string name="set_audio_channel_detail">Please keep 0 if there is no special need</string>
