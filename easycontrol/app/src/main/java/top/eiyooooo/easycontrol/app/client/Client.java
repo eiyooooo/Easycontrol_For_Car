@@ -352,7 +352,7 @@ public class Client {
     if (error != null) {
       PublicTools.logToast(error);
       if (AppData.setting.getShowReconnect())
-        AppData.uiHandler.postDelayed(() -> AppData.myBroadcastReceiver.handleReconnect(uuid, mode), 500);
+        AppData.uiHandler.postDelayed(() -> AppData.myBroadcastReceiver.handleReconnect(clientView.deviceOriginal, mode), 500);
     }
     for (int i = 0; i < 7; i++) {
       try {
