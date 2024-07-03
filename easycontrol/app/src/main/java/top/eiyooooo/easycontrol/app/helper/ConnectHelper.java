@@ -13,8 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ScrollView;
 
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import top.eiyooooo.easycontrol.app.R;
@@ -68,7 +68,7 @@ public class ConnectHelper {
             });
             reconnectView.buttonCancel.setOnClickListener(v -> dialog.cancel());
         } else {
-            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime, true);
+            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime, true, false);
             AppData.uiHandler.post(countdownRunnable);
             reconnectView.buttonConfirm.setOnClickListener(v -> {
                 AppData.uiHandler.removeCallbacks(countdownRunnable);
@@ -82,7 +82,7 @@ public class ConnectHelper {
         }
     }
 
-    public static final HashSet<Device> needStartDefaultUSB = new HashSet<>();
+    public static final HashMap<String, Device> needStartDefaultUSB = new HashMap<>();
     public static boolean showingUSBDialog;
     public final Runnable showStartDefaultUSB = new Runnable() {
         @Override
@@ -95,13 +95,13 @@ public class ConnectHelper {
 
     public void showUSBDialog() {
         showingUSBDialog = true;
-        ItemReconnectBinding reconnectView = ItemReconnectBinding.inflate(LayoutInflater.from(context));
-        reconnectView.text.setText(AppData.main.getString(R.string.tip_default_usb));
+        ItemReconnectBinding USBView = ItemReconnectBinding.inflate(LayoutInflater.from(context));
+        USBView.text.setText(AppData.main.getString(R.string.tip_default_usb));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
         ScrollView dialogView = ModuleDialogBinding.inflate(LayoutInflater.from(context)).getRoot();
-        dialogView.addView(reconnectView.getRoot());
+        dialogView.addView(USBView.getRoot());
         dialogView.setPadding(0, 0, 0, 0);
         builder.setView(dialogView);
         Dialog dialog = builder.create();
@@ -121,30 +121,26 @@ public class ConnectHelper {
             waitTime = 0;
         }
         if (waitTime == 0) {
-            reconnectView.buttonConfirm.setOnClickListener(v -> {
-                Iterator<Device> iterator = needStartDefaultUSB.iterator();
-                while (iterator.hasNext()) {
-                    Device device = iterator.next();
-                    DeviceListAdapter.startDevice(device, AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
-                    iterator.remove();
+            USBView.buttonConfirm.setOnClickListener(v -> {
+                for (Map.Entry<String, Device> entry : needStartDefaultUSB.entrySet()) {
+                    DeviceListAdapter.startDevice(entry.getValue(), AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
+                    needStartDefaultUSB.remove(entry.getKey());
                 }
                 dialog.cancel();
             });
-            reconnectView.buttonCancel.setOnClickListener(v -> dialog.cancel());
+            USBView.buttonCancel.setOnClickListener(v -> dialog.cancel());
         } else {
-            Runnable countdownRunnable = getCountdownRunnable(reconnectView, waitTime, true);
+            Runnable countdownRunnable = getCountdownRunnable(USBView, waitTime, true, true);
             AppData.uiHandler.post(countdownRunnable);
-            reconnectView.buttonConfirm.setOnClickListener(v -> {
+            USBView.buttonConfirm.setOnClickListener(v -> {
                 AppData.uiHandler.removeCallbacks(countdownRunnable);
-                Iterator<Device> iterator = needStartDefaultUSB.iterator();
-                while (iterator.hasNext()) {
-                    Device device = iterator.next();
-                    DeviceListAdapter.startDevice(device, AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
-                    iterator.remove();
+                for (Map.Entry<String, Device> entry : needStartDefaultUSB.entrySet()) {
+                    DeviceListAdapter.startDevice(entry.getValue(), AppData.setting.getTryStartDefaultInAppTransfer() ? 1 : 0);
+                    needStartDefaultUSB.remove(entry.getKey());
                 }
                 dialog.cancel();
             });
-            reconnectView.buttonCancel.setOnClickListener(v -> {
+            USBView.buttonCancel.setOnClickListener(v -> {
                 AppData.uiHandler.removeCallbacks(countdownRunnable);
                 dialog.cancel();
             });
@@ -176,7 +172,7 @@ public class ConnectHelper {
             });
             reconnectView.buttonCancel.setOnClickListener(v -> removeViewSafely(reconnectView.getRoot()));
         } else {
-            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime, false);
+            Runnable countdownRunnable = getCountdownRunnable(reconnectView, reconnectTime, false, false);
             AppData.uiHandler.post(countdownRunnable);
             reconnectView.buttonConfirm.setOnClickListener(v -> {
                 AppData.uiHandler.removeCallbacks(countdownRunnable);
@@ -190,22 +186,26 @@ public class ConnectHelper {
         }
     }
 
-    private static Runnable getCountdownRunnable(ItemReconnectBinding reconnectView, int reconnectTime, boolean detectStatus) {
+    private static Runnable getCountdownRunnable(ItemReconnectBinding view, int reconnectTime, boolean detectStatus, boolean USB) {
         final int[] secondsLeft = {reconnectTime};
         return new Runnable() {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
+                if (USB && needStartDefaultUSB.isEmpty()) {
+                    view.buttonCancel.performClick();
+                    return;
+                }
                 if (detectStatus && !status) {
-                    reconnectView.buttonConfirm.setText(AppData.main.getString(R.string.confirm));
+                    view.buttonConfirm.setText(AppData.main.getString(R.string.confirm));
                     return;
                 }
                 if (secondsLeft[0] > 0) {
-                    reconnectView.buttonConfirm.setText(AppData.main.getString(R.string.confirm) + " (" + secondsLeft[0] + "s)");
+                    view.buttonConfirm.setText(AppData.main.getString(R.string.confirm) + " (" + secondsLeft[0] + "s)");
                     secondsLeft[0]--;
                     AppData.uiHandler.postDelayed(this, 1000);
                 } else {
-                    reconnectView.buttonConfirm.performClick();
+                    view.buttonConfirm.performClick();
                 }
             }
         };

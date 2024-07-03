@@ -186,6 +186,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         for (Client client : Client.allClient) if (client.uuid.equals(entry.getKey())) client.release(AppData.main.getString(R.string.error_stream_closed));
         DeviceListAdapter.linkDevices.remove(entry.getKey());
         Adb.adbMap.remove(entry.getKey());
+        ConnectHelper.needStartDefaultUSB.remove(entry.getKey());
         break;
       }
     }
@@ -209,8 +210,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         }
         DeviceListAdapter.linkDevices.put(uuid, usbDevice);
         if (device.connectOnStart && DeviceListAdapter.startedDefault) {
-          ConnectHelper.needStartDefaultUSB.add(device);
-          if (connectHelper != null && ConnectHelper.status) {
+          ConnectHelper.needStartDefaultUSB.put(device.uuid, device);
+          if (connectHelper != null) {
             AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
             AppData.uiHandler.postDelayed(connectHelper.showStartDefaultUSB, 1000);
           }

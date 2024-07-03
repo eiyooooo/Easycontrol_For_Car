@@ -101,8 +101,6 @@ public class MainActivity extends Activity {
           }
         }
       }
-      AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
-      AppData.uiHandler.postDelayed(connectHelper.showStartDefaultUSB, 1000);
     }
     super.onResume();
   }
