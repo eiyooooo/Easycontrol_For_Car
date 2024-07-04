@@ -2,10 +2,6 @@ package top.eiyooooo.easycontrol.app.client.view;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.DisplayMetrics;

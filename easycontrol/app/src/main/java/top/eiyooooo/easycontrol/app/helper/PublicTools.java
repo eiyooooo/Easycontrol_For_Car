@@ -1,12 +1,10 @@
 package top.eiyooooo.easycontrol.app.helper;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -16,17 +14,12 @@ import android.media.MediaCodecList;
 import android.net.DhcpInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.hardware.SensorManager;
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.Handler;

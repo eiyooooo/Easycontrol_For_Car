@@ -1,6 +1,5 @@
 package top.eiyooooo.easycontrol.app.helper;
 
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;

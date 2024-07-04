@@ -5,7 +5,6 @@ import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.view.LayoutInflater;
 import android.view.View;
