@@ -7,9 +7,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.ScrollView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import top.eiyooooo.easycontrol.app.R;
 import top.eiyooooo.easycontrol.app.databinding.ItemReconnectBinding;
@@ -74,7 +74,7 @@ public class ConnectHelper {
         }
     }
 
-    public static final HashMap<String, Device> needStartDefaultUSB = new HashMap<>();
+    public static final Map<String, Device> needStartDefaultUSB = new ConcurrentHashMap<>();
     public static boolean showingUSBDialog;
     public final Runnable showStartDefaultUSB = new Runnable() {
         @Override
