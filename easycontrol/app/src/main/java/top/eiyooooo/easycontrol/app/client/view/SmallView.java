@@ -73,8 +73,8 @@ public class SmallView extends ViewOutlineProvider {
       clientView.device.small_l_p_height = shortEdge * 4 / 5;
       clientView.device.small_l_l_width = longEdge * 4 / 5;
       clientView.device.small_l_l_height = shortEdge * 4 / 5;
-      clientView.device.small_free_width = shortEdge * 4 / 5;
-      clientView.device.small_free_height = longEdge * 4 / 5;
+      clientView.device.small_free_width = shortEdge * 2 / 5;
+      clientView.device.small_free_height = shortEdge * 3 / 5;
     }
     // 设置监听控制
     setFloatVideoListener();
@@ -87,12 +87,19 @@ public class SmallView extends ViewOutlineProvider {
       if (InitSize < 2) return;
 
       if (clientView.mode == 1 && clientView.device.setResolution) {
+        boolean checkPosition = false;
         if (clientView.device.small_free_x == 0 && clientView.device.small_free_y == 0) {
           clientView.updateMaxSize(new Pair<>(clientView.device.small_free_width, clientView.device.small_free_height));
           ViewGroup.LayoutParams layoutParams = clientView.textureView.getLayoutParams();
-          smallViewParams.x = clientView.device.small_free_x = (shortEdge - layoutParams.width) / 2;
-          smallViewParams.y = clientView.device.small_free_y = (longEdge - layoutParams.height) / 2;
+          if (LocalIsPortrait()) {
+            smallViewParams.x = clientView.device.small_free_x = (shortEdge - layoutParams.width) / 2;
+            smallViewParams.y = clientView.device.small_free_y = (longEdge - layoutParams.height) / 2;
+          } else {
+            smallViewParams.x = clientView.device.small_free_x = (longEdge - layoutParams.width) / 2;
+            smallViewParams.y = clientView.device.small_free_y = (shortEdge - layoutParams.height) / 2;
+          }
           AppData.windowManager.updateViewLayout(smallView.getRoot(), smallViewParams);
+          checkPosition = true;
           InitPos = true;
         }
 
@@ -106,7 +113,34 @@ public class SmallView extends ViewOutlineProvider {
           smallViewParams.y = clientView.device.small_free_y;
           AppData.windowManager.updateViewLayout(smallView.getRoot(), smallViewParams);
           clientView.updateMaxSize(new Pair<>(clientView.device.small_free_width, clientView.device.small_free_height));
+          checkPosition = true;
           InitPos = true;
+        }
+
+        boolean LocalIsPortrait = LocalIsPortrait();
+        if (checkPosition || LocalIsPortrait != LastLocalIsPortrait) {
+          LastLocalIsPortrait = LocalIsPortrait;
+          view.postDelayed(() -> {
+            int[] location = new int[2];
+            view.getLocationOnScreen(location);
+            int viewRight = location[0] + view.getWidth();
+            int viewBottom = location[1] + view.getHeight();
+            int width, height;
+            if (LocalIsPortrait) {
+              width = shortEdge;
+              height = longEdge;
+            } else {
+              width = longEdge;
+              height = shortEdge;
+            }
+            if (location[0] < 0 || location[1] < 0 || viewRight > width || viewBottom > height) {
+              clientView.device.small_free_x = 0;
+              clientView.device.small_free_y = 0;
+              clientView.device.small_free_width = shortEdge * 2 / 5;
+              clientView.device.small_free_height = shortEdge * 3 / 5;
+              clientView.updateMaxSize(clientView.getMaxSize());
+            }
+          }, 500);
         }
         return;
       }
@@ -395,8 +429,8 @@ public class SmallView extends ViewOutlineProvider {
       clientView.device.small_l_p_height = shortEdge * 4 / 5;
       clientView.device.small_l_l_width = longEdge * 4 / 5;
       clientView.device.small_l_l_height = shortEdge * 4 / 5;
-      clientView.device.small_free_width = shortEdge * 4 / 5;
-      clientView.device.small_free_height = longEdge * 4 / 5;
+      clientView.device.small_free_width = shortEdge * 2 / 5;
+      clientView.device.small_free_height = shortEdge * 3 / 5;
       clientView.updateMaxSize(clientView.getMaxSize());
       barViewTimer();
     });
