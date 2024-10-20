@@ -282,6 +282,7 @@ public class Client {
   private static final int CLIPBOARD_EVENT = 3;
   private static final int CHANGE_SIZE_EVENT = 4;
   private static final int KEEP_ALIVE_EVENT = 5;
+  private static final int MODE_CHANGED_EVENT = 6;
 
   private void executeStreamVideo() {
     try {
@@ -328,6 +329,13 @@ public class Client {
             break;
           case KEEP_ALIVE_EVENT:
             lastKeepAliveTime = System.currentTimeMillis();
+            break;
+          case MODE_CHANGED_EVENT:
+            int mode = bufferStream.readInt();
+            if (mode == 0) {
+              PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_ended));
+            }
+            AppData.uiHandler.post(() -> changeMode(mode));
             break;
         }
       }

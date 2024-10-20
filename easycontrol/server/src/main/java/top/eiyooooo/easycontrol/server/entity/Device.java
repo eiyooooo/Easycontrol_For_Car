@@ -1,5 +1,8 @@
 package top.eiyooooo.easycontrol.server.entity;
 
+import android.app.ActivityManager;
+import android.app.ITaskStackListener;
+import android.app.TaskStackListener;
 import android.content.IOnPrimaryClipChangedListener;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -22,6 +25,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +51,8 @@ public final class Device {
         setRotationListener();
         // 折叠监听
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) setDisplayFoldListener();
+        // 任务监听
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) setTaskStackListener();
         // 剪切板监听
         setClipBoardListener();
         // 设置不息屏
@@ -153,6 +159,49 @@ public final class Device {
         });
     }
 
+    @SuppressWarnings("NewApi")
+    private static final TaskStackListener taskStackListener = new TaskStackListener() {
+        private final HashMap<Integer, Integer> monitoredTaskIds = new HashMap<>();
+
+        @Override
+        public void onTaskRemovalStarted(ActivityManager.RunningTaskInfo taskInfo) {
+            L.d("onTaskRemovalStarted taskId: " + taskInfo.taskId);
+            monitoredTaskIds.remove(taskInfo.taskId);
+            SwitchModeIfNoTasksInVD();
+        }
+
+        @Override
+        public void onTaskDisplayChanged(int taskId, int newDisplayId) {
+            L.d("onTaskDisplayChanged taskId: " + taskId + " newDisplayId: " + newDisplayId);
+            if (newDisplayId == Display.DEFAULT_DISPLAY) {
+                if (monitoredTaskIds.containsKey(taskId)) {
+                    monitoredTaskIds.remove(taskId);
+                    SwitchModeIfNoTasksInVD();
+                }
+            } else {
+                monitoredTaskIds.put(taskId, newDisplayId);
+            }
+        }
+
+        private void SwitchModeIfNoTasksInVD() {
+            if (displayId != Display.DEFAULT_DISPLAY && !monitoredTaskIds.containsValue(displayId)) {
+                L.d("No task in VD: " + displayId + ", switch to screen mirroring");
+                handleConfigChanged(0);
+                ControlPacket.sendModeChanged(0);
+            }
+        }
+    };
+
+    /** @noinspection JavaReflectionMemberAccess*/
+    private static void setTaskStackListener() {
+        try {
+            Object iam = ActivityManager.class.getMethod("getService").invoke(null);
+            Objects.requireNonNull(iam).getClass().getMethod("registerTaskStackListener", ITaskStackListener.class).invoke(iam, taskStackListener);
+        } catch (Exception e) {
+            L.e("setTaskStackListener error", e);
+        }
+    }
+
     private static final PointersState pointersState = new PointersState();
 
     public static void touchEvent(int action, Float x, Float y, int pointerId, int offsetTime) {
@@ -216,6 +265,8 @@ public final class Device {
                     IBinder token = SurfaceControl.getPhysicalDisplayToken(physicalDisplayId);
                     if (token != null) SurfaceControl.setDisplayPowerMode(token, mode);
                 }
+                if (mode == Display.STATE_UNKNOWN) ButtonMonitor.start();
+                else ButtonMonitor.stop();
                 return;
             } catch (Exception ignored) {
                 L.w("change power mode for all screens error, try built-in display");
@@ -224,6 +275,8 @@ public final class Device {
         try {
             IBinder d = SurfaceControl.getBuiltInDisplay();
             if (d != null) SurfaceControl.setDisplayPowerMode(d, mode);
+            if (mode == Display.STATE_UNKNOWN) ButtonMonitor.start();
+            else ButtonMonitor.stop();
         } catch (Exception e) {
             L.e("change screen power mode error", e);
         }

@@ -60,6 +60,18 @@ public final class ControlPacket {
         Scrcpy.writeMain(ByteBuffer.wrap(new byte[]{5}));
     }
 
+    public static void sendModeChanged(int mode) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(5);
+        byteBuffer.put((byte) 6);
+        byteBuffer.putInt(mode);
+        byteBuffer.flip();
+        try {
+            Scrcpy.writeMain(byteBuffer);
+        } catch (Exception e) {
+            Scrcpy.errorClose(e);
+        }
+    }
+
     public static void handleTouchEvent() throws IOException {
         int action = Scrcpy.inputStream.readByte();
         int pointerId = Scrcpy.inputStream.readByte();
