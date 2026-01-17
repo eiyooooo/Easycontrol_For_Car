@@ -26,7 +26,7 @@ public final class Setting {
   }
 
   public int getDefaultMaxSize() {
-    return sharedPreferences.getInt("defaultMaxSize", 1600);
+    return sharedPreferences.getInt("defaultMaxSize", 1920);
   }
 
   public void setDefaultMaxSize(int value) {
@@ -35,7 +35,7 @@ public final class Setting {
   }
 
   public int getDefaultMaxFps() {
-    return sharedPreferences.getInt("defaultMaxFps", 60);
+    return sharedPreferences.getInt("defaultMaxFps", 30);
   }
 
   public void setDefaultMaxFps(int value) {
@@ -107,7 +107,7 @@ public final class Setting {
   }
 
   public boolean getTurnOffScreenIfStart() {
-    return sharedPreferences.getBoolean("TurnOffScreenIfStart", false);
+    return sharedPreferences.getBoolean("TurnOffScreenIfStart", true);
   }
 
   public void setTurnOffScreenIfStart(boolean value) {
@@ -125,7 +125,7 @@ public final class Setting {
   }
 
   public boolean getTurnOnScreenIfStop() {
-    return sharedPreferences.getBoolean("TurnOnScreenIfStop", true);
+    return sharedPreferences.getBoolean("TurnOnScreenIfStop", false);
   }
 
   public void setTurnOnScreenIfStop(boolean value) {
@@ -152,7 +152,7 @@ public final class Setting {
   }
 
   public boolean getFillFull() {
-    return sharedPreferences.getBoolean("fillFull", false);
+    return sharedPreferences.getBoolean("fillFull", true);
   }
 
   public void setFillFull(boolean value) {
@@ -188,7 +188,7 @@ public final class Setting {
   }
 
   public boolean getShowReconnect() {
-    return sharedPreferences.getBoolean("showReconnect", true);
+    return sharedPreferences.getBoolean("showReconnect", false);
   }
 
   public void setShowReconnect(boolean value) {
@@ -197,7 +197,7 @@ public final class Setting {
   }
 
   public boolean getShowConnectUSB() {
-    return sharedPreferences.getBoolean("showConnectUSB", true);
+    return sharedPreferences.getBoolean("showConnectUSB", false);
   }
 
   public void setShowConnectUSB(boolean value) {
@@ -224,7 +224,7 @@ public final class Setting {
   }
 
   public boolean getEnableUSB() {
-    return sharedPreferences.getBoolean("enableUSB", true);
+    return sharedPreferences.getBoolean("enableUSB", false);
   }
 
   public void setEnableUSB(boolean value) {
