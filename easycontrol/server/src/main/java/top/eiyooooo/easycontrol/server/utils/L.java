@@ -77,15 +77,32 @@ public class L {
     private static PrintStream fileOut;
 
     public static void flush(StringBuilder sb) {
-        if (logMode != 2) {
+        // stdout 是 App 端的请求/响应协议流（二进制帧），日志文本行会挤错帧解析；
+        // logMode=1（Scrcpy 进程）的 stdout 连着 App 的 shell 协议流，同样不能输出
+        if (logMode != 1) {
             System.out.println(sb);
             System.out.flush();
         }
+        writeFile(sb);
+    }
 
-        if (logMode == 1) return;
+    // 只写文件与 logcat，不进 stdout。用于协议处理路径上的运行期日志（INPUT/RESPONSE 等）
+    public static void logToFile(String message) {
+        StringBuilder sb = new StringBuilder("DEBUG: <");
+        sb.append(DateFormat.format("HH:mm:ss", new java.util.Date())).append("> ");
+        sb.append(message);
+        Log.d("easycontrol_for_car", message);
+        writeFile(sb);
+    }
+
+    private static void writeFile(StringBuilder sb) {
+        // Scrcpy(logMode=1) 的日志也写文件，否则切换显示器失败等关键错误无法排查；
+        // append 模式，避免多进程（Server+Scrcpy、多会话）互相截断日志
         try {
             if (fileOut == null) {
-                fileOut = new PrintStream(new FileOutputStream("/data/local/tmp/easycontrol_for_car_log", false));
+                File logFile = new File("/data/local/tmp/easycontrol_for_car_log");
+                if (logFile.length() > 2 * 1024 * 1024) logFile.delete(); // 防止 append 模式下文件无限增长
+                fileOut = new PrintStream(new FileOutputStream("/data/local/tmp/easycontrol_for_car_log", true));
             }
             fileOut.println(sb);
         } catch (Exception ignored) {
@@ -97,7 +114,9 @@ public class L {
         new Thread(() -> {
             try {
                 File file = new File("/data/local/tmp/easycontrol_for_car_log");
-                long lastLength = 0;
+                // 只 tail 本进程启动后新增的日志；stdout 是 App 的请求/响应协议流，
+                // 全量输出历史日志会把响应挤错位导致 App 解析失败
+                long lastLength = file.length();
                 while (true) {
                     long fileLength = file.length();
                     if (fileLength > lastLength) {

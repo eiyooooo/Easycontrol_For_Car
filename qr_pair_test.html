@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyControl ADB 配对测试二维码生成器</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <style>
+    :root {
+      --bg: #f2f4f3; --card: #ffffff; --muted-card: #f5f7f6;
+      --text: #1f2621; --muted: #5f6b63; --border: #e3e8e5;
+      --brand: #16a34a; --brand-soft: #e7f5ec; --brand-text: #166534;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font: 400 15px/22px -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; justify-content: center; padding: 40px 16px;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 24px; max-width: 640px; width: 100%; height: fit-content;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+    .sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .body { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+    .qr-shell {
+      background: #fff; border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px; flex: none;
+    }
+    .qr-shell img { display: block; width: 220px; height: 220px; }
+    .fields { flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 14px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    input {
+      width: 100%; font: 400 14px/20px ui-monospace, Consolas, monospace;
+      background: var(--muted-card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; color: var(--text);
+    }
+    input:focus { outline: none; border-color: var(--brand); }
+    .content {
+      margin-top: 16px; font: 400 14px/20px ui-monospace, Consolas, monospace;
+      color: var(--brand-text); background: var(--brand-soft);
+      border-radius: 8px; padding: 10px 12px; word-break: break-all;
+    }
+    ol { margin-top: 16px; padding-left: 20px; color: var(--muted); font-size: 13px; }
+    ol li { margin-bottom: 8px; }
+    code { font-family: ui-monospace, Consolas, monospace; background: var(--muted-card); padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>EasyControl ADB 配对测试二维码</h1>
+    <div class="sub">模拟被控端「无线调试 → 使用二维码配对设备」生成的二维码（WIFI:T:ADB;S:…;P:…;;）</div>
+    <div class="body">
+      <div class="qr-shell"><img id="qr-img" alt="二维码"></div>
+      <div class="fields">
+        <div>
+          <label>服务名 S（真实格式 adb-&lt;serial&gt;-&lt;random&gt;，须与被控端 mDNS 实例名一致才能配对成功）</label>
+          <input id="f-s" value="adb-TEST-12345" spellcheck="false">
+        </div>
+        <div>
+          <label>配对密码 P（真实配对时为系统随机字符串）</label>
+          <input id="f-p" value="easycontrol-test" spellcheck="false">
+        </div>
+      </div>
+    </div>
+    <div class="content" id="qr-content">WIFI:T:ADB;S:adb-TEST-12345;P:easycontrol-test;;</div>
+    <ol>
+      <li>电脑浏览器打开本页，显示二维码。</li>
+      <li>控制端手机打开 App → 配对页 → 点「扫码配对」，对准电脑屏幕扫码。</li>
+      <li><b>验证扫码链路</b>：App 显示「正在查找配对服务…」，约 15 秒后超时提示——因为网络中不存在名为 <code>adb-TEST-12345</code> 的 mDNS 服务，属预期结果。</li>
+      <li><b>验证真实配对</b>：被控端（Android 11+）进入无线调试二维码配对界面后，可在其上用 <code>adb shell cmd adb mdns</code>（或 `adb mdns services`）查看实际 pairing 服务名，把实例名与密码填入上方输入框重新生成即可等效系统二维码。</li>
+    </ol>
+  </div>
+  <script>
+    (function () {
+      var img = document.getElementById('qr-img');
+      var content = document.getElementById('qr-content');
+      var fS = document.getElementById('f-s');
+      var fP = document.getElementById('f-p');
+      function update() {
+        var text = 'WIFI:T:ADB;S:' + fS.value + ';P:' + fP.value + ';;';
+        content.textContent = text;
+        try {
+          var qr = qrcode(0, 'M');
+          qr.addData(text);
+          qr.make();
+          img.src = qr.createDataURL(8, 12);
+        } catch (e) { /* 内容非法时不刷新 */ }
+      }
+      fS.addEventListener('input', update);
+      fP.addEventListener('input', update);
+      update();
+    })();
+  </script>
+</body>
+</html>

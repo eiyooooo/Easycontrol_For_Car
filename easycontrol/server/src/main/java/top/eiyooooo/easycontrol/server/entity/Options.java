@@ -16,6 +16,8 @@ public final class Options {
     public static boolean useH265 = true;
     public static boolean useOpus = true;
     public static int mirrorMode = 0;
+    // 应用流转指定应用的包名：非空时音频只采集该应用（按 uid 过滤），其他应用声音留在被控端
+    public static String audioPackage = "";
 
     public static void parse(String... args) {
         for (String arg : args) {
@@ -61,6 +63,9 @@ public final class Options {
                         break;
                     }
                     mirrorMode = Integer.parseInt(value);
+                    break;
+                case "audioPackage":
+                    audioPackage = value;
                     break;
             }
         }

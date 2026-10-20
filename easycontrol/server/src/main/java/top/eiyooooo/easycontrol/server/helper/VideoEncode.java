@@ -83,9 +83,21 @@ public final class VideoEncode {
         if (Options.mirrorMode == 1) {
             try {
                 VirtualDisplay virtualDisplay = virtualDisplays.get(Device.displayId);
-                if (virtualDisplay != null) virtualDisplay.release();
-                virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car",
-                        Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
+                if (virtualDisplay != null) {
+                    // 复用已有镜像显示器，避免反复增删显示器导致被控端系统服务异常（如三星SecondScreen崩溃循环）
+                    try {
+                        virtualDisplay.setSurface(surface);
+                        virtualDisplay.resize(Device.videoSize.first, Device.videoSize.second, getVirtualDisplayDensity(virtualDisplay));
+                    } catch (Exception e) {
+                        L.w("resize virtualDisplay error", e);
+                        virtualDisplay.release();
+                        virtualDisplay = null;
+                    }
+                }
+                if (virtualDisplay == null) {
+                    virtualDisplay = DisplayManager.createVirtualDisplay("easycontrol_for_car",
+                            Device.videoSize.first, Device.videoSize.second, Device.displayId, surface);
+                }
                 virtualDisplays.put(Device.displayId, virtualDisplay);
                 int displayId = virtualDisplay.getDisplay().getDisplayId();
                 WindowManager.freezeRotation(displayId, 0);
@@ -113,6 +125,16 @@ public final class VideoEncode {
         surface.release();
     }
 
+    private static int getVirtualDisplayDensity(VirtualDisplay virtualDisplay) {
+        try {
+            android.util.DisplayMetrics metrics = new android.util.DisplayMetrics();
+            virtualDisplay.getDisplay().getMetrics(metrics);
+            if (metrics.densityDpi > 0) return metrics.densityDpi;
+        } catch (Exception ignored) {
+        }
+        return 160;
+    }
+
     private static void setDisplaySurface(IBinder display, Surface surface) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         SurfaceControl.openTransaction();
         try {
@@ -127,17 +149,13 @@ public final class VideoEncode {
     private static final MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
 
     public static void encodeOut() throws IOException, ErrnoException {
-        try {
-            // 找到已完成的输出缓冲区
-            int outIndex;
-            do outIndex = encoder.dequeueOutputBuffer(bufferInfo, -1); while (outIndex < 0);
-            ByteBuffer buffer = encoder.getOutputBuffer(outIndex);
-            if (buffer == null) return;
-            ControlPacket.sendVideoEvent(bufferInfo.presentationTimeUs, buffer);
-            encoder.releaseOutputBuffer(outIndex, false);
-        } catch (IllegalStateException e) {
-            L.e("encodeOut error", e);
-        }
+        // 找到已完成的输出缓冲区
+        int outIndex;
+        do outIndex = encoder.dequeueOutputBuffer(bufferInfo, -1); while (outIndex < 0);
+        ByteBuffer buffer = encoder.getOutputBuffer(outIndex);
+        if (buffer == null) return;
+        ControlPacket.sendVideoEvent(bufferInfo.presentationTimeUs, buffer);
+        encoder.releaseOutputBuffer(outIndex, false);
     }
 
     public static void release() {

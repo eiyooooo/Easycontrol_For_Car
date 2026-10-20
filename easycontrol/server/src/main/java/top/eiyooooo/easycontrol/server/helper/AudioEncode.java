@@ -100,6 +100,7 @@ public final class AudioEncode {
         try {
             audioCapture.stop();
             audioCapture.release();
+            AudioCapture.releaseAffinity();
             encoder.stop();
             encoder.release();
         } catch (Exception e) {

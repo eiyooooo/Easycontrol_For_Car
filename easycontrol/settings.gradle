@@ -1,5 +1,9 @@
 pluginManagement {
   repositories {
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    // 阿里云未收录时兜底官方
     google()
     mavenCentral()
     gradlePluginPortal()
@@ -8,8 +12,11 @@ pluginManagement {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    google()
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    // 阿里云未收录时兜底官方
     mavenCentral()
+    google()
     maven { url "https://jitpack.io" }
   }
 }

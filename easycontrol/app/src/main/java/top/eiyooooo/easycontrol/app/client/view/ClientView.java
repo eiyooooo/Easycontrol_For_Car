@@ -24,6 +24,7 @@ import top.eiyooooo.easycontrol.app.entity.Device;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientView implements TextureView.SurfaceTextureListener {
   public final Device device;
@@ -78,8 +79,11 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   }
 
   public final AtomicBoolean changeSizeLock = new AtomicBoolean(false);
+  private final AtomicInteger changeSizeSeq = new AtomicInteger(0);
   public void changeSize(float ratio) {
     new Thread(() -> {
+      // 记录请求序号：连续拉伸时只应用最后一次，避免远端显示器频繁resize/编码器重启导致被控端UI重启
+      final int seq = changeSizeSeq.incrementAndGet();
       if (!changeSizeLock.get()) {
         try {
           synchronized (changeSizeLock) {
@@ -89,6 +93,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
         }
       }
       if (!changeSizeLock.get() || mode == 0 || displayId == 0) return;
+      if (seq != changeSizeSeq.get()) return;
       try {
         float targetRatio = ratio;
         if (targetRatio > 4 || targetRatio < 0.25) return;
@@ -121,6 +126,7 @@ public class ClientView implements TextureView.SurfaceTextureListener {
           }
         }
         if (deviceSize == null) return;
+        if (seq != changeSizeSeq.get()) return;
 
         int rotation = targetRatio > 1 ? 1 : 0;
 
@@ -141,9 +147,12 @@ public class ClientView implements TextureView.SurfaceTextureListener {
         if (newWidth == newHeight) newWidth -= 16;
 
         if (mode == 0 || displayId == 0) return;
+        // 目标尺寸与当前一致时不再调整，避免无谓触发远端显示器配置变更
+        if (Math.abs(newWidth - deviceSize.first) <= 16 && Math.abs(newHeight - deviceSize.second) <= 16) return;
         String output = Adb.getStringResponseFromServer(device, "resizeDisplay", "width=" + newWidth, "height=" + newHeight, "id=" + displayId);
 
         if (output.contains("success")) {
+          if (seq != changeSizeSeq.get()) return;
           Thread.sleep(500);
           if (displayId == 0) controlPacket.sendConfigChangedEvent(1);
           else controlPacket.sendConfigChangedEvent(2);
@@ -215,6 +224,12 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   public void updateMaxSize(Pair<Integer, Integer> maxSize) {
     if (maxSize == null || maxSize.first == 0 || maxSize.second == 0) return;
     this.maxSize = maxSize;
+    // 应用流转自由拉伸小窗：窗口尺寸即画面尺寸，直接铺满。不按 videoSize 比例 letterbox 重排——
+    // 否则远端分辨率尚未跟上时（尤其松手瞬间），窗口会被旧比例重排缩小
+    if (smallView != null && mode == 1 && device.setResolution && viewMode == 2) {
+      reCalculateTextureViewSize(maxSize.first, maxSize.second);
+      return;
+    }
     if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution))) {
       if (videoSize != null) {
         float fullMaxAspectRatio = (float) fullView.fullMaxSize.first / fullView.fullMaxSize.second;
@@ -231,6 +246,11 @@ public class ClientView implements TextureView.SurfaceTextureListener {
   public void updateVideoSize(Pair<Integer, Integer> videoSize) {
     if (videoSize == null || videoSize.first == 0 || videoSize.second == 0) return;
     this.videoSize = videoSize;
+    // 应用流转自由拉伸：远端分辨率已跟随窗口比例，画面直接铺满窗口（16对齐产生的微小比例误差由拉伸吸收），避免按视频比例letterbox重排导致窗口变小
+    if (mode == 1 && device.setResolution && viewMode == 2 && maxSize != null) {
+      reCalculateTextureViewSize(maxSize.first, maxSize.second);
+      return;
+    }
     if (fullView != null && fullView.fullMaxSize != null && (AppData.setting.getFillFull() || (mode == 1 && device.setResolution))) {
       float fullMaxAspectRatio = (float) fullView.fullMaxSize.first / fullView.fullMaxSize.second;
       float videoAspectRatio = (float) videoSize.first / videoSize.second;

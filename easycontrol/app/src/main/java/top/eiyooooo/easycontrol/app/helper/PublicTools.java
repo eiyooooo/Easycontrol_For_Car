@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.hardware.usb.UsbDevice;
 import android.media.MediaCodecInfo;
@@ -21,7 +22,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.*;
@@ -33,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +50,7 @@ import top.eiyooooo.easycontrol.app.client.Client;
 import top.eiyooooo.easycontrol.app.databinding.*;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
+import top.eiyooooo.easycontrol.app.entity.RemoteAppInfo;
 
 public class PublicTools {
 
@@ -210,14 +215,34 @@ public class PublicTools {
       itemAddDeviceBinding.scanAddress.setEnabled(false);
       new Thread(() -> {
         ArrayList<String> scannedAddresses = scanAddress();
+        // 并发获取扫描到的设备型号与系统版本（未授权或免验证关闭的设备仅显示地址）
+        ConcurrentHashMap<String, String> deviceInfoMap = new ConcurrentHashMap<>();
+        if (!scannedAddresses.isEmpty()) {
+          ExecutorService executor = Executors.newFixedThreadPool(scannedAddresses.size());
+          for (String addr : scannedAddresses) {
+            executor.execute(() -> {
+              try {
+                Adb adb = new Adb(addr, AppData.keyPair);
+                if (adb.model != null && !adb.model.isEmpty() && adb.version != null && !adb.version.isEmpty())
+                  deviceInfoMap.put(addr, adb.model + " · Android " + adb.version + " · " + addr);
+              } catch (Exception ignored) {
+              }
+            });
+          }
+          executor.shutdown();
+          try {
+            while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {}
+          } catch (InterruptedException ignored) {}
+        }
+        ArrayList<String> scannedDeviceInfos = new ArrayList<>();
+        for (String addr : scannedAddresses) scannedDeviceInfos.add(deviceInfoMap.getOrDefault(addr, addr));
         AppData.uiHandler.post(() -> {
           if (scannedAddresses.isEmpty()) Toast.makeText(context, context.getString(R.string.add_device_scan_address_finish_none), Toast.LENGTH_SHORT).show();
           else {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(context.getString(R.string.add_device_scan_finish));
-            builder.setItems(scannedAddresses.toArray(new String[0]), (dialog1, which) -> {
-              String address = scannedAddresses.get(which);
-              itemAddDeviceBinding.address.setText(address);
+            builder.setItems(scannedDeviceInfos.toArray(new String[0]), (dialog1, which) -> {
+              itemAddDeviceBinding.address.setText(scannedAddresses.get(which));
             });
             builder.show();
           }
@@ -233,18 +258,38 @@ public class PublicTools {
       itemAddDeviceBinding.specifiedAppTitle.setText(context.getString(R.string.add_device_scanning));
       itemAddDeviceBinding.scanRemoteAppList.setEnabled(false);
       new Thread(() -> {
-        ArrayList<String> remoteAppList = Client.getAppList(device, device.isLinkDevice() ? usbDevice : null);
+        ArrayList<RemoteAppInfo> remoteAppList = Client.getAppList(device, device.isLinkDevice() ? usbDevice : null);
         AppData.uiHandler.post(() -> {
           if (remoteAppList.isEmpty()) Toast.makeText(context, context.getString(R.string.add_device_scan_specify_app_finish_error), Toast.LENGTH_SHORT).show();
           else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle(context.getString(R.string.add_device_scan_finish));
-            builder.setItems(remoteAppList.toArray(new String[0]), (dialog1, which) -> {
-              String app = remoteAppList.get(which);
-              if (app.contains("@")) app = app.split("@")[1];
-              itemAddDeviceBinding.specifiedApp.setText(app);
+            // 自定义对话框：搜索框 + 图标/应用名/包名列表
+            DialogSearchableListBinding dialogBinding = DialogSearchableListBinding.inflate(LayoutInflater.from(context));
+            RemoteAppListAdapter adapter = new RemoteAppListAdapter(remoteAppList, LayoutInflater.from(context));
+            dialogBinding.appList.setAdapter(adapter);
+            dialogBinding.appSearch.addTextChangedListener(new TextWatcher() {
+              @Override
+              public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+              }
+
+              @Override
+              public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+              }
+
+              @Override
+              public void afterTextChanged(Editable s) {
+              }
             });
-            builder.show();
+            AlertDialog appListDialog = new AlertDialog.Builder(context)
+              .setTitle(context.getString(R.string.add_device_scan_finish))
+              .setView(dialogBinding.getRoot())
+              .setNegativeButton(R.string.add_device_button, null)
+              .create();
+            dialogBinding.appList.setOnItemClickListener((parent, view, position, id) -> {
+              itemAddDeviceBinding.specifiedApp.setText(adapter.getItem(position).packageName);
+              appListDialog.dismiss();
+            });
+            appListDialog.show();
           }
           itemAddDeviceBinding.specifiedAppTitle.setText(context.getString(R.string.add_device_specify_app));
           itemAddDeviceBinding.scanRemoteAppList.setEnabled(true);
@@ -1017,6 +1062,60 @@ public class PublicTools {
       mode = appOps.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
     } else mode = appOps.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
     return mode == AppOpsManager.MODE_ALLOWED;
+  }
+
+  // 远端应用列表适配器：图标 + 应用名/包名双行 + 搜索过滤
+  private static class RemoteAppListAdapter extends BaseAdapter {
+    private final ArrayList<RemoteAppInfo> allApps;
+    private final ArrayList<RemoteAppInfo> showApps = new ArrayList<>();
+    private final LayoutInflater inflater;
+
+    RemoteAppListAdapter(ArrayList<RemoteAppInfo> apps, LayoutInflater inflater) {
+      this.allApps = apps;
+      this.inflater = inflater;
+      showApps.addAll(apps);
+    }
+
+    void filter(String keyword) {
+      showApps.clear();
+      if (keyword == null || keyword.trim().isEmpty()) {
+        showApps.addAll(allApps);
+      } else {
+        String k = keyword.toLowerCase(Locale.ROOT);
+        for (RemoteAppInfo app : allApps) {
+          if (app.packageName.toLowerCase(Locale.ROOT).contains(k) || (app.label != null && app.label.toLowerCase(Locale.ROOT).contains(k))) {
+            showApps.add(app);
+          }
+        }
+      }
+      notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+      return showApps.size();
+    }
+
+    @Override
+    public RemoteAppInfo getItem(int position) {
+      return showApps.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+      return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      ItemAppListBinding binding = convertView == null ? ItemAppListBinding.inflate(inflater, parent, false) : ItemAppListBinding.bind(convertView);
+      RemoteAppInfo app = getItem(position);
+      Bitmap icon = app.getIcon();
+      if (icon != null) binding.appIcon.setImageBitmap(icon);
+      binding.appLabel.setText(app.label == null || app.label.isEmpty() ? app.packageName : app.label);
+      binding.appPackage.setText(app.packageName);
+      return binding.getRoot();
+    }
   }
 
   public interface MyFunction {

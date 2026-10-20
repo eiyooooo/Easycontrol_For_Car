@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingStart="16dp"
+  android:paddingTop="8dp"
+  android:paddingEnd="16dp"
+  android:paddingBottom="8dp">
+
+  <ImageView
+    android:id="@+id/app_icon"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:contentDescription="@string/add_device_specify_app"
+    android:src="@android:drawable/sym_def_app_icon" />
+
+  <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/app_label"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:includeFontPadding="false"
+      android:maxLines="1"
+      android:textColor="@color/onCardBackground"
+      android:textSize="@dimen/smallFont"
+      tools:text="应用名" />
+
+    <TextView
+      android:id="@+id/app_package"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="2dp"
+      android:ellipsize="end"
+      android:includeFontPadding="false"
+      android:maxLines="1"
+      android:textColor="@color/onCardBackgroundSecond"
+      android:textSize="@dimen/smallSmallFont"
+      tools:text="com.example.app" />
+
+  </LinearLayout>
+
+</LinearLayout>

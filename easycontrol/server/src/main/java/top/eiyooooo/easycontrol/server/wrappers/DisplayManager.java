@@ -1,11 +1,13 @@
 package top.eiyooooo.easycontrol.server.wrappers;
 
 import android.hardware.display.VirtualDisplay;
+import android.os.Build;
 import android.util.Pair;
 import android.view.Display;
 import android.view.Surface;
 import top.eiyooooo.easycontrol.server.Channel;
 import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
+import top.eiyooooo.easycontrol.server.helper.FakeContext;
 import top.eiyooooo.easycontrol.server.utils.L;
 
 import java.lang.reflect.Field;
@@ -112,7 +114,28 @@ public final class DisplayManager {
     }
 
     public static VirtualDisplay createVirtualDisplay(String name, int width, int height, int displayIdToMirror, Surface surface) throws Exception {
-        Method method = getCreateVirtualDisplayMethod();
-        return (VirtualDisplay) method.invoke(null, name, width, height, displayIdToMirror, surface);
+        try {
+            Method method = getCreateVirtualDisplayMethod();
+            return (VirtualDisplay) method.invoke(null, name, width, height, displayIdToMirror, surface);
+        } catch (Exception e) {
+            // Android 16 上 DisplayManager 内部方法变更（scrcpy #6234/#6331），回退公开 API 创建
+            L.w("createVirtualDisplay by internal method error, fallback to public api", e);
+            return createVirtualDisplayByPublicApi(name, width, height, surface);
+        }
+    }
+
+    // 公开 API 不支持指定被镜像的 displayId，只能镜像默认显示器内容
+    private static VirtualDisplay createVirtualDisplayByPublicApi(String name, int width, int height, Surface surface) throws Exception {
+        android.hardware.display.DisplayManager displayManager = android.hardware.display.DisplayManager.class
+                .getDeclaredConstructor(android.content.Context.class)
+                .newInstance(FakeContext.get());
+        int density = 0;
+        DisplayInfo defaultDisplay = getDisplayInfo(Display.DEFAULT_DISPLAY);
+        if (defaultDisplay != null) density = defaultDisplay.density;
+        int flags = 1 /* PUBLIC */ | 1 << 8 /* DESTROY_CONTENT_ON_REMOVAL */;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            flags |= 1 << 10 /* TRUSTED */ | 1 << 11 /* OWN_DISPLAY_GROUP */ | 1 << 12 /* ALWAYS_UNLOCKED */;
+        }
+        return displayManager.createVirtualDisplay(name, width, height, density, surface, flags);
     }
 }

@@ -47,6 +47,9 @@ public class Device {
   public int mini_y;
   public static int MINI_Y =200;
   public int connection = -1; // -1:未检查连接 0:检查连接中 1:可以连接 2:无法连接
+  // 设备型号与系统版本，连接检查时获取，不持久化
+  public String model;
+  public String version;
 
   public Device(String uuid,
                 int type,

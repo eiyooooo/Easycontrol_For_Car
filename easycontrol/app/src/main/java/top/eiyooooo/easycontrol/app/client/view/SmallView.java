@@ -1,14 +1,17 @@
 package top.eiyooooo.easycontrol.app.client.view;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Outline;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.*;
+import android.widget.ImageView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,6 +86,8 @@ public class SmallView extends ViewOutlineProvider {
     // 设置窗口监听
     smallView.textureViewLayout.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
       if (right == 0 || bottom == 0) return;
+      // 小窗尺寸变化时同步适配按钮面板宽度，避免面板超出投屏画面宽度
+      fitBarView();
       InitSize++;
       if (InitSize < 2) return;
 
@@ -299,6 +304,21 @@ public class SmallView extends ViewOutlineProvider {
     });
   }
 
+  // 把手上一次单击时间（双击检测）
+  private long lastBarTapTime = 0;
+
+  // 把手选中状态：长按超过 0.3 秒或开始拖动时高亮背景，触摸结束恢复透明
+  private final Runnable barSelectRunnable = this::setBarSelected;
+
+  private void setBarSelected() {
+    smallView.bar.setBackgroundTintList(ColorStateList.valueOf(AppData.main.getResources().getColor(R.color.clientBarSecond)));
+  }
+
+  private void clearBarSelected() {
+    smallView.bar.removeCallbacks(barSelectRunnable);
+    smallView.bar.setBackgroundTintList(ColorStateList.valueOf(AppData.main.getResources().getColor(R.color.translucent)));
+  }
+
   // 设置上横条监听控制
   @SuppressLint("ClickableViewAccessibility")
   private void setBarListener() {
@@ -315,6 +335,8 @@ public class SmallView extends ViewOutlineProvider {
           paramsX.set(smallViewParams.x);
           paramsY.set(smallViewParams.y);
           isFilp.set(false);
+          // 长按 0.3 秒显示选中状态
+          smallView.bar.postDelayed(barSelectRunnable, 300);
           break;
         }
         case MotionEvent.ACTION_MOVE: {
@@ -329,6 +351,9 @@ public class SmallView extends ViewOutlineProvider {
           }
           // 拖动限制，避免拖到状态栏
           if (y < statusBarHeight + 10) return true;
+          // 开始滑动显示选中状态
+          setBarSelected();
+          lastBarTapTime = 0;
           // 更新
           smallViewParams.x = paramsX.get() + flipX;
           smallViewParams.y = paramsY.get() + flipY;
@@ -360,10 +385,21 @@ public class SmallView extends ViewOutlineProvider {
           break;
         }
         case MotionEvent.ACTION_UP:
+          clearBarSelected();
           if (!isFilp.get()) {
-            changeBarView();
-            barViewTimer();
+            // 双击把手才显示/隐藏按钮面板（单击只计半拍）
+            long now = SystemClock.uptimeMillis();
+            if (now - lastBarTapTime < 300) {
+              lastBarTapTime = 0;
+              changeBarView();
+              barViewTimer();
+            } else {
+              lastBarTapTime = now;
+            }
           }
+          break;
+        case MotionEvent.ACTION_CANCEL:
+          clearBarSelected();
           break;
       }
       return true;
@@ -411,27 +447,7 @@ public class SmallView extends ViewOutlineProvider {
       barViewTimer();
     });
     smallView.resetLocation.setOnClickListener(v -> {
-      clientView.device.small_p_p_x = 0;
-      clientView.device.small_p_p_y = 0;
-      clientView.device.small_p_l_x = 0;
-      clientView.device.small_p_l_y = 0;
-      clientView.device.small_l_p_x = 0;
-      clientView.device.small_l_p_y = 0;
-      clientView.device.small_l_l_x = 0;
-      clientView.device.small_l_l_y = 0;
-      clientView.device.small_free_x = 0;
-      clientView.device.small_free_y = 0;
-      clientView.device.small_p_p_width = shortEdge * 4 / 5;
-      clientView.device.small_p_p_height = longEdge * 4 / 5;
-      clientView.device.small_p_l_width = shortEdge * 4 / 5;
-      clientView.device.small_p_l_height = longEdge * 4 / 5;
-      clientView.device.small_l_p_width = longEdge * 4 / 5;
-      clientView.device.small_l_p_height = shortEdge * 4 / 5;
-      clientView.device.small_l_l_width = longEdge * 4 / 5;
-      clientView.device.small_l_l_height = shortEdge * 4 / 5;
-      clientView.device.small_free_width = shortEdge * 2 / 5;
-      clientView.device.small_free_height = shortEdge * 3 / 5;
-      clientView.updateMaxSize(clientView.getMaxSize());
+      resetToDefaultSize();
       barViewTimer();
     });
     smallView.buttonPower.setOnClickListener(v -> {
@@ -440,19 +456,69 @@ public class SmallView extends ViewOutlineProvider {
     });
   }
 
+  // 重置为默认尺寸与位置
+  private void resetToDefaultSize() {
+    clientView.device.small_p_p_x = 0;
+    clientView.device.small_p_p_y = 0;
+    clientView.device.small_p_l_x = 0;
+    clientView.device.small_p_l_y = 0;
+    clientView.device.small_l_p_x = 0;
+    clientView.device.small_l_p_y = 0;
+    clientView.device.small_l_l_x = 0;
+    clientView.device.small_l_l_y = 0;
+    clientView.device.small_free_x = 0;
+    clientView.device.small_free_y = 0;
+    clientView.device.small_p_p_width = shortEdge * 4 / 5;
+    clientView.device.small_p_p_height = longEdge * 4 / 5;
+    clientView.device.small_p_l_width = shortEdge * 4 / 5;
+    clientView.device.small_p_l_height = longEdge * 4 / 5;
+    clientView.device.small_l_p_width = longEdge * 4 / 5;
+    clientView.device.small_l_p_height = shortEdge * 4 / 5;
+    clientView.device.small_l_l_width = longEdge * 4 / 5;
+    clientView.device.small_l_l_height = shortEdge * 4 / 5;
+    clientView.device.small_free_width = shortEdge * 2 / 5;
+    clientView.device.small_free_height = shortEdge * 3 / 5;
+    clientView.updateMaxSize(clientView.getMaxSize());
+  }
+
   // 导航栏隐藏
   private void setNavBarHide(boolean isShow) {
     smallView.navBar.setVisibility(isShow ? View.VISIBLE : View.GONE);
     smallView.buttonNavBar.setImageResource(isShow ? R.drawable.not_equal : R.drawable.equals);
   }
 
+
+
   private void changeBarView() {
     if (clientView == null) return;
     boolean toShowView = smallView.barView.getVisibility() == View.GONE;
+    if (toShowView) fitBarView();
     clientView.viewAnim(smallView.barView, toShowView, 0, PublicTools.dp2px(-40f), (isStart -> {
       if (isStart && toShowView) smallView.barView.setVisibility(View.VISIBLE);
       else if (!isStart && !toShowView) smallView.barView.setVisibility(View.GONE);
     }));
+  }
+
+  // 按钮面板宽度限制为不超过小窗（投屏画面）宽度：窗口足够宽时图标保持 38dp；不足时按窗口宽度缩小图标宽度
+  private void fitBarView() {
+    int windowWidth = smallView.textureViewLayout.getWidth();
+    if (windowWidth == 0) return;
+    // 面板自然宽度 = 5×(38dp图标+2dp×2边距) + 6dp内边距×2 = 222dp
+    int naturalWidth = PublicTools.dp2px(222f);
+    int iconWidth = PublicTools.dp2px(38f);
+    if (windowWidth < naturalWidth) {
+      // 窗口偏窄：图标宽度 = (面板宽-内边距) / 5列 - 每格边距
+      int fitWidth = Math.min(naturalWidth, windowWidth);
+      iconWidth = Math.max(PublicTools.dp2px(20f), (fitWidth - PublicTools.dp2px(12f)) / 5 - PublicTools.dp2px(4f) - 6);
+    }
+    ImageView[] buttons = {smallView.resetLocation, smallView.buttonNavBar, smallView.buttonMini, smallView.buttonFull, smallView.buttonRotate, smallView.buttonTransfer, smallView.buttonLight, smallView.buttonLightOff, smallView.buttonPower, smallView.buttonClose};
+    for (ImageView button : buttons) {
+      ViewGroup.LayoutParams layoutParams = button.getLayoutParams();
+      if (layoutParams.width != iconWidth) {
+        layoutParams.width = iconWidth;
+        button.setLayoutParams(layoutParams);
+      }
+    }
   }
 
   private void changeBar(int Show) {

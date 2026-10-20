@@ -7,6 +7,9 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,6 +137,13 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
     else
       devicesItemBinding.deviceIcon.setImageResource(R.drawable.wifi_can_not_connect);
     devicesItemBinding.deviceName.setText(device.name);
+    // 名称前显示设备型号与系统版本，使用不同颜色标记
+    if (device.model != null && device.version != null && !device.model.isEmpty() && !device.version.isEmpty()) {
+      String prefix = device.model + " · Android " + device.version + " · ";
+      SpannableString spanText = new SpannableString(prefix + device.name);
+      spanText.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.clientBar)), 0, prefix.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+      devicesItemBinding.deviceName.setText(spanText);
+    }
     // 单击事件
     devicesItemBinding.getRoot().setOnClickListener(v -> {
       if (expandableListView.isGroupExpanded(groupPosition))
@@ -222,6 +232,12 @@ public class DeviceListAdapter extends BaseExpandableListAdapter {
             Adb adb = new Adb(device.uuid, device.address, AppData.keyPair);
             Adb.adbMap.put(device.uuid, adb);
           }
+        }
+        // 型号与系统版本在Adb最开始连接时获取，此处读取用于列表名称前缀显示
+        Adb adb = Adb.adbMap.get(device.uuid);
+        if (adb != null) {
+          device.model = adb.model;
+          device.version = adb.version;
         }
         synchronized (checkingConnection) {
           checkingConnection.wait();

@@ -1,5 +1,8 @@
 package top.eiyooooo.easycontrol.server.entity;
 
+import android.app.ActivityManager;
+import android.app.ITaskStackListener;
+import android.app.TaskStackListener;
 import android.content.IOnPrimaryClipChangedListener;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -22,6 +25,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +51,8 @@ public final class Device {
         setRotationListener();
         // 折叠监听
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) setDisplayFoldListener();
+        // 任务监听
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) setTaskStackListener();
         // 剪切板监听
         setClipBoardListener();
         // 设置不息屏
@@ -65,6 +71,8 @@ public final class Device {
 
     private static void getDeviceSize() {
         DisplayInfo displayInfo = DisplayManager.getDisplayInfo(displayId);
+        // 显示器刚被销毁或跨进程传播延迟时保留旧尺寸，避免 NPE 中断编码线程
+        if (displayInfo == null) return;
         deviceSize = displayInfo.size;
         deviceRotation = displayInfo.rotation;
         layerStack = displayInfo.layerStack;
@@ -72,20 +80,44 @@ public final class Device {
     }
 
     public static void handleConfigChanged(int mode) {
+        L.d("handleConfigChanged mode=" + mode);
         if (mode <= 0) {
-            try {
-                DisplayInfo test = DisplayManager.getDisplayInfo(-mode);
-                if (test == null) throw new Exception();
-                displayId = -mode;
-                WindowManager.removeRotationWatcher();
-                setRotationListener();
-            } catch (Throwable e) {
-                L.w("failed to switch display");
-            }
+            // 切回镜像/切显示器：displayId 由异步线程更新（含重试），编码重启也在其成功路径触发；
+            // 此处若同步 getDeviceSize 会用旧 displayId 查到已销毁的显示器导致 NPE
+            switchDisplayAsync(-mode);
+            return;
         }
         getDeviceSize();
         if (mode == 1) needReset = true;
         VideoEncode.isHasChangeConfig = true;
+    }
+
+    // 切换编码/触摸目标显示器。虚拟显示器由 Server 进程创建，DisplayManager 的跨进程
+    // 传播有延迟，Scrcpy 进程立即查询可能拿到 null（竞态导致"有时流转失败"），
+    // 失败时异步重试，最多等 3 秒；期间触摸仍注入旧显示器，切换成功后自动恢复。
+    private static void switchDisplayAsync(int displayId) {
+        new Thread(() -> {
+            for (int i = 0; i < 15; i++) {
+                try {
+                    DisplayInfo test = DisplayManager.getDisplayInfo(displayId);
+                    if (test == null) throw new Exception("display not propagated yet");
+                    Device.displayId = displayId;
+                    WindowManager.removeRotationWatcher();
+                    setRotationListener();
+                    getDeviceSize();
+                    VideoEncode.isHasChangeConfig = true;
+                    L.d("switched to display " + displayId);
+                    return;
+                } catch (Throwable e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ie) {
+                        return;
+                    }
+                }
+            }
+            L.w("failed to switch display " + displayId);
+        }).start();
     }
 
     private static void getVideoSize() {
@@ -153,6 +185,59 @@ public final class Device {
         });
     }
 
+    @SuppressWarnings("NewApi")
+    private static final TaskStackListener taskStackListener = new TaskStackListener() {
+        private final HashMap<Integer, Integer> monitoredTaskIds = new HashMap<>();
+
+        @Override
+        public void onTaskRemovalStarted(ActivityManager.RunningTaskInfo taskInfo) {
+            L.d("onTaskRemovalStarted taskId: " + taskInfo.taskId);
+            monitoredTaskIds.remove(taskInfo.taskId);
+            SwitchModeIfNoTasksInVD();
+        }
+
+        @Override
+        public void onTaskDisplayChanged(int taskId, int newDisplayId) {
+            L.d("onTaskDisplayChanged taskId: " + taskId + " newDisplayId: " + newDisplayId);
+            if (newDisplayId == Display.DEFAULT_DISPLAY) {
+                if (monitoredTaskIds.containsKey(taskId)) {
+                    monitoredTaskIds.remove(taskId);
+                    SwitchModeIfNoTasksInVD();
+                }
+            } else {
+                monitoredTaskIds.put(taskId, newDisplayId);
+            }
+        }
+
+        private void SwitchModeIfNoTasksInVD() {
+            if (displayId == Display.DEFAULT_DISPLAY || monitoredTaskIds.containsValue(displayId)) return;
+            // 切换到虚拟显示器后客户端需要 1-2 秒才把任务移过来，立即判断会因竞态
+            // 在空窗期把刚流转的会话错误降级回镜像模式，延迟复核
+            L.d("No task in VD: " + displayId + ", recheck later");
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                if (displayId == Display.DEFAULT_DISPLAY || monitoredTaskIds.containsValue(displayId)) return;
+                L.d("No task in VD: " + displayId + ", switch to screen mirroring");
+                handleConfigChanged(0);
+                ControlPacket.sendModeChanged(0);
+            }).start();
+        }
+    };
+
+    /** @noinspection JavaReflectionMemberAccess*/
+    private static void setTaskStackListener() {
+        try {
+            Object iam = ActivityManager.class.getMethod("getService").invoke(null);
+            Objects.requireNonNull(iam).getClass().getMethod("registerTaskStackListener", ITaskStackListener.class).invoke(iam, taskStackListener);
+        } catch (Exception e) {
+            L.e("setTaskStackListener error", e);
+        }
+    }
+
     private static final PointersState pointersState = new PointersState();
 
     public static void touchEvent(int action, Float x, Float y, int pointerId, int offsetTime) {
@@ -216,6 +301,8 @@ public final class Device {
                     IBinder token = SurfaceControl.getPhysicalDisplayToken(physicalDisplayId);
                     if (token != null) SurfaceControl.setDisplayPowerMode(token, mode);
                 }
+                if (mode == Display.STATE_UNKNOWN) ButtonMonitor.start();
+                else ButtonMonitor.stop();
                 return;
             } catch (Exception ignored) {
                 L.w("change power mode for all screens error, try built-in display");
@@ -224,6 +311,8 @@ public final class Device {
         try {
             IBinder d = SurfaceControl.getBuiltInDisplay();
             if (d != null) SurfaceControl.setDisplayPowerMode(d, mode);
+            if (mode == Display.STATE_UNKNOWN) ButtonMonitor.start();
+            else ButtonMonitor.stop();
         } catch (Exception e) {
             L.e("change screen power mode error", e);
         }

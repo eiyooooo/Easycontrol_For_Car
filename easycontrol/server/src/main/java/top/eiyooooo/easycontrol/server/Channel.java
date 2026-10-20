@@ -16,14 +16,15 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.MediaCodec;
 import android.os.Build;
 import android.os.Looper;
+import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.Surface;
 import android.view.SurfaceView;
 import org.json.JSONArray;
@@ -41,6 +42,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Channel {
     DisplayMetrics displayMetrics;
@@ -69,18 +74,18 @@ public class Channel {
                     dm.registerDisplayListener(new DisplayManager.DisplayListener() {
                         @Override
                         public void onDisplayAdded(int displayId) {
-                            L.d("onDisplayAdded invoked displayId:" + displayId);
+                            L.logToFile("onDisplayAdded invoked displayId:" + displayId);
                         }
 
                         @Override
                         public void onDisplayRemoved(int displayId) {
-                            L.d("onDisplayRemoved invoked displayId:" + displayId);
+                            L.logToFile("onDisplayRemoved invoked displayId:" + displayId);
 
                         }
 
                         @Override
                         public void onDisplayChanged(int displayId) {
-                            L.d("onDisplayChanged invoked displayId:" + displayId);
+                            L.logToFile("onDisplayChanged invoked displayId:" + displayId);
                         }
                     }, null);
 
@@ -126,7 +131,13 @@ public class Channel {
         return path;
     }
 
-    public synchronized Bitmap Drawable2Bitmap(String packageName) throws
+    public Bitmap Drawable2Bitmap(String packageName) throws
+            InvocationTargetException, IllegalAccessException {
+        return Drawable2Bitmap(packageName, 0);
+    }
+
+    // size > 0 时直接按目标尺寸绘制，避免先解码全尺寸 bitmap 再缩放的双重开销
+    public Bitmap Drawable2Bitmap(String packageName, int size) throws
             InvocationTargetException, IllegalAccessException {
         Drawable icon;
 
@@ -160,27 +171,29 @@ public class Channel {
             return null;
         }
 
-        return Drawable2Bitmap(icon);
+        return Drawable2Bitmap(icon, size);
     }
 
     private Bitmap Drawable2Bitmap(Drawable icon) {
+        return Drawable2Bitmap(icon, 0);
+    }
+
+    private Bitmap Drawable2Bitmap(Drawable icon, int size) {
         try {
             if (icon == null) return null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && icon instanceof AdaptiveIconDrawable) {
-                Bitmap bitmap = Bitmap.createBitmap(icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                icon.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                icon.draw(canvas);
-                return bitmap;
-            } else {
-                int w = icon.getIntrinsicWidth();
-                int h = icon.getIntrinsicHeight();
-                Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                icon.setBounds(0, 0, w, h);
-                icon.draw(canvas);
-                return bitmap;
+            int w = icon.getIntrinsicWidth();
+            int h = icon.getIntrinsicHeight();
+            if (w <= 0 || h <= 0) {
+                w = size > 0 ? size : 48;
+                h = w;
             }
+            int tw = (size > 0 && (w > size || h > size)) ? size : w;
+            int th = (size > 0 && (w > size || h > size)) ? size : h;
+            Bitmap bitmap = Bitmap.createBitmap(tw, th, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            icon.setBounds(0, 0, tw, th);
+            icon.draw(canvas);
+            return bitmap;
         } catch (Exception e) {
             return null;
         }
@@ -221,34 +234,73 @@ public class Channel {
     }
 
     public String getAllAppInfo(int appType) throws InvocationTargetException, IllegalAccessException {
+        return getAllAppInfo(appType, false);
+    }
+
+    public String getAllAppInfo(int appType, boolean withIcon) throws InvocationTargetException, IllegalAccessException {
+        long t0 = android.os.SystemClock.elapsedRealtime();
         List<String> packages = getAppPackages();
-        if (packages == null) {
-            return "";
-        }
+        long t1 = android.os.SystemClock.elapsedRealtime();
+        // 每个应用需要 2 次包信息 binder 查询 + 图标解码，应用多时串行非常慢，并行预生成各行文本后按原顺序拼装
+        int threads = Math.min(4, Math.max(1, Runtime.getRuntime().availableProcessors() - 2));
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
         StringBuilder builder = new StringBuilder();
-        for (String packageName : packages) {
-            PackageInfo packageInfo = getPackageInfo(packageName);
-            if (packageInfo == null) continue;
-            int resultTag = packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM;
-            if (appType != 0) {
-                if (appType == 1) {
-                    if (resultTag > 0) {
-                        // system app
-                        continue;
+        int lines = 0;
+        try {
+            List<Future<String>> futures = new ArrayList<>();
+            for (String packageName : packages) {
+                futures.add(executor.submit(() -> buildAppInfoLine(packageName, appType, withIcon)));
+            }
+            for (Future<String> future : futures) {
+                try {
+                    String line = future.get();
+                    if (line != null) {
+                        builder.append(line);
+                        lines++;
                     }
-                } else {
-                    if (resultTag == 0) {
-                        // user app
-                        continue;
-                    }
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+                    // 包信息反射查询失败按原语义向上抛（请求失败），其他异常跳过该应用
+                    if (cause instanceof InvocationTargetException) throw (InvocationTargetException) cause;
+                    if (cause instanceof IllegalAccessException) throw (IllegalAccessException) cause;
+                    L.e("getAllAppInfo", cause);
                 }
             }
-            phasePackageInfo(builder, packageInfo);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            executor.shutdown();
         }
+        L.d("getAllAppInfo: apps=" + lines + "/" + packages.size() + " threads=" + threads + " icon=" + withIcon
+                + " getPackages=" + (t1 - t0) + "ms queryAndIcon=" + (android.os.SystemClock.elapsedRealtime() - t1) + "ms");
         return builder.toString().trim();
     }
 
-    private void phasePackageInfo(StringBuilder builder, PackageInfo packageInfo) {
+    // 生成单个应用的信息行（被过滤或查询失败返回 null）
+    private String buildAppInfoLine(String packageName, int appType, boolean withIcon) throws InvocationTargetException, IllegalAccessException {
+        PackageInfo packageInfo = getPackageInfo(packageName);
+        if (packageInfo == null) return null;
+        int resultTag = packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM;
+        if (appType != 0) {
+            if (appType == 1) {
+                if (resultTag > 0) {
+                    // system app
+                    return null;
+                }
+            } else {
+                if (resultTag == 0) {
+                    // user app
+                    return null;
+                }
+            }
+        }
+        String iconBase64 = withIcon ? getIconBase64(packageInfo.applicationInfo.packageName, 64) : null;
+        StringBuilder line = new StringBuilder();
+        phasePackageInfo(line, packageInfo, iconBase64);
+        return line.toString();
+    }
+
+    private void phasePackageInfo(StringBuilder builder, PackageInfo packageInfo, String iconBase64) {
         ApplicationInfo applicationInfo = packageInfo.applicationInfo;
         builder.append(applicationInfo.packageName);
         builder.append("<!@r@!>").append(getLabel(applicationInfo));
@@ -277,7 +329,70 @@ public class Channel {
         }
         builder.append("<!@r@!>").append(applicationInfo.uid);
         builder.append("<!@r@!>").append(applicationInfo.sourceDir);
+        if (iconBase64 != null) {
+            builder.append("<!@r@!>").append(iconBase64);
+        }
         builder.append("<!@n@!>");
+    }
+
+    // 图标 base64 数据上限
+    private static final int MAX_ICON_BYTES = 16 * 1024;
+
+    // 获取应用图标并转为 base64 字符串（失败返回 null）
+    public String getIconBase64(String packageName, int size) {
+        try {
+            Bitmap bitmap = Drawable2Bitmap(packageName, size);
+            if (bitmap == null) return "null";
+            byte[] bytes = compressIcon(bitmap);
+            return Base64.encodeToString(bytes, Base64.NO_WRAP);
+        } catch (Exception e) {
+            L.e("getIconBase64 " + packageName, e);
+            return "null";
+        }
+    }
+
+    // 图标压缩到 16KB 以内；负责回收传入的 bitmap
+    // API 30+ 用有损 WEBP（体积小、新编码器快）逐级降质量；旧系统 legacy WEBP 编码极慢，改用 PNG（quality 无效）+ 缩尺寸控制体积
+    private byte[] compressIcon(Bitmap bitmap) {
+        byte[] bytes = new byte[0];
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                int[] qualities = {90, 75, 50, 30};
+                while (true) {
+                    for (int quality : qualities) {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, quality, stream);
+                        bytes = stream.toByteArray();
+                        stream.close();
+                        if (bytes.length <= MAX_ICON_BYTES) return bytes;
+                    }
+                    int width = bitmap.getWidth();
+                    if (width <= 32) return bytes;
+                    int newWidth = Math.max(32, width / 2);
+                    Bitmap scaled = Bitmap.createScaledBitmap(bitmap, newWidth, newWidth, true);
+                    bitmap.recycle();
+                    bitmap = scaled;
+                }
+            }
+            // 旧系统：PNG 无损，降质量无效，直接缩尺寸直到满足
+            while (true) {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                bytes = stream.toByteArray();
+                stream.close();
+                int width = bitmap.getWidth();
+                if (bytes.length <= MAX_ICON_BYTES || width <= 32) return bytes;
+                int newWidth = Math.max(32, width / 2);
+                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, newWidth, newWidth, true);
+                bitmap.recycle();
+                bitmap = scaled;
+            }
+        } catch (Exception e) {
+            L.e("compressIcon", e);
+            return bytes;
+        } finally {
+            bitmap.recycle();
+        }
     }
 
     public String getLabel(ApplicationInfo info) {
@@ -441,21 +556,29 @@ public class Channel {
         return jsonObjectResult;
     }
 
-    public VirtualDisplay createVirtualDisplay(int width, int height, int density) throws Exception {
+    public Pair<VirtualDisplay, Surface> createVirtualDisplay(int width, int height, int density) throws Exception {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             throw new Exception("Virtual display is not supported before Android 11");
-        Surface surface;
-        try {
-            SurfaceView surfaceView = new SurfaceView(FakeContext.get());
-            surface = surfaceView.getHolder().getSurface();
-        } catch (Exception ignored) {
-            L.w("Failed to create SurfaceView, trying MediaCodec");
+        Surface surface = null;
+		try {
             surface = MediaCodec.createPersistentInputSurface();
+        } catch (Exception ignored) {
+            L.w("Failed to create MediaCodec persistent input surface");
+        }
+        
+        if (surface == null) {
+            try {
+	            SurfaceView surfaceView = new SurfaceView(FakeContext.get());
+	            surface = surfaceView.getHolder().getSurface();
+	        } catch (Exception ignored) {
+	            L.w("Failed to create SurfaceView, trying MediaCodec");
+	        }
         }
         if (surface == null) throw new Exception("Failed to create surface");
         android.hardware.display.DisplayManager displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(FakeContext.get());
         int flags = getVirtualDisplayFlags();
-        return displayManager.createVirtualDisplay("easycontrol_for_car", width, height, density, surface, flags);
+        VirtualDisplay virtualDisplay = displayManager.createVirtualDisplay("easycontrol_for_car", width, height, density, surface, flags);
+        return new Pair<>(virtualDisplay, surface);
     }
 
     private static int getVirtualDisplayFlags() {

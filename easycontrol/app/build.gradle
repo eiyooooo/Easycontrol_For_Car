@@ -1,10 +1,11 @@
 plugins {
-  id 'com.android.application' version '8.1.3'
+  id 'com.android.application' version '9.4.1'
 }
 
 android {
   namespace 'top.eiyooooo.easycontrol.app'
-  compileSdk 34
+  compileSdk 37
+  compileSdkMinor 2
 
   defaultConfig {
     applicationId 'top.eiyooooo.easycontrol.app'
@@ -17,8 +18,9 @@ android {
     }
   }
 
-  viewBinding {
-    enabled = true
+  buildFeatures {
+    viewBinding = true
+    buildConfig = true
   }
 
   buildTypes {
@@ -40,8 +42,10 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
-  packagingOptions {
-    resources.excludes.add("META-INF/*")
+  packaging {
+    resources {
+      excludes += "META-INF/*"
+    }
   }
 
 }

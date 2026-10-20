@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.entity.Device;
+import top.eiyooooo.easycontrol.app.entity.RemoteAppInfo;
 import top.eiyooooo.easycontrol.app.helper.EventMonitor;
 import top.eiyooooo.easycontrol.app.helper.L;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
@@ -57,6 +58,8 @@ public class Client {
   private final Thread loadingTimeOutThread;
   private final Thread keepAliveThread;
   private static final int timeoutDelay = 5 * 1000;
+  // 加载超时：与被控端 Scrcpy 启动握手超时（15 秒）对齐，否则 App 端先超时误判连接失败
+  private static final int loadingTimeoutDelay = 15 * 1000;
   private long lastKeepAliveTime;
   public int multiLink = 0; // 0为单连接，1为多连接主，2为多连接从
 
@@ -92,7 +95,7 @@ public class Client {
     // 连接
     loadingTimeOutThread = new Thread(() -> {
       try {
-        Thread.sleep(timeoutDelay);
+        Thread.sleep(loadingTimeoutDelay);
         if (startThread != null) startThread.interrupt();
         if (loading.first.getParent() != null) AppData.windowManager.removeView(loading.first);
         release(null);
@@ -139,7 +142,15 @@ public class Client {
 
   // 连接ADB
   private static Adb connectADB(Device device, UsbDevice usbDevice) throws Exception {
-    if (Adb.adbMap.containsKey(device.uuid)) return Adb.adbMap.get(device.uuid);
+    if (Adb.adbMap.containsKey(device.uuid)) {
+      Adb cached = Adb.adbMap.get(device.uuid);
+      try {
+        // 设备重启/网络切换后 TCP 可能半开（本端不触发断线回调，缓存残留死连接），复用前探测
+        if ("ok".equals(cached.runAdbCmd("echo ok").trim())) return cached;
+      } catch (Exception ignored) {
+      }
+      cached.close();
+    }
     Adb adb;
     if (usbDevice == null) adb = new Adb(device.uuid, device.address, AppData.keyPair);
     else adb = new Adb(device.uuid, usbDevice, AppData.keyPair);
@@ -162,13 +173,18 @@ public class Client {
     if (device.maxFps != 60) cmd.append(" maxFps=").append(device.maxFps);
     if (device.maxVideoBit != 4) cmd.append(" maxVideoBit=").append(device.maxVideoBit);
     if (displayId != 0) cmd.append(" displayId=").append(displayId);
+    // 流转会话按 uid 过滤音频采集：控制端只播放指定应用的声音，被控端其他应用声音留在本机（Android 16+）
+    // 注意：流转的虚拟显示器在连接后才创建，Scrcpy 启动时 displayId 恒为 0，判断要用会话模式而不是 displayId
+    if (mode == 1 && !device.specified_app.isEmpty()) cmd.append(" audioPackage=").append(device.specified_app);
     if (AppData.setting.getNewMirrorMode()) cmd.append(" mirrorMode=1");
     if (!AppData.setting.getKeepAwake()) cmd.append(" keepAwake=0");
     if (ScreenMode != 1001) cmd.append(" ScreenMode=").append(ScreenMode);
     if (!(device.useH265 && supportH265)) cmd.append(" useH265=0");
     if (!(device.useOpus && supportOpus)) cmd.append(" useOpus=0");
-    cmd.append(" \n");
-    shell.write(ByteBuffer.wrap(cmd.toString().getBytes()));
+    // root shell 下同样要降权运行编码器进程，否则 Android 13 上编码器 createVirtualDisplay/音频归因失败
+    // 注意：命令必须以换行结尾，交互式 shell 收到换行才会执行；wrapServerCmd 后补回换行
+    String scrcpyCmd = adb.wrapServerCmd(cmd.toString().trim());
+    shell.write(ByteBuffer.wrap((scrcpyCmd + " \n").getBytes()));
     logger();
   }
 
@@ -196,10 +212,12 @@ public class Client {
       if (output.contains("success")) {
         displayId = Integer.parseInt(output.substring(output.lastIndexOf(" -> ") + 4));
         clientView.displayId = displayId;
+        L.logWithoutTime(uuid, "tryCreateDisplay success, displayId=" + displayId);
         changeMode(1);
         PublicTools.logToast(AppData.main.getString(R.string.tip_application_transfer));
-      } else throw new Exception("");
-    } catch (Exception ignored) {
+      } else throw new Exception("createVirtualDisplay response: " + output);
+    } catch (Exception e) {
+      L.logWithoutTime(uuid, "tryCreateDisplay failed: " + e);
       changeMode(0);
       PublicTools.logToast(AppData.main.getString(R.string.error_create_display));
     }
@@ -255,8 +273,9 @@ public class Client {
           if (output.contains("Exception")) throw new Exception("");
         } else throw new Exception("");
       }
-    } catch (Exception ignored) {
+    } catch (Exception e) {
       specifiedTransferred = true;
+      L.logWithoutTime(uuid, "appTransfer failed: " + e);
       changeMode(0);
       PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_failed));
     }
@@ -282,6 +301,7 @@ public class Client {
   private static final int CLIPBOARD_EVENT = 3;
   private static final int CHANGE_SIZE_EVENT = 4;
   private static final int KEEP_ALIVE_EVENT = 5;
+  private static final int MODE_CHANGED_EVENT = 6;
 
   private void executeStreamVideo() {
     try {
@@ -328,6 +348,13 @@ public class Client {
             break;
           case KEEP_ALIVE_EVENT:
             lastKeepAliveTime = System.currentTimeMillis();
+            break;
+          case MODE_CHANGED_EVENT:
+            int mode = bufferStream.readInt();
+            if (mode == 0) {
+              PublicTools.logToast(AppData.main.getString(R.string.error_transfer_app_ended));
+            }
+            AppData.uiHandler.post(() -> changeMode(mode));
             break;
         }
       }
@@ -429,18 +456,18 @@ public class Client {
     }).start();
   }
 
-  public static ArrayList<String> getAppList(Device device, UsbDevice usbDevice) {
+  public static ArrayList<RemoteAppInfo> getAppList(Device device, UsbDevice usbDevice) {
     try {
       if (Adb.adbMap.get(device.uuid) == null) {
         if (device.isLinkDevice()) Adb.adbMap.put(device.uuid, new Adb(device.uuid, usbDevice, AppData.keyPair));
         else Adb.adbMap.put(device.uuid, new Adb(device.uuid, device.address, AppData.keyPair));
       }
-      ArrayList<String> appList = new ArrayList<>();
-      String output = Adb.getStringResponseFromServer(device, "getAllAppInfo", "app_type=1");
+      ArrayList<RemoteAppInfo> appList = new ArrayList<>();
+      String output = Adb.getStringResponseFromServer(device, "getAllAppInfo", "app_type=1", "icon=1");
       String[] allAppInfo = output.split("<!@n@!>");
       for (String info : allAppInfo) {
         String[] appInfo = info.split("<!@r@!>");
-        if (appInfo.length > 1) appList.add(appInfo[1] + "@" + appInfo[0]);
+        if (appInfo.length > 1) appList.add(RemoteAppInfo.parse(appInfo));
       }
       return appList;
     } catch (Exception e) {
@@ -475,9 +502,11 @@ public class Client {
     this.mode = mode;
     clientView.changeSizeLock.set(false);
     if (mode == 0) {
-      try {
-        Adb.getStringResponseFromServer(clientView.device, "releaseVirtualDisplay", "id=" + displayId);
-      } catch (Exception ignored) {
+      if (displayId != 0) {
+        try {
+          Adb.getStringResponseFromServer(clientView.device, "releaseVirtualDisplay", "id=" + displayId);
+        } catch (Exception ignored) {
+        }
       }
       displayId = 0;
       clientView.displayId = 0;
@@ -487,16 +516,20 @@ public class Client {
     }
     new Thread(() -> {
       try {
+        int wait = 0;
         while (!isStarted()) {
           Thread.sleep(1000);
+          if (++wait % 3 == 0) L.logWithoutTime(uuid, "changeMode(" + mode + ") waiting video stream, waited " + wait + "s, displayId=" + displayId);
         }
+        L.logWithoutTime(uuid, "changeMode(" + mode + ") sending configChanged displayId=" + displayId);
         controlPacket.sendConfigChangedEvent(-displayId);
         if (mode != 0) appTransfer(clientView.device);
         synchronized (clientView.changeSizeLock) {
           clientView.changeSizeLock.set(true);
           clientView.changeSizeLock.notifyAll();
         }
-      } catch (Exception ignored) {
+      } catch (Exception e) {
+        L.log(uuid, e);
       }
     }).start();
     clientView.changeMode(mode);

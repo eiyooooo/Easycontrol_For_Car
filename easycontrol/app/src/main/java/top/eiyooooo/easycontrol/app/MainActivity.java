@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
+    if (connectHelper != null) AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
     AppData.myBroadcastReceiver.setDeviceListAdapter(null);
     AppData.myBroadcastReceiver.setConnectHelper(null);
     ConnectHelper.status = false;
@@ -83,7 +83,7 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onPause() {
-    AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
+    if (connectHelper != null) AppData.uiHandler.removeCallbacks(connectHelper.showStartDefaultUSB);
     ConnectHelper.status = false;
     super.onPause();
   }

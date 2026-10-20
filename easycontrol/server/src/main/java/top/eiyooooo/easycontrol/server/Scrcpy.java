@@ -23,7 +23,10 @@ import java.util.ArrayList;
 
 public final class Scrcpy {
     private static final Object object = new Object();
+    // 运行期 keepalive 超时
     private static final int timeoutDelay = 5 * 1000;
+    // 启动握手超时：音频 uid 亲和等反射初始化较慢，放宽到 15 秒
+    private static final int startTimeoutDelay = 15 * 1000;
 
     public static void main(String... args) {
         L.logMode = 1;
@@ -31,7 +34,7 @@ public final class Scrcpy {
         try {
             Thread timeOutThread = new Thread(() -> {
                 try {
-                    Thread.sleep(timeoutDelay);
+                    Thread.sleep(startTimeoutDelay);
                     release();
                 } catch (InterruptedException ignored) {
                 }

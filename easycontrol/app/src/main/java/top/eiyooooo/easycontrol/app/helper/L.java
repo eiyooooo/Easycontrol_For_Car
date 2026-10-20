@@ -12,6 +12,7 @@ public class L {
     private static final Map<String, StringBuilder> logs = new HashMap<>();
 
     public static void log(String uuid, String log) {
+        android.util.Log.d("easycontrol", log);
         StringBuilder logBuilder = logs.get(uuid);
         if (logBuilder == null) {
             logBuilder = new StringBuilder();
@@ -27,6 +28,7 @@ public class L {
     }
 
     public static void logWithoutTime(String uuid, String log) {
+        android.util.Log.d("easycontrol", log);
         StringBuilder logBuilder = logs.get(uuid);
         if (logBuilder == null) {
             logBuilder = new StringBuilder();
